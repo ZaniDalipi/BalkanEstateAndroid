@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -9,7 +10,53 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/ads" />
+            <option value="$PROJECT_DIR$/ads/data" />
+            <option value="$PROJECT_DIR$/ads/domain" />
+            <option value="$PROJECT_DIR$/ads/presentation" />
+            <option value="$PROJECT_DIR$/agent" />
+            <option value="$PROJECT_DIR$/agent/data" />
+            <option value="$PROJECT_DIR$/agent/domain" />
+            <option value="$PROJECT_DIR$/agent/presentation" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/core/data" />
+            <option value="$PROJECT_DIR$/core/domain" />
+            <option value="$PROJECT_DIR$/core/presentation" />
+            <option value="$PROJECT_DIR$/core/presentation/designSystem" />
+            <option value="$PROJECT_DIR$/core/presentation/ui" />
+            <option value="$PROJECT_DIR$/favourites" />
+            <option value="$PROJECT_DIR$/favourites/data" />
+            <option value="$PROJECT_DIR$/favourites/domain" />
+            <option value="$PROJECT_DIR$/favourites/presentation" />
+            <option value="$PROJECT_DIR$/map" />
+            <option value="$PROJECT_DIR$/map/data" />
+            <option value="$PROJECT_DIR$/map/domain" />
+            <option value="$PROJECT_DIR$/map/presentation" />
+            <option value="$PROJECT_DIR$/media" />
+            <option value="$PROJECT_DIR$/media/data" />
+            <option value="$PROJECT_DIR$/media/domain" />
+            <option value="$PROJECT_DIR$/media/presentation" />
+            <option value="$PROJECT_DIR$/messaging" />
+            <option value="$PROJECT_DIR$/messaging/data" />
+            <option value="$PROJECT_DIR$/messaging/domain" />
+            <option value="$PROJECT_DIR$/messaging/presentation" />
+            <option value="$PROJECT_DIR$/notification" />
+            <option value="$PROJECT_DIR$/notification/data" />
+            <option value="$PROJECT_DIR$/notification/domain" />
+            <option value="$PROJECT_DIR$/notification/presentation" />
+            <option value="$PROJECT_DIR$/profile" />
+            <option value="$PROJECT_DIR$/profile/data" />
+            <option value="$PROJECT_DIR$/profile/domain" />
+            <option value="$PROJECT_DIR$/profile/presentation" />
+            <option value="$PROJECT_DIR$/property_details" />
+            <option value="$PROJECT_DIR$/property_details/data" />
+            <option value="$PROJECT_DIR$/property_details/domain" />
+            <option value="$PROJECT_DIR$/property_details/presentation" />
+            <option value="$PROJECT_DIR$/search" />
+            <option value="$PROJECT_DIR$/search/data" />
+            <option value="$PROJECT_DIR$/search/domain" />
+            <option value="$PROJECT_DIR$/search/presentation" />
           </set>
         </option>
       </GradleProjectSettings>
