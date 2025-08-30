@@ -19,7 +19,7 @@ coilCompose = "2.7.0"
 composeCompiler = "1.5.9"
 desugar_jdk_libs = "2.1.5"
 ktor = "3.0.2"
-ktorClientLogging = "3.0.1"
+ktorClientLogging = "3.2.3"
 ktorServerCallLogging = "2.3.7"
 koin = "4.0.0"
 materialIconsExtended = "1.7.8"
@@ -27,9 +27,9 @@ navigationCompose = "2.8.9"
 securityCryptoKtx = "1.1.0-alpha07"
 timber = "5.0.1"
 ksp = "2.0.21-1.0.28"
-room = "2.7.1"
+room = "2.7.2"
 org-jetbrains-kotlin-jvm = "1.9.22"
-maps = "4.3.3"
+maps = "6.7.2"
 coroutines = "1.9.0"
 gmsLocation = "21.3.0"
 mapsUtils = "5.0.0"
@@ -40,6 +40,7 @@ secretsPlugin = "2.0.1"
 playServicesMaps = "19.2.0"
 annotation = "1.9.1"
 compose-ui = "1.9.0"
+sqldelight = "2.1.0"
 
 # Project versions
 projectApplicationId = "com.zanoapps.balkanestateandroid"
@@ -70,6 +71,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
@@ -109,6 +111,11 @@ org-mongodb-bson = { module = "org.mongodb:bson", version.ref = "bson" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 google-maps-android-utils-ktx = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsUtils" }
 annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
+#sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
+#sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+#sqldelight-androidDriver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+#sqldelight-jvmDriver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+#sqldelight-nativeDriver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 
 
 # Gradle
@@ -117,6 +124,8 @@ android-tools-common = { group = "com.android.tools", name = "common", version.r
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
+#sqldelight-gradlePlugin = { group = "app.cash.sqldelight", name = "sqldelight-gradle-plugin", version = "sqldelight" }
+
 
 
 [plugins]
@@ -130,7 +139,18 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 room = { id = "androidx.room", version.ref = "room" }
 androidDynamicFeature = { id = "com.android.dynamic-feature", version.ref = "agp" }
 mapsplatform-secrets-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsPlugin" }
+
 #custom convention plugins
+balkanEstateAndroid-android-application = { id = "balkanEstateAndroid.android.application", version = "unspecified" }
+balkanEstateAndroid-android-application-compose = { id = "balkanEstateAndroid.android.application.compose", version = "unspecified" }
+balkanEstateAndroid-android-library = { id = "balkanEstateAndroid.library", version = "unspecified" }
+balkanEstateAndroid-android-library-compose = { id = "balkanEstateAndroid.library.compose", version = "unspecified" }
+balkanEstateAndroid-android-feature-ui = { id = "balkanEstateAndroid.feature.ui", version = "unspecified" }
+balkanEstateAndroid-android-room = { id = "balkanEstateAndroid.room", version = "unspecified" }
+balkanEstateAndroid-jvm-library = { id = "balkanEstateAndroid.jvm.library", version = "unspecified" }
+balkanEstateAndroid-jvm-ktor = { id = "balkanEstateAndroid.jvm.ktor", version = "unspecified" }
+
+
 
 [bundles]
 compose = [
