@@ -1,12 +1,7 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -18,6 +13,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "BalkanEstateAndroid"
 include(":app")
@@ -56,3 +52,8 @@ include(":property_details:presentation")
 include(":media:data")
 include(":media:domain")
 include(":media:presentation")
+
+include(":core:database")
+include(":auth:data")
+include(":auth:domain")
+include(":auth:presentation")
