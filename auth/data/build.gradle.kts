@@ -1,6 +1,9 @@
 plugins {
-    alias(libs.plugins.balkanEstateAndroid.jvm.library)
-    // maybe if i need ktor
+    alias(libs.plugins.balkanEstateAndroid.android.library)
+    alias(libs.plugins.balkanEstateAndroid.jvm.ktor)
+}
+android {
+    namespace = "com.zanoapps.auth.data"
 }
 
 dependencies {

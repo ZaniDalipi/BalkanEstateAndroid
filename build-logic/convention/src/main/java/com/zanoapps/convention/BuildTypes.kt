@@ -85,18 +85,21 @@ internal fun Project.configBuildTypes(
         }
     }
 }
-
-private fun BuildType.configureDebugBuildType() {
-// api key and base urls ( they have to be in local.properties defined)
-}
-
 private fun BuildType.configureStagingBuildType() {
 // api key and base urls ( they have to be in local.properties defined)
 }
 
+private fun BuildType.configureDebugBuildType() {
+//    buildConfigField("String", "API_KEY", apiKey)
+    buildConfigField("String", "BASE_URL", "\"https://balkanEstate.io:8080\"")
+}
+
 private fun BuildType.configureReleaseBuildType(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
+
 ) {
+//    buildConfigField("String", "API_KEY", apiKey)
+    buildConfigField("String", "BASE_URL", "\"https://balkanEstate.io:8080\"")
 
     isMinifyEnabled = true
     proguardFiles(
@@ -104,4 +107,3 @@ private fun BuildType.configureReleaseBuildType(
         "proguard-rules.pro"
     )
 }
-

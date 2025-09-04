@@ -14,6 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "BalkanEstateAndroid"
 include(":app")
@@ -53,7 +54,7 @@ include(":media:data")
 include(":media:domain")
 include(":media:presentation")
 
-include(":core:database")
 include(":auth:data")
 include(":auth:domain")
 include(":auth:presentation")
+include(":core:database")

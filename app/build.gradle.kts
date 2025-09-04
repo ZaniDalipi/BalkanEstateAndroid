@@ -11,6 +11,15 @@ android {
 dependencies {
 
 
+    implementation("org.jetbrains:annotations:23.0.0") {
+        exclude(group = "com.intellij", module = "annotations")
+    }
+    // OR if it's a transitive dependency
+    configurations.all {
+        exclude(group = "com.intellij", module = "annotations")
+    }
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -19,6 +28,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
