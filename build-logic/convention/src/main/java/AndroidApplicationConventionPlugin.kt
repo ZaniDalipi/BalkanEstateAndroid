@@ -14,7 +14,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             // applying the plugins that we want to together with this convention plugin
             pluginManager.run {
                 apply("com.android.application")
-                //apply("org.jetbrains.kotlin.android")
+                apply("org.jetbrains.kotlin.android")
             }
             extensions.configure<ApplicationExtension> {
                 defaultConfig {

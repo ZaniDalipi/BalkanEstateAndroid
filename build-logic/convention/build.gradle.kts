@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.implementation
-
 plugins {
     `kotlin-dsl`
 }
@@ -8,7 +6,6 @@ group = "com.zanoapps.balkanestateandroid.buildlogic"
 
 dependencies {
 
-    implementation(libs.serialization)
 
     // includes this only during compile time
     compileOnly(libs.android.gradlePlugin)
@@ -53,9 +50,11 @@ gradlePlugin {
         }
 
         register("androidRoom") {
-            id = "balkanEstateAndroid.room"
+            id = "balkanEstateAndroid.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
         }
+
+
 
         register("androidDynamicFeature") {
             id = "balkanEstateAndroid.android.dynamic.feature"
