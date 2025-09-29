@@ -49,8 +49,8 @@ import kotlin.collections.forEach
 fun PricingCard(
     title: String,
     currentPrice: String,
-    ctaText: String,
-    onCtaClick: () -> Unit,
+    text: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     badge: Badge? = null,
     titleIcon: ImageVector? = null,
@@ -58,7 +58,7 @@ fun PricingCard(
     period: String = "",
     savings: String? = null,
     features: List<PricingFeature> = emptyList(),
-    ctaStyle: PricingCTAStyle = PricingCTAStyle.Primary,
+    style: PricingCTAStyle = PricingCTAStyle.Primary,
     isHighlighted: Boolean = false,
     isEnterprise: Boolean = false,
     trialText: String? = null
@@ -88,7 +88,7 @@ fun PricingCard(
     }
 
     Card(
-        onClick = onCtaClick,
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .then(borderModifier),
@@ -251,14 +251,14 @@ fun PricingCard(
 
             // CTA Button
             Button(
-                onClick = onCtaClick,
+                onClick = onClick,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = getButtonColors(ctaStyle),
+                colors = getButtonColors(style),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 Text(
-                    text = ctaText,
+                    text = text,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = Poppins

@@ -1,5 +1,4 @@
-package com.zanoapps.onboarding.presentation.buyer
-
+package com.zanoapps.onboarding.presentation.seller.sellingtime
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,84 +13,77 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.Poppins
+import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
-import com.zanoapps.onboarding.domain.enums.buyer.PropertyIntent
+import com.zanoapps.onboarding.domain.enums.seller.SellingTime
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.ProgressBar
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
 
 @Composable
-fun PropertyIntentScreen(
-    propertyIntent: PropertyIntent,
-    onToggleIntent: (PropertyIntent) -> Unit,
+fun SellingTimeScreen(
+    selectedType: SellingTime,
+    onToggleSelection: (SellingTime) -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
     onSkip: () -> Unit,
     canNavigateBack: Boolean,
     modifier: Modifier = Modifier
 ) {
-
-    var selectedOptionRadioButton by remember { mutableStateOf("") }
-
     GradientBackground {
-
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp)
         ) {
-            // Progress indicator
+
             ProgressBar(
-                progress = 0.6f,
+                progress = 0.66f,
                 modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = "Are you looking to buy or rent?",
+                text = stringResource(R.string.sellingTimeTitle),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
-                fontFamily = Poppins,
+                fontFamily = Poppins
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "This affects the properties we'll show you",
+                text = stringResource(R.string.sellingTimeDescription),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.fillMaxWidth()
             )
-
             Spacer(modifier = Modifier.height(32.dp))
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(PropertyIntent.entries.toTypedArray()) { propertyIntent ->
+                items(SellingTime.entries.toTypedArray()) { sellingTime ->
                     BalkanEstateSelectionCard(
-                        title = propertyIntent.title,
-                        description = propertyIntent.description,
+                        title = sellingTime.displayName,
+                        description = sellingTime.description,
                         isSelected = false,
-                        onClick = { },
+                        onClick = {},
                         selectionType = SelectionType.CHECKBOX,
                         showSelectionIndicator = true
                     )
@@ -100,26 +92,24 @@ fun PropertyIntentScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Navigation buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if (canNavigateBack) {
+                if(canNavigateBack) {
                     BalkanEstateOutlinedActionButton(
-                        onClick = onBack,
-                        text = "Back",
+                        text = stringResource(R.string.go_back),
                         isLoading = false,
                         enabled = true,
+                        onClick = {  },
                         modifier = Modifier.weight(1f)
                     )
                 }
-
                 BalkanEstateActionButton(
-                    onClick = onNext,
-                    text = "Next",
+                    text = stringResource(R.string.next),
                     isLoading = false,
                     enabled = true,
+                    onClick = {  },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -134,18 +124,17 @@ fun PropertyIntentScreen(
 
 }
 
-
 @Preview(showBackground = true)
 @Composable
-private fun PropertyIntentScreenPreview() {
+fun SellingTimeScreenPreview() {
     BalkanEstateTheme {
-        PropertyIntentScreen(
-            propertyIntent = PropertyIntent.BUY,
-            onToggleIntent = {},
-            onNext = {  },
-            onBack = {  },
-            onSkip = {  },
-            canNavigateBack = true
+        SellingTimeScreen(
+            selectedType = SellingTime.NO_RUSH,
+            onToggleSelection = { },
+            onNext = { },
+            onBack = { },
+            onSkip = { },
+            canNavigateBack = true,
         )
     }
 }

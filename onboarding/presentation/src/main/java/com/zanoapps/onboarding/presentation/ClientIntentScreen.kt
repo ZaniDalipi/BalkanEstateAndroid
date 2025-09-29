@@ -35,11 +35,7 @@ import com.zanoapps.onboarding.presentation.components.SelectionType
 fun ClientIntentScreen(
     selectedIntent: ClientIntent?,
     onSelectIntent: (ClientIntent) -> Unit,
-    onNext: () -> Unit,
-    onBack: () -> Unit,
     onSkip: () -> Unit,
-    canNavigateNext: Boolean,
-    canNavigateBack: Boolean,
     modifier: Modifier = Modifier
 ) {
     GradientBackground {
@@ -134,11 +130,7 @@ private fun Screen() {
             onSelectIntent = {
                 ClientIntent.BUY_RENT
             },
-            onNext = {},
-            onBack = { },
             onSkip = { },
-            canNavigateNext = true,
-            canNavigateBack = true,
         )
 
     }

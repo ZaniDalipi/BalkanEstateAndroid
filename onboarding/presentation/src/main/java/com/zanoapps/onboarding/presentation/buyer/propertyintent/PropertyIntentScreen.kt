@@ -1,4 +1,4 @@
-package com.zanoapps.onboarding.presentation.buyer
+package com.zanoapps.onboarding.presentation.buyer.propertyintent
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -28,16 +28,16 @@ import com.zanoapps.core.presentation.designsystem.Poppins
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
-import com.zanoapps.onboarding.domain.enums.buyer.LifeSituation
+import com.zanoapps.onboarding.domain.enums.buyer.PropertyIntent
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.ProgressBar
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
 
 @Composable
-fun CurrentLifeSituationBuyerScreen(
-    lifeSituation: LifeSituation,
-    onToggleBox: (LifeSituation) -> Unit,
+fun PropertyIntentScreen(
+    propertyIntent: PropertyIntent,
+    onToggleIntent: (PropertyIntent) -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
     onSkip: () -> Unit,
@@ -56,14 +56,14 @@ fun CurrentLifeSituationBuyerScreen(
         ) {
             // Progress indicator
             ProgressBar(
-                progress = 0.4f,
+                progress = 0.6f,
                 modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = "What's your current life situation?",
+                text = "Are you looking to buy or rent?",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
@@ -73,7 +73,7 @@ fun CurrentLifeSituationBuyerScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "This helps us understand your housing needs better",
+                text = "This affects the properties we'll show you",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Normal,
@@ -86,10 +86,10 @@ fun CurrentLifeSituationBuyerScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(LifeSituation.entries.toTypedArray()) { lifeSituation ->
+                items(PropertyIntent.entries.toTypedArray()) { propertyIntent ->
                     BalkanEstateSelectionCard(
-                        title = lifeSituation.title,
-                        description = lifeSituation.description,
+                        title = propertyIntent.title,
+                        description = propertyIntent.description,
                         isSelected = false,
                         onClick = { },
                         selectionType = SelectionType.CHECKBOX,
@@ -137,15 +137,15 @@ fun CurrentLifeSituationBuyerScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun CurrentLifeSituationScreenPreview() {
+private fun PropertyIntentScreenPreview() {
     BalkanEstateTheme {
-        CurrentLifeSituationBuyerScreen(
-            lifeSituation = LifeSituation.GROWING_FAMILY,
-            onNext = { },
-            onBack = {},
-            onSkip = { },
-            onToggleBox = { },
-            canNavigateBack = true,
+        PropertyIntentScreen(
+            propertyIntent = PropertyIntent.BUY,
+            onToggleIntent = {},
+            onNext = {  },
+            onBack = {  },
+            onSkip = {  },
+            canNavigateBack = true
         )
     }
 }
