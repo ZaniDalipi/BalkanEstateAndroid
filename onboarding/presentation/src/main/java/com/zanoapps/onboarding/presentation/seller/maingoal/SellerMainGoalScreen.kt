@@ -1,4 +1,4 @@
-package com.zanoapps.onboarding.presentation.seller
+package com.zanoapps.onboarding.presentation.seller.maingoal
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,16 +25,16 @@ import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
-import com.zanoapps.onboarding.domain.enums.seller.PropertyTypeSeller
+import com.zanoapps.onboarding.domain.enums.seller.MainGoal
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.ProgressBar
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
 
 @Composable
-fun PropertyTypeScreen(
-    selectedType: PropertyTypeSeller,
-    onToggleSelection: (PropertyTypeSeller) -> Unit,
+fun SellerMainGoalScreen(
+    selectedType: MainGoal,
+    onToggleSelection: (MainGoal) -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
     onSkip: () -> Unit,
@@ -49,14 +49,14 @@ fun PropertyTypeScreen(
         ) {
 
             ProgressBar(
-                progress = 0.33f,
+                progress = 1f,
                 modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = stringResource(R.string.propertyTypeTitle),
+                text = stringResource(R.string.mainGoalTitle),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
@@ -66,7 +66,7 @@ fun PropertyTypeScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(R.string.propertyTypeDescription),
+                text = stringResource(R.string.mainGoalDescription),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Normal,
@@ -78,10 +78,10 @@ fun PropertyTypeScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(PropertyTypeSeller.entries.toTypedArray()) { type ->
+                items(MainGoal.entries.toTypedArray()) { goal ->
                     BalkanEstateSelectionCard(
-                        title = type.displayName,
-                        description = type.description,
+                        title = goal.displayName,
+                        description = goal.description,
                         isSelected = false,
                         onClick = {},
                         selectionType = SelectionType.CHECKBOX,
@@ -126,10 +126,10 @@ fun PropertyTypeScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun PropertyTypeScreenPreview() {
+fun MainGoalScreenPreview() {
     BalkanEstateTheme {
-        PropertyTypeScreen(
-            selectedType = PropertyTypeSeller.COMMERCIAL_PROPERTY,
+        SellerMainGoalScreen(
+            selectedType = MainGoal.QUICK_SALE,
             onToggleSelection = { },
             onNext = { },
             onBack = { },

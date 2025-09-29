@@ -45,8 +45,24 @@ import com.zanoapps.onboarding.presentation.seller.pricing.components.subsFeatur
 import kotlinx.coroutines.delay
 
 @Composable
+fun PricingScreenRoot(
+    onSelectPlanClick: () -> Unit,
+    onSkipClicked: () -> Unit
+    ) {
+    PricingScreen(
+        onAction = { action ->
+            when (action) {
+                is PricingActions.OnSelectPlanClick -> onSelectPlanClick()
+                PricingActions.OnSkipClicked -> onSkipClicked()
+            }
+        }
+    )
+}
+
+@Composable
 fun PricingScreen(
-    onSelectPlan: (String) -> Unit = {},
+    onAction: (PricingActions) -> Unit,
+    // state
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -129,11 +145,11 @@ fun PricingScreen(
                 period = "/year",
                 savings = "Save €120 today!",
                 features = getYearlyFeatures(),
-                ctaText = "Get Pro Annual - €80/year",
-                ctaStyle = PricingCTAStyle.Primary,
+                text = "Get Pro Annual - €80/year",
+                style = PricingCTAStyle.Primary,
                 isHighlighted = true,
                 trialText = "+ 15 DAYS FREE TRIAL",
-                onCtaClick = { onSelectPlan("yearly") }
+                onClick = { }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -148,9 +164,9 @@ fun PricingScreen(
                 currentPrice = "€12.50",
                 savings = "Save €12.50 monthly!",
                 features = getMonthlyFeatures(),
-                ctaText = "Get Pro Monthly - €12.50/month",
-                ctaStyle = PricingCTAStyle.Secondary,
-                onCtaClick = { onSelectPlan("monthly") }
+                text = "Get Pro Monthly - €12.50/month",
+                style = PricingCTAStyle.Secondary,
+                onClick = { }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -166,10 +182,10 @@ fun PricingScreen(
                 currentPrice = "€1,000",
                 period = "/year",
                 features = getEnterpriseFeatures(),
-                ctaText = "Perfect for Real Estate Companies",
-                ctaStyle = PricingCTAStyle.Enterprise,
+                text = "Perfect for Real Estate Companies",
+                style = PricingCTAStyle.Enterprise,
                 isEnterprise = true,
-                onCtaClick = { onSelectPlan("enterprise") }
+                onClick = { }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -201,7 +217,9 @@ enum class PricingCTAStyle {
 @Composable
 private fun PricingScreenPreview() {
     BalkanEstateTheme {
-        PricingScreen()
+        PricingScreen(
+            onAction = { }
+        )
     }
 }
 

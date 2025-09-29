@@ -1,22 +1,18 @@
-package com.zanoapps.onboarding.presentation.buyer
+package com.zanoapps.onboarding.presentation.seller.sellercompletion
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,18 +20,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
-import com.zanoapps.core.presentation.designsystem.CheckIcon
+import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
+import com.zanoapps.onboarding.presentation.components.SuccessLogoComp
 
 @Composable
-fun PreFinalMessageScreen(
+fun SellerOnboardingCompletionScreen(
     onSearchPropertyClicked: () -> Unit,
+    onCreateAccountClicked: () -> Unit,
     iconSize: Dp = 25.dp,
     modifier: Modifier = Modifier
 ) {
     GradientBackground(
-        modifier = Modifier
+        modifier = Modifier.fillMaxHeight()
     ) {
 
         Column(
@@ -45,36 +43,17 @@ fun PreFinalMessageScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Box(
+
+            SuccessLogoComp(
                 modifier = Modifier
-                    .size(75.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
-                        .padding(12.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = CheckIcon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(iconSize)
+                    .fillMaxWidth()
+            )
 
-                    )
-                }
-
-            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Perfect! We've got your preferences",
+                text = stringResource(R.string.pre_final_message_seller_title),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
@@ -83,7 +62,7 @@ fun PreFinalMessageScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Let's find properties that match your lifestyle and needs",
+                text = stringResource(R.string.pre_final_message_seller_description),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Normal,
@@ -91,23 +70,47 @@ fun PreFinalMessageScreen(
             )
 
 
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .padding(bottom = 48.dp)
+            ) {
+
+                BalkanEstateActionButton(
+                    text = stringResource(R.string.get_property_valuation),
+                    isLoading = false,
+                    enabled = true,
+                    onClick = { }
+                )
+            }
         }
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .padding(bottom = 48.dp)
+                .padding(18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
 
+            Text(
+                text = stringResource(R.string.benefits_create_account),
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             BalkanEstateActionButton(
-                text = "Start Searching Properties",
+                text = stringResource(R.string.create_account),
                 isLoading = false,
                 enabled = true,
                 onClick = { }
             )
         }
     }
-
 }
 
 @Preview(showBackground = true)
@@ -115,8 +118,9 @@ fun PreFinalMessageScreen(
 fun PreFinalMessageScreenPreview() {
     BalkanEstateTheme {
 
-        PreFinalMessageScreen(
-            onSearchPropertyClicked = { }
+        SellerOnboardingCompletionScreen(
+            onSearchPropertyClicked = { },
+            onCreateAccountClicked = {  },
         )
     }
 }
