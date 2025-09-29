@@ -77,7 +77,7 @@ val SharePropertyIcon: ImageVector
 val SortResultsIcon: ImageVector
     @Composable get() = ImageVector.vectorResource(id = R.drawable.sort_results)
 
-val SquareMeetersIcon: ImageVector
+val SquareMetersIcon: ImageVector
     @Composable get() = ImageVector.vectorResource(id = R.drawable.square_meeters)
 
 val VirtualTourIcon: ImageVector
@@ -89,4 +89,33 @@ val VirtualTour2Icon: ImageVector
 val YearBuildIcon: ImageVector
     @Composable get() = ImageVector.vectorResource(id = R.drawable.year_build)
 
+val BalkanEstateLogo: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.balkan_estate_logo)
 
+val BackToolbarLogo: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.back_toolbar)
+
+val CompareIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.compare)
+
+val TourIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.person_360_tour)
+
+val HomeIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.home)
+
+val EnterpriseIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.enterprise)
+
+val AnalyticsIcon: ImageVector
+    @Composable() get() = ImageVector.vectorResource(id = R.drawable.analytics)
+
+val CameraIcon: ImageVector
+    @Composable() get() = ImageVector.vectorResource(id = R.drawable.camera)
+
+val LightingIcon: ImageVector
+    @Composable() get() = ImageVector.vectorResource(id = R.drawable.lightning_icon)
+val MoneyBackIcon: ImageVector
+    @Composable() get() = ImageVector.vectorResource(id = R.drawable.money_back_guarantee)
+val SuccessChartIcon: ImageVector
+    @Composable() get() = ImageVector.vectorResource(id = R.drawable.success_chart)

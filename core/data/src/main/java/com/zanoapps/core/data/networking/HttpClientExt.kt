@@ -1,5 +1,6 @@
 package com.zanoapps.core.data.networking
 
+import com.zanoapps.core.data.BuildConfig
 import com.zanoapps.core.domain.util.DataError
 import com.zanoapps.core.domain.util.Result
 import io.ktor.client.HttpClient
@@ -90,11 +91,10 @@ suspend inline fun <reified T> responseToResult(response: HttpResponse): Result<
         else -> Result.Error(DataError.Network.UNKNOWN)
     }
 }
-/*
 fun constructRoute(route: String): String {
     return when {
-        route.contains(BuildConfig.BASE_URL) -> route,
+        route.contains(BuildConfig.BASE_URL) -> route
         route.startsWith("/") -> BuildConfig.BASE_URL + route
         else -> BuildConfig.BASE_URL + "/$route"
     }
-}*/
+}

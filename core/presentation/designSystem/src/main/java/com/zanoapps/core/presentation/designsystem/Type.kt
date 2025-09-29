@@ -36,7 +36,7 @@ val Typography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 20.sp,
-        color = balkanEstateGray
+        color = BalkanEstateGray
     ),
     bodyMedium = TextStyle(
         fontFamily = Poppins,
@@ -61,6 +61,6 @@ val Typography = Typography(
         fontFamily = Poppins,
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp,
-        color = balkanEstateWhite
+        color = BalkanEstateWhite95Background
     ),
 )

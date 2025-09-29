@@ -13,4 +13,6 @@ dependencies {
     implementation(projects.core.presentation)
     implementation(projects.ads.domain)
 
+    implementation(libs.coil.compose)
+
 }

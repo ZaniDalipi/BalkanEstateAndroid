@@ -44,6 +44,7 @@
             <option value="$PROJECT_DIR$/core/presentation" />
             <option value="$PROJECT_DIR$/core/presentation/designSystem" />
             <option value="$PROJECT_DIR$/core/presentation/ui" />
+            <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/favourites" />
             <option value="$PROJECT_DIR$/favourites/data" />
             <option value="$PROJECT_DIR$/favourites/domain" />
@@ -64,6 +65,9 @@
             <option value="$PROJECT_DIR$/notification/data" />
             <option value="$PROJECT_DIR$/notification/domain" />
             <option value="$PROJECT_DIR$/notification/presentation" />
+            <option value="$PROJECT_DIR$/onboarding" />
+            <option value="$PROJECT_DIR$/onboarding/domain" />
+            <option value="$PROJECT_DIR$/onboarding/presentation" />
             <option value="$PROJECT_DIR$/profile" />
             <option value="$PROJECT_DIR$/profile/data" />
             <option value="$PROJECT_DIR$/profile/domain" />
