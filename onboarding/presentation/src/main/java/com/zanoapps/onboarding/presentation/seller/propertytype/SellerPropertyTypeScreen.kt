@@ -13,6 +13,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +38,7 @@ import com.zanoapps.onboarding.presentation.components.SkipSurvey
 
 @Composable
 fun SellerPropertyTypeScreen(
-    selectedType: PropertyTypeSeller,
+    sellerPropertyType: List<PropertyTypeSeller>,
     onToggleSelection: (PropertyTypeSeller) -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
@@ -82,8 +87,10 @@ fun SellerPropertyTypeScreen(
                     BalkanEstateSelectionCard(
                         title = type.displayName,
                         description = type.description,
-                        isSelected = false,
-                        onClick = {},
+                        isSelected = sellerPropertyType.contains(type),
+                        onClick = {
+                            onToggleSelection(type)
+                        },
                         selectionType = SelectionType.CHECKBOX,
                         showSelectionIndicator = true
                     )
@@ -92,24 +99,35 @@ fun SellerPropertyTypeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            Text(
+                text = "Selected: ${sellerPropertyType.size} types",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if(canNavigateBack) {
+                if (canNavigateBack) {
                     BalkanEstateOutlinedActionButton(
                         text = stringResource(R.string.go_back),
                         isLoading = false,
                         enabled = true,
-                        onClick = {  },
+                        onClick = { },
                         modifier = Modifier.weight(1f)
                     )
                 }
                 BalkanEstateActionButton(
                     text = stringResource(R.string.next),
                     isLoading = false,
-                    enabled = true,
-                    onClick = {  },
+                    enabled = sellerPropertyType.isNotEmpty(),
+                    onClick = onNext,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -128,10 +146,22 @@ fun SellerPropertyTypeScreen(
 @Composable
 fun PropertyTypeScreenPreview() {
     BalkanEstateTheme {
+
+        var propertiesListSelected by remember { mutableStateOf<List<PropertyTypeSeller>>(emptyList()) }
+
         SellerPropertyTypeScreen(
-            selectedType = PropertyTypeSeller.COMMERCIAL_PROPERTY,
-            onToggleSelection = { },
-            onNext = { },
+            sellerPropertyType = propertiesListSelected,
+            onToggleSelection = { property ->
+                propertiesListSelected = if (propertiesListSelected.contains(property)) {
+                    propertiesListSelected - property
+                } else {
+                    propertiesListSelected + property
+                }
+
+            },
+            onNext = {
+                println("Selected properties: $propertiesListSelected")
+            },
             onBack = { },
             onSkip = { },
             canNavigateBack = true,

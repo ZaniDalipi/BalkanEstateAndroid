@@ -1,5 +1,9 @@
 package com.zanoapps.onboarding.presentation.seller.pricing.components
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,9 +27,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,13 +44,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.presentation.designsystem.BalkanEstateDarkGray
 import com.zanoapps.core.presentation.designsystem.BalkanEstateEnterpriseColorCardView
+import com.zanoapps.core.presentation.designsystem.BalkanEstateGray40
 import com.zanoapps.core.presentation.designsystem.BalkanEstateGreen
 import com.zanoapps.core.presentation.designsystem.BalkanEstateOrange
+import com.zanoapps.core.presentation.designsystem.CheckIcon
 import com.zanoapps.core.presentation.designsystem.Poppins
 import com.zanoapps.core.presentation.designsystem.components.Badge
-import com.zanoapps.onboarding.presentation.seller.pricing.PricingCTAStyle
+import com.zanoapps.core.presentation.designsystem.components.animations.pressAnimation
 import com.zanoapps.onboarding.presentation.seller.pricing.PricingFeature
-import kotlin.collections.forEach
+import com.zanoapps.onboarding.presentation.seller.pricing.SubscriptionPlan
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,9 +67,11 @@ fun PricingCard(
     titleIcon: ImageVector? = null,
     originalPrice: String? = null,
     period: String = "",
+    visible: Boolean = true,
+    delayMillis: Long = 0,
     savings: String? = null,
     features: List<PricingFeature> = emptyList(),
-    style: PricingCTAStyle = PricingCTAStyle.Primary,
+    style: SubscriptionPlan = SubscriptionPlan.PRO_ANNUAL,
     isHighlighted: Boolean = false,
     isEnterprise: Boolean = false,
     trialText: String? = null
@@ -84,14 +97,50 @@ fun PricingCard(
             shape = RoundedCornerShape(24.dp)
         )
     } else {
-        Modifier
+        Modifier.border(
+            width = 3.dp,
+            color = BalkanEstateGray40,
+            shape = RoundedCornerShape(24.dp)
+        )
     }
+
+    var isVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(visible) {
+        if (visible) {
+            delay(delayMillis)
+            isVisible = true
+        }
+    }
+
+    val scale by animateFloatAsState(
+        targetValue = if (isVisible) 1f else 0.9f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMediumLow
+        ),
+        label = "cardScale"
+    )
+
+    val alpha by animateFloatAsState(
+        targetValue = if (isVisible) 1f else 0f,
+        animationSpec = tween(400),
+        label = "cardAlpha"
+    )
+
 
     Card(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .then(borderModifier),
+            .then(borderModifier)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+                this.alpha = alpha
+                translationY = if (!isVisible) 30f else 0f
+            }
+            .pressAnimation(),
         shape = RoundedCornerShape(24.dp),
         colors = cardColors,
         elevation = CardDefaults.cardElevation(
@@ -228,7 +277,7 @@ fun PricingCard(
             // Features
             features.forEach { feature ->
                 when {
-                    isEnterprise && feature.title != null && feature.description != null -> {
+                    isEnterprise && feature.title != null &&feature.description != null -> {
                         EnterpriseFeatureItem(
                             title = feature.title,
                             description = feature.description
@@ -237,7 +286,7 @@ fun PricingCard(
 
                     feature.text != null -> {
                         StandardFeatureItem(
-                            icon = feature.icon ?: Icons.Default.Check,
+                            icon = feature.icon ?: CheckIcon,
                             text = feature.text,
                             isEnterprise = isEnterprise,
                             isHighlighted = isHighlighted
@@ -269,19 +318,19 @@ fun PricingCard(
 }
 
 @Composable
-private fun getButtonColors(style: PricingCTAStyle) = when (style) {
-    PricingCTAStyle.Primary -> ButtonDefaults.buttonColors(
+private fun getButtonColors(style: SubscriptionPlan) = when (style) {
+    SubscriptionPlan.PRO_ANNUAL -> ButtonDefaults.buttonColors(
         containerColor = BalkanEstateGreen,
         contentColor = MaterialTheme.colorScheme.onPrimary
     )
 
-    PricingCTAStyle.Secondary -> ButtonDefaults.outlinedButtonColors(
+    SubscriptionPlan.PRO_MONTHLY -> ButtonDefaults.outlinedButtonColors(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary
 
     )
 
-    PricingCTAStyle.Enterprise -> ButtonDefaults.buttonColors(
+    SubscriptionPlan.ENTERPRISE -> ButtonDefaults.buttonColors(
         containerColor = BalkanEstateOrange,
         contentColor = MaterialTheme.colorScheme.onPrimary
     )

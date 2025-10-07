@@ -15,9 +15,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,9 +30,9 @@ import com.zanoapps.core.presentation.designsystem.Poppins
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
+import com.zanoapps.core.presentation.designsystem.components.animations.BalkanEstateExpressiveProgressIndicator
 import com.zanoapps.onboarding.domain.enums.buyer.Amenity
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
-import com.zanoapps.onboarding.presentation.components.ProgressBar
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
 
@@ -45,7 +47,9 @@ fun AmenitiesBuyerScreen(
     modifier: Modifier = Modifier
 ) {
 
-    var selectedOptionRadioButton by remember { mutableStateOf("") }
+    var progress by remember { mutableFloatStateOf(0f) }
+
+
 
     GradientBackground {
 
@@ -55,8 +59,8 @@ fun AmenitiesBuyerScreen(
                 .padding(24.dp)
         ) {
             // Progress indicator
-            ProgressBar(
-                progress = 0.8f,
+            BalkanEstateExpressiveProgressIndicator(
+                progress = progress,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -90,8 +94,10 @@ fun AmenitiesBuyerScreen(
                     BalkanEstateSelectionCard(
                         title = amenity.title,
                         description = amenity.description,
-                        isSelected = false,
-                        onClick = { },
+                        isSelected = selectedAmenities.contains(amenity),
+                        onClick = {
+                            onToggleAmenity(amenity)
+                        },
                         selectionType = SelectionType.CHECKBOX,
                         showSelectionIndicator = true
                     )
@@ -100,14 +106,26 @@ fun AmenitiesBuyerScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Navigation buttons
+            Text(
+                text = "Selected: ${selectedAmenities.size} amenities",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 if (canNavigateBack) {
                     BalkanEstateOutlinedActionButton(
-                        onClick = onBack,
+                        onClick = {
+                                if (progress > 0.5f) progress -= 0.1f
+                        },
                         text = "Back",
                         isLoading = false,
                         enabled = true,
@@ -116,11 +134,14 @@ fun AmenitiesBuyerScreen(
                 }
 
                 BalkanEstateActionButton(
-                    onClick = onNext,
+                    onClick = {
+                        if (progress < 1f) progress += 0.1f
+                    },
                     text = "Next",
                     isLoading = false,
-                    enabled = true,
+                    enabled = selectedAmenities.isNotEmpty(),
                     modifier = Modifier.weight(1f)
+
                 )
             }
 
@@ -139,14 +160,23 @@ fun AmenitiesBuyerScreen(
 @Composable
 private fun AmenityScreenPreview() {
     BalkanEstateTheme {
+
+        var selectedAmenities by remember { mutableStateOf<List<Amenity>>(emptyList()) }
+
         AmenitiesBuyerScreen(
-            selectedAmenities = listOf(
-                Amenity.GOOD_SCHOOLS, Amenity.PARKS_RECREATION
-            ),
-            onNext = { },
+            selectedAmenities = selectedAmenities,
+            onToggleAmenity = { amenity ->
+                selectedAmenities = if (selectedAmenities.contains(amenity)) {
+                    selectedAmenities - amenity // Remove if already selected
+                } else {
+                    selectedAmenities + amenity // Add if not selected
+                }
+            },
+            onNext = {
+                println("Selected amenities: $selectedAmenities")
+            },
             onBack = {},
             onSkip = { },
-            onToggleAmenity = { },
             canNavigateBack = true,
         )
     }

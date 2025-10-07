@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +29,7 @@ import com.zanoapps.core.presentation.designsystem.Poppins
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
+import com.zanoapps.onboarding.domain.enums.buyer.LifeSituation
 import com.zanoapps.onboarding.domain.enums.buyer.PropertyIntent
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.ProgressBar
@@ -36,7 +38,7 @@ import com.zanoapps.onboarding.presentation.components.SkipSurvey
 
 @Composable
 fun PropertyIntentScreen(
-    propertyIntent: PropertyIntent,
+    propertyIntentList: List<PropertyIntent>,
     onToggleIntent: (PropertyIntent) -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
@@ -90,15 +92,25 @@ fun PropertyIntentScreen(
                     BalkanEstateSelectionCard(
                         title = propertyIntent.title,
                         description = propertyIntent.description,
-                        isSelected = false,
-                        onClick = { },
+                        isSelected = propertyIntentList.contains(propertyIntent),
+                        onClick = {
+                            onToggleIntent(propertyIntent)
+                        },
                         selectionType = SelectionType.CHECKBOX,
                         showSelectionIndicator = true
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "Selected: ${propertyIntentList.size} intents",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Navigation buttons
             Row(
@@ -119,7 +131,7 @@ fun PropertyIntentScreen(
                     onClick = onNext,
                     text = "Next",
                     isLoading = false,
-                    enabled = true,
+                    enabled = propertyIntentList.isNotEmpty(),
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -139,9 +151,20 @@ fun PropertyIntentScreen(
 @Composable
 private fun PropertyIntentScreenPreview() {
     BalkanEstateTheme {
+
+        var selectedOptions by remember { mutableStateOf<List<PropertyIntent>>(emptyList()) }
+
+
         PropertyIntentScreen(
-            propertyIntent = PropertyIntent.BUY,
-            onToggleIntent = {},
+            propertyIntentList = selectedOptions,
+            onToggleIntent = {propertyIntent ->
+                selectedOptions = if (selectedOptions.contains(propertyIntent)) {
+                    selectedOptions - propertyIntent
+                } else {
+                    selectedOptions + propertyIntent
+                }
+
+            },
             onNext = {  },
             onBack = {  },
             onSkip = {  },

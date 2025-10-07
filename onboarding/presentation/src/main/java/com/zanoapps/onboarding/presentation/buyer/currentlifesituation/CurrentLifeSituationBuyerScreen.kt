@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,9 +35,19 @@ import com.zanoapps.onboarding.presentation.components.ProgressBar
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
 
+
+@Composable
+fun CurrentLifeSituationRoot(
+
+
+) {
+
+    
+}
+
 @Composable
 fun CurrentLifeSituationBuyerScreen(
-    lifeSituation: LifeSituation,
+    selectedOptionsLifeSituation: List<LifeSituation>,
     onToggleBox: (LifeSituation) -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
@@ -90,15 +101,26 @@ fun CurrentLifeSituationBuyerScreen(
                     BalkanEstateSelectionCard(
                         title = lifeSituation.title,
                         description = lifeSituation.description,
-                        isSelected = false,
-                        onClick = { },
+                        isSelected = selectedOptionsLifeSituation.contains(lifeSituation),
+                        onClick = {
+                            onToggleBox(lifeSituation)
+                        },
                         selectionType = SelectionType.CHECKBOX,
                         showSelectionIndicator = true
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "Selected: ${selectedOptionsLifeSituation.size} options",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Navigation buttons
             Row(
@@ -119,7 +141,7 @@ fun CurrentLifeSituationBuyerScreen(
                     onClick = onNext,
                     text = "Next",
                     isLoading = false,
-                    enabled = true,
+                    enabled = selectedOptionsLifeSituation.isNotEmpty(),
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -139,12 +161,21 @@ fun CurrentLifeSituationBuyerScreen(
 @Composable
 private fun CurrentLifeSituationScreenPreview() {
     BalkanEstateTheme {
+
+        var selectedOptions by remember { mutableStateOf<List<LifeSituation>>(emptyList()) }
         CurrentLifeSituationBuyerScreen(
-            lifeSituation = LifeSituation.GROWING_FAMILY,
+            selectedOptionsLifeSituation = selectedOptions,
+            onToggleBox = { lifeOption ->
+                selectedOptions = if (selectedOptions.contains(lifeOption)) {
+                    selectedOptions - lifeOption
+                } else {
+                    selectedOptions + lifeOption
+                }
+
+            },
             onNext = { },
             onBack = {},
             onSkip = { },
-            onToggleBox = { },
             canNavigateBack = true,
         )
     }

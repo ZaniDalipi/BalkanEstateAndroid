@@ -15,12 +15,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.zanoapps.balkanestateandroid.ui.theme.BalkanEstateAndroidTheme
 import com.zanoapps.core.presentation.designsystem.AddedToFavIcon
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
@@ -31,61 +33,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BalkanEstateTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Button()
-                    }
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val navController = rememberNavController()
+                    NavigationRoot(navController = navController)
+
+
+
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-
-@Composable
-fun Button() {
-
-        Button(
-            onClick = {},
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primary),
-            enabled = true
-        ) {
-            Icon(
-                imageVector = AddedToFavIcon,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(end = 16.dp)
-            )
-            Text(
-                text = "Test for the guys",
-                color = MaterialTheme.colorScheme.onPrimary
-
-
-            )
-        }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BalkanEstateAndroidTheme {
-        Button()
     }
 }

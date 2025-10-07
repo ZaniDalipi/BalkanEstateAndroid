@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.core.ktx)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -39,6 +40,8 @@ dependencies {
 
     // timber
     implementation(libs.timber)
+
+    implementation(libs.bundles.koin)
 
 
     // all the app modules included here because this is the place where everything is glued together
@@ -99,6 +102,10 @@ dependencies {
         implementation(projects.media.data)
         implementation(projects.media.domain)
         implementation(projects.media.presentation)
+
+        // On Boarding modules
+        implementation(projects.onboarding.domain)
+        implementation(projects.onboarding.presentation)
     }
 
 }
