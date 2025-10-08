@@ -18,34 +18,62 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.Poppins
+import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
 import com.zanoapps.onboarding.domain.enums.buyer.LifeSituation
+import com.zanoapps.onboarding.presentation.buyer.OnBoardingBuyerViewModel
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.ProgressBar
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
+import org.koin.androidx.compose.koinViewModel
+
+
+@Composable
+fun CurrentLifeSituationRoot(
+    viewModel: OnBoardingBuyerViewModel = koinViewModel(),
+    onActionCurrentLifeSituation: (LifeSituation) -> Unit,
+    onBackClicked: () -> Unit,
+    onNextClicked: () -> Unit,
+    onSkipClicked: () -> Unit,
+    ) {
+
+    CurrentLifeSituationBuyerScreen(
+        state = viewModel.lifeSituation,
+        onAction = { action ->
+            viewModel.onLifeSituationAction(action)
+
+            // Handle navigation actions
+            when (action) {
+                is CurrentLifeSituationAction.OnBackClick -> onBackClicked()
+                is CurrentLifeSituationAction.OnNextClick -> onNextClicked()
+                is CurrentLifeSituationAction.OnSkipClick -> onSkipClicked()
+                else -> Unit
+            }
+        },
+    )
+
+    
+}
 
 @Composable
 fun CurrentLifeSituationBuyerScreen(
-    lifeSituation: LifeSituation,
-    onToggleBox: (LifeSituation) -> Unit,
-    onNext: () -> Unit,
-    onBack: () -> Unit,
-    onSkip: () -> Unit,
-    canNavigateBack: Boolean,
+    state: CurrentLifeSituationBuyerState,
+    onAction: (CurrentLifeSituationAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    var selectedOptionRadioButton by remember { mutableStateOf("") }
 
     GradientBackground {
 
@@ -56,7 +84,7 @@ fun CurrentLifeSituationBuyerScreen(
         ) {
             // Progress indicator
             ProgressBar(
-                progress = 0.4f,
+                progress = state.progress,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -90,36 +118,44 @@ fun CurrentLifeSituationBuyerScreen(
                     BalkanEstateSelectionCard(
                         title = lifeSituation.title,
                         description = lifeSituation.description,
-                        isSelected = false,
-                        onClick = { },
-                        selectionType = SelectionType.CHECKBOX,
+                        isSelected = state.savedLifeSituation == lifeSituation,
+                        onClick = {
+                            onAction(CurrentLifeSituationAction.OnPreferenceSelected(lifeSituation))
+                        },
+                        selectionType = SelectionType.RADIO,
                         showSelectionIndicator = true
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Navigation buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if (canNavigateBack) {
+                if (state.canNavigateBack) {
                     BalkanEstateOutlinedActionButton(
-                        onClick = onBack,
-                        text = "Back",
-                        isLoading = false,
-                        enabled = true,
+                        onClick = {
+                            onAction(CurrentLifeSituationAction.OnBackClick)
+                        },
+                        text = stringResource(R.string.go_back),
+                        isLoading = state.isLoading,
+                        enabled = !state.isLoading,
                         modifier = Modifier.weight(1f)
                     )
                 }
 
                 BalkanEstateActionButton(
-                    onClick = onNext,
-                    text = "Next",
-                    isLoading = false,
-                    enabled = true,
+                    onClick = {
+                        onAction(CurrentLifeSituationAction.OnNextClick)
+                    },
+                    text = stringResource(R.string.next),
+                    isLoading = state.isLoading,
+                    enabled = state.savedLifeSituation != null && !state.isLoading,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -127,7 +163,7 @@ fun CurrentLifeSituationBuyerScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             SkipSurvey(
-                onSkip = onSkip
+                onSkip = { onAction(CurrentLifeSituationAction.OnSkipClick) }
             )
         }
     }
@@ -139,13 +175,18 @@ fun CurrentLifeSituationBuyerScreen(
 @Composable
 private fun CurrentLifeSituationScreenPreview() {
     BalkanEstateTheme {
+
+        var selectedOptions by remember { mutableStateOf(LifeSituation.GROWING_FAMILY) }
         CurrentLifeSituationBuyerScreen(
-            lifeSituation = LifeSituation.GROWING_FAMILY,
-            onNext = { },
-            onBack = {},
-            onSkip = { },
-            onToggleBox = { },
-            canNavigateBack = true,
+            state = CurrentLifeSituationBuyerState(selectedOptions),
+            onAction = {currentLifeSituationAction ->
+                when(currentLifeSituationAction) {
+                    CurrentLifeSituationAction.OnBackClick -> TODO()
+                    CurrentLifeSituationAction.OnNextClick -> TODO()
+                    CurrentLifeSituationAction.OnSkipClick -> TODO()
+                    is CurrentLifeSituationAction.OnPreferenceSelected -> TODO()
+                }
+            }
         )
     }
 }

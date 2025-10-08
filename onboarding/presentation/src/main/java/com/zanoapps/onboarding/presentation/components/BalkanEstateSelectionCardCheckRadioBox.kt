@@ -1,6 +1,8 @@
 package com.zanoapps.onboarding.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,8 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -30,11 +30,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
+import com.zanoapps.core.presentation.designsystem.EnterpriseIcon
+import com.zanoapps.core.presentation.designsystem.HomeIcon
 import com.zanoapps.core.presentation.designsystem.Poppins
+import com.zanoapps.core.presentation.designsystem.components.animations.BalkanEstateAnimatedCheckbox
 
 enum class SelectionType {
     RADIO,
-    CHECKBOX
+    CHECKBOX,
+    NONE
 }
 
 @Composable
@@ -46,17 +50,27 @@ fun BalkanEstateSelectionCard(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     selectionType: SelectionType = SelectionType.CHECKBOX,
-    showSelectionIndicator: Boolean = true
+    showSelectionIndicator: Boolean = true,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
+
+
     Card(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = interactionSource
+            ),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {
                 MaterialTheme.colorScheme.primary.copy(0.05f)
             } else {
                 MaterialTheme.colorScheme.secondary
+
             }
         ),
         border = if (isSelected) {
@@ -89,20 +103,23 @@ fun BalkanEstateSelectionCard(
                             onClick = onClick,
                             colors = RadioButtonDefaults.colors(
                                 selectedColor = MaterialTheme.colorScheme.primary,
-                                unselectedColor = MaterialTheme.colorScheme.surface
+                                unselectedColor = MaterialTheme.colorScheme.onSurface
                             ),
                         )
                     }
+
                     SelectionType.CHECKBOX -> {
-                        Checkbox(
+
+                        BalkanEstateAnimatedCheckbox(
                             checked = isSelected,
-                            onCheckedChange = { onClick() },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = MaterialTheme.colorScheme.primary,
-                                uncheckedColor = MaterialTheme.colorScheme.surface,
-                                checkmarkColor = MaterialTheme.colorScheme.onPrimary
-                            )
+                            onCheckedChange = { onClick() }
+
                         )
+                    }
+
+                    SelectionType.NONE -> {
+
+
                     }
                 }
             }
@@ -114,11 +131,12 @@ fun BalkanEstateSelectionCard(
                     tint = if (isSelected) {
                         MaterialTheme.colorScheme.primary
                     } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                        MaterialTheme.colorScheme.onSurface
                     },
                     modifier = Modifier.size(24.dp)
                 )
             }
+
 
             Column(
                 modifier = Modifier.weight(1f)
@@ -129,13 +147,13 @@ fun BalkanEstateSelectionCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
                     fontFamily = Poppins,
-                    )
+                )
 
                 Text(
                     text = description,
                     fontFamily = Poppins,
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.surface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -168,8 +186,7 @@ fun MultiSelectCheckboxGroup(
     }
 }
 
-// this has to be created separately
-// in in a data class wherever will be used, so in on boarding module
+
 data class SelectionOption(
     val id: String,
     val title: String,
@@ -278,6 +295,52 @@ private fun SingleSelectionRadioPreview() {
                 isSelected = selectedOption == "rent",
                 onClick = { selectedOption = "rent" },
                 selectionType = SelectionType.RADIO
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SingleSelectionPreview() {
+    BalkanEstateTheme {
+        var selectedOption by remember { mutableStateOf("") }
+
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Single Selection Example",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontFamily = Poppins,
+            )
+
+            Text(
+                text = "Selected: $selectedOption",
+                fontFamily = Poppins,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            BalkanEstateSelectionCard(
+                title = "Buy",
+                description = "I want to purchase a property",
+                isSelected = selectedOption == "buy",
+                onClick = { selectedOption = "buy" },
+                icon = EnterpriseIcon,
+                selectionType = SelectionType.NONE
+            )
+
+            BalkanEstateSelectionCard(
+                title = "Rent",
+                description = "I'm looking for a rental property",
+                isSelected = selectedOption == "rent",
+                onClick = { selectedOption = "rent" },
+                icon = HomeIcon,
+                selectionType = SelectionType.NONE
             )
         }
     }

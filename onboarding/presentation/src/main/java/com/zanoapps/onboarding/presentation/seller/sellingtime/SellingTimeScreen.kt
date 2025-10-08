@@ -13,6 +13,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +30,7 @@ import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
+import com.zanoapps.onboarding.domain.enums.buyer.LifeSituation
 import com.zanoapps.onboarding.domain.enums.seller.SellingTime
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.ProgressBar
@@ -33,7 +39,7 @@ import com.zanoapps.onboarding.presentation.components.SkipSurvey
 
 @Composable
 fun SellingTimeScreen(
-    selectedType: SellingTime,
+    sellingTimeList: List<SellingTime>,
     onToggleSelection: (SellingTime) -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
@@ -82,8 +88,10 @@ fun SellingTimeScreen(
                     BalkanEstateSelectionCard(
                         title = sellingTime.displayName,
                         description = sellingTime.description,
-                        isSelected = false,
-                        onClick = {},
+                        isSelected = sellingTimeList.contains(sellingTime),
+                        onClick = {
+                            onToggleSelection(sellingTime)
+                        },
                         selectionType = SelectionType.CHECKBOX,
                         showSelectionIndicator = true
                     )
@@ -91,6 +99,15 @@ fun SellingTimeScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "Selected: ${sellingTimeList.size} options",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -101,15 +118,15 @@ fun SellingTimeScreen(
                         text = stringResource(R.string.go_back),
                         isLoading = false,
                         enabled = true,
-                        onClick = {  },
+                        onClick = onBack,
                         modifier = Modifier.weight(1f)
                     )
                 }
                 BalkanEstateActionButton(
                     text = stringResource(R.string.next),
                     isLoading = false,
-                    enabled = true,
-                    onClick = {  },
+                    enabled = sellingTimeList.isNotEmpty(),
+                    onClick = onNext,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -128,9 +145,20 @@ fun SellingTimeScreen(
 @Composable
 fun SellingTimeScreenPreview() {
     BalkanEstateTheme {
+
+        var selectedOptions by remember { mutableStateOf<List<SellingTime>>(emptyList())}
+
+
         SellingTimeScreen(
-            selectedType = SellingTime.NO_RUSH,
-            onToggleSelection = { },
+            sellingTimeList = selectedOptions,
+            onToggleSelection = {options ->
+                selectedOptions = if (selectedOptions.contains(options)) {
+                    selectedOptions - options
+                } else {
+                    selectedOptions + options
+                }
+
+            },
             onNext = { },
             onBack = { },
             onSkip = { },

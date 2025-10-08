@@ -26,6 +26,9 @@ import com.zanoapps.core.presentation.designsystem.BackToolbarLogo
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.Poppins
 import com.zanoapps.core.presentation.designsystem.R
+import com.zanoapps.core.presentation.designsystem.components.animations.AnimationDefaults
+import com.zanoapps.core.presentation.designsystem.components.animations.pressAnimation
+import com.zanoapps.core.presentation.designsystem.components.animations.shimmer
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,6 +76,7 @@ fun BalkanEstateToolbar(
                         .background(
                             MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
                         )
+
                 ) {
                     Icon(
                         imageVector = BackToolbarLogo,

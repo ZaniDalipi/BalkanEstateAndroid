@@ -31,6 +31,9 @@ import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.Poppins
 import com.zanoapps.core.presentation.designsystem.balkanEstateGradientEnd
 import com.zanoapps.core.presentation.designsystem.balkanEstateGradientStartPrimary
+import com.zanoapps.core.presentation.designsystem.components.animations.AnimationDefaults
+import com.zanoapps.core.presentation.designsystem.components.animations.pressAnimation
+import com.zanoapps.core.presentation.designsystem.components.animations.rotateAnimation
 
 @Composable
 fun BalkanEstateActionButton(
@@ -46,8 +49,7 @@ fun BalkanEstateActionButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onPrimary,
-            disabledContainerColor = MaterialTheme.colorScheme.secondary,
-            disabledContentColor = MaterialTheme.colorScheme.surface
+            disabledContainerColor = MaterialTheme.colorScheme.secondary
         ),
         border = if (!enabled) {
             BorderStroke(
@@ -78,6 +80,8 @@ fun BalkanEstateActionButton(
             }
 
 
+
+
         ) {
         Box(
             modifier = Modifier
@@ -91,7 +95,7 @@ fun BalkanEstateActionButton(
                     .size(15.dp)
                     .alpha(if (isLoading) 1f else 0f),
                 strokeWidth = 1.5.dp,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Text(

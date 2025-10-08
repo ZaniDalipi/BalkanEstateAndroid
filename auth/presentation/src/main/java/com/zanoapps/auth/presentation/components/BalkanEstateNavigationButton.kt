@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -186,7 +184,7 @@ private fun NavigationSection(
             )
 
             NavigationItem(
-                icon = Icons.Default.Home,
+                icon = HomeIcon,
                 text = "Claim your home",
                 onClick = onClaimHomeClick
             )

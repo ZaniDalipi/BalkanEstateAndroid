@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -37,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.zanoapps.core.presentation.designsystem.AddedToFavIcon
 import com.zanoapps.core.presentation.designsystem.BathroomsIcon
 import com.zanoapps.core.presentation.designsystem.BedroomsIcon
 import com.zanoapps.core.presentation.designsystem.SquareMetersIcon
@@ -102,7 +100,7 @@ fun PropertyCard(
                         .padding(12.dp)
                 ) {
                     Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        imageVector = if (isFavorite) AddedToFavIcon else AddedToFavIcon,
                         contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
                         tint = if (isFavorite) Color(0xFFE53E3E) else Color.White,
                         modifier = Modifier.size(24.dp)
@@ -283,7 +281,7 @@ fun PropertyCardCompact(
                         .padding(8.dp)
                 ) {
                     Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        imageVector = if (isFavorite) AddedToFavIcon else AddedToFavIcon,
                         contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
                         tint = if (isFavorite) Color(0xFFE53E3E) else Color.White,
                         modifier = Modifier.size(20.dp)

@@ -46,13 +46,13 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun PricingScreenRoot(
-    onSelectPlanClick: () -> Unit,
+    onSelectPlanClick: (SubscriptionPlan) -> Unit,
     onSkipClicked: () -> Unit
-    ) {
+) {
     PricingScreen(
         onAction = { action ->
             when (action) {
-                is PricingActions.OnSelectPlanClick -> onSelectPlanClick()
+                is PricingActions.OnSelectPlanClick -> onSelectPlanClick(action.option)
                 PricingActions.OnSkipClicked -> onSkipClicked()
             }
         }
@@ -146,10 +146,18 @@ fun PricingScreen(
                 savings = "Save €120 today!",
                 features = getYearlyFeatures(),
                 text = "Get Pro Annual - €80/year",
-                style = PricingCTAStyle.Primary,
+                style = SubscriptionPlan.PRO_ANNUAL,
                 isHighlighted = true,
+                delayMillis = 2,
                 trialText = "+ 15 DAYS FREE TRIAL",
-                onClick = { }
+                onClick = {
+                    onAction(
+                        PricingActions.OnSelectPlanClick(
+                            SubscriptionPlan.PRO_ANNUAL
+                        )
+                    )
+
+                }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -165,9 +173,18 @@ fun PricingScreen(
                 savings = "Save €12.50 monthly!",
                 features = getMonthlyFeatures(),
                 text = "Get Pro Monthly - €12.50/month",
-                style = PricingCTAStyle.Secondary,
-                onClick = { }
+                style = SubscriptionPlan.PRO_MONTHLY,
+                delayMillis = 5,
+                onClick = {
+                    onAction(
+                        PricingActions.OnSelectPlanClick(
+                            SubscriptionPlan.PRO_MONTHLY
+                        )
+                    )
+
+                }
             )
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -183,9 +200,16 @@ fun PricingScreen(
                 period = "/year",
                 features = getEnterpriseFeatures(),
                 text = "Perfect for Real Estate Companies",
-                style = PricingCTAStyle.Enterprise,
+                style = SubscriptionPlan.ENTERPRISE,
                 isEnterprise = true,
-                onClick = { }
+                delayMillis = 7,
+                onClick = {
+                    onAction(
+                        PricingActions.OnSelectPlanClick(
+                            SubscriptionPlan.ENTERPRISE
+                        )
+                    )
+                }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -206,10 +230,10 @@ data class PricingFeature(
     val description: String? = null
 )
 
-enum class PricingCTAStyle {
-    Primary,
-    Secondary,
-    Enterprise
+enum class SubscriptionPlan {
+    PRO_ANNUAL,
+    PRO_MONTHLY,
+    ENTERPRISE
 }
 
 
@@ -218,7 +242,9 @@ enum class PricingCTAStyle {
 private fun PricingScreenPreview() {
     BalkanEstateTheme {
         PricingScreen(
-            onAction = { }
+            onAction = {
+
+            }
         )
     }
 }

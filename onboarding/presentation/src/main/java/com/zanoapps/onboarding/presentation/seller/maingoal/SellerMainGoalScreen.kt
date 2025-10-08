@@ -13,6 +13,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,10 +35,11 @@ import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.ProgressBar
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
+import kotlin.collections.plus
 
 @Composable
 fun SellerMainGoalScreen(
-    selectedType: MainGoal,
+    mainGoals: List<MainGoal>,
     onToggleSelection: (MainGoal) -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
@@ -82,8 +88,10 @@ fun SellerMainGoalScreen(
                     BalkanEstateSelectionCard(
                         title = goal.displayName,
                         description = goal.description,
-                        isSelected = false,
-                        onClick = {},
+                        isSelected = mainGoals.contains(goal),
+                        onClick = {
+                            onToggleSelection(goal)
+                        },
                         selectionType = SelectionType.CHECKBOX,
                         showSelectionIndicator = true
                     )
@@ -91,6 +99,18 @@ fun SellerMainGoalScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+
+
+            Text(
+                text = "Selected: ${mainGoals.size} goals",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -108,8 +128,8 @@ fun SellerMainGoalScreen(
                 BalkanEstateActionButton(
                     text = stringResource(R.string.next),
                     isLoading = false,
-                    enabled = true,
-                    onClick = {  },
+                    enabled = mainGoals.isNotEmpty() ,
+                    onClick = onNext,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -128,10 +148,21 @@ fun SellerMainGoalScreen(
 @Composable
 fun MainGoalScreenPreview() {
     BalkanEstateTheme {
+
+        var mainGoalsSelected by remember { mutableStateOf<List<MainGoal>>(emptyList()) }
+
         SellerMainGoalScreen(
-            selectedType = MainGoal.QUICK_SALE,
-            onToggleSelection = { },
-            onNext = { },
+            mainGoals = mainGoalsSelected,
+            onToggleSelection = { mainGoal ->
+                mainGoalsSelected = if (mainGoalsSelected.contains(mainGoal)) {
+                    mainGoalsSelected - mainGoal
+                } else {
+                    mainGoalsSelected + mainGoal
+                }
+            },
+            onNext = {
+                println("Selected main goals: $mainGoalsSelected")
+            },
             onBack = { },
             onSkip = { },
             canNavigateBack = true,

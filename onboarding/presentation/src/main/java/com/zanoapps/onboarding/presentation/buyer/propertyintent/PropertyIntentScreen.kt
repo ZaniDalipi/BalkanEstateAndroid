@@ -19,33 +19,61 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.Poppins
+import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
 import com.zanoapps.onboarding.domain.enums.buyer.PropertyIntent
+import com.zanoapps.onboarding.presentation.buyer.OnBoardingBuyerViewModel
+import com.zanoapps.onboarding.presentation.buyer.amenities.AmenitiesAction
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.ProgressBar
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
+import org.koin.androidx.compose.koinViewModel
+
+
+@Composable
+fun PropertyIntentScreenRoot(
+    viewModel: OnBoardingBuyerViewModel = koinViewModel(),
+    onActionPropertyIntent: (PropertyIntent) -> Unit,
+    onSkipClicked: () -> Unit,
+    onBackClicked: () -> Unit,
+    onNextClicked: () -> Unit,
+
+    ) {
+
+    PropertyIntentScreen(
+        state = viewModel.propertyIntentState,
+        onAction = { action ->
+            viewModel.onPropertyIntentAction(action)
+            when (action) {
+                PropertyIntentAction.OnBackClick -> onBackClicked()
+                PropertyIntentAction.OnNextClick -> onNextClicked()
+                PropertyIntentAction.OnSkipClick -> onSkipClicked()
+                else -> Unit
+            }
+
+        }
+    )
+
+
+}
 
 @Composable
 fun PropertyIntentScreen(
-    propertyIntent: PropertyIntent,
-    onToggleIntent: (PropertyIntent) -> Unit,
-    onNext: () -> Unit,
-    onBack: () -> Unit,
-    onSkip: () -> Unit,
-    canNavigateBack: Boolean,
+    state: PropertyIntentState,
+    onAction: (PropertyIntentAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    var selectedOptionRadioButton by remember { mutableStateOf("") }
 
     GradientBackground {
 
@@ -56,7 +84,7 @@ fun PropertyIntentScreen(
         ) {
             // Progress indicator
             ProgressBar(
-                progress = 0.6f,
+                progress = state.progress,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -90,36 +118,40 @@ fun PropertyIntentScreen(
                     BalkanEstateSelectionCard(
                         title = propertyIntent.title,
                         description = propertyIntent.description,
-                        isSelected = false,
-                        onClick = { },
-                        selectionType = SelectionType.CHECKBOX,
+                        isSelected = state.savedIntents == propertyIntent,
+                        onClick = {
+                            onAction(PropertyIntentAction.OnPreferenceSelected(propertyIntent))
+                        },
+                        selectionType = SelectionType.RADIO,
                         showSelectionIndicator = true
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Navigation buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if (canNavigateBack) {
+                if (state.canNavigateBack) {
                     BalkanEstateOutlinedActionButton(
-                        onClick = onBack,
-                        text = "Back",
-                        isLoading = false,
-                        enabled = true,
+                        onClick = {
+                            onAction(PropertyIntentAction.OnBackClick)
+                        },
+                        text = stringResource(R.string.go_back),
+                        isLoading = state.isLoading,
+                        enabled = !state.isLoading,
                         modifier = Modifier.weight(1f)
                     )
                 }
 
                 BalkanEstateActionButton(
-                    onClick = onNext,
-                    text = "Next",
-                    isLoading = false,
-                    enabled = true,
+                    onClick = {
+                        onAction(PropertyIntentAction.OnNextClick)
+                    },
+                    text = stringResource(R.string.next),
+                    isLoading = state.isLoading,
+                    enabled = state.savedIntents != null && !state.isLoading,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -127,7 +159,7 @@ fun PropertyIntentScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             SkipSurvey(
-                onSkip = onSkip
+                onSkip = { onAction(PropertyIntentAction.OnSkipClick) }
             )
         }
     }
@@ -139,13 +171,44 @@ fun PropertyIntentScreen(
 @Composable
 private fun PropertyIntentScreenPreview() {
     BalkanEstateTheme {
+
+        var selectedOptions by remember { mutableStateOf(PropertyIntent.BUY_TO_INVEST) }
+
+
         PropertyIntentScreen(
-            propertyIntent = PropertyIntent.BUY,
-            onToggleIntent = {},
-            onNext = {  },
-            onBack = {  },
-            onSkip = {  },
-            canNavigateBack = true
+            state = PropertyIntentState(selectedOptions),
+            onAction = { action ->
+                when (action) {
+                    is PropertyIntentAction.OnPreferenceSelected -> {
+
+                    }
+
+                    AmenitiesAction.OnBackClick -> { /* Handle back */
+                    }
+
+                    AmenitiesAction.OnNextClick -> {
+                        println("Selected amenities: $selectedOptions")
+                    }
+
+                    AmenitiesAction.OnSkipClick -> {
+
+                    }
+
+                    PropertyIntentAction.OnBackClick -> {
+
+                    }
+
+                    PropertyIntentAction.OnNextClick -> {
+
+                    }
+
+                    PropertyIntentAction.OnSkipClick -> {
+
+                    }
+                }
+            },
         )
+
     }
+
 }
