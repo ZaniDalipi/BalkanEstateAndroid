@@ -15,40 +15,59 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.Poppins
+import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
 import com.zanoapps.core.presentation.designsystem.components.animations.BalkanEstateExpressiveProgressIndicator
 import com.zanoapps.onboarding.domain.enums.buyer.Amenity
+import com.zanoapps.onboarding.presentation.buyer.OnBoardingBuyerViewModel
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
+import org.koin.androidx.compose.koinViewModel
+
+
+@Composable
+fun AmenitiesScreenRoot(
+    viewModel: OnBoardingBuyerViewModel = koinViewModel(),
+    onActionOptionsSelected: (Amenity) -> Unit,
+    onSkipClicked: () -> Unit,
+    onBackClicked: () -> Unit,
+    onNextClicked: () -> Unit
+) {
+    AmenitiesBuyerScreen(
+        state = viewModel.amenityState,
+        onAction = { action ->
+            viewModel.onAmenitiesAction(action)
+
+            when (action) {
+                is AmenitiesAction.OnBackClick -> onBackClicked()
+                is AmenitiesAction.OnNextClick -> onNextClicked()
+                is AmenitiesAction.OnSkipClick -> onSkipClicked()
+                else -> Unit
+            }
+        },
+    )
+}
 
 @Composable
 fun AmenitiesBuyerScreen(
-    selectedAmenities: List<Amenity>,
-    onToggleAmenity: (Amenity) -> Unit,
-    onNext: () -> Unit,
-    onBack: () -> Unit,
-    onSkip: () -> Unit,
-    canNavigateBack: Boolean,
+    state: AmenityState,
+    onAction: (AmenitiesAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    var progress by remember { mutableFloatStateOf(0f) }
-
 
 
     GradientBackground {
@@ -60,7 +79,7 @@ fun AmenitiesBuyerScreen(
         ) {
             // Progress indicator
             BalkanEstateExpressiveProgressIndicator(
-                progress = progress,
+                progress = state.progress,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -94,9 +113,9 @@ fun AmenitiesBuyerScreen(
                     BalkanEstateSelectionCard(
                         title = amenity.title,
                         description = amenity.description,
-                        isSelected = selectedAmenities.contains(amenity),
+                        isSelected = state.savedAmenities.contains(amenity),
                         onClick = {
-                            onToggleAmenity(amenity)
+                            onAction(AmenitiesAction.OnPreferenceSelected(amenity))
                         },
                         selectionType = SelectionType.CHECKBOX,
                         showSelectionIndicator = true
@@ -104,15 +123,6 @@ fun AmenitiesBuyerScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "Selected: ${selectedAmenities.size} amenities",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -121,25 +131,27 @@ fun AmenitiesBuyerScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if (canNavigateBack) {
+                if (state.canNavigateBack) {
                     BalkanEstateOutlinedActionButton(
                         onClick = {
-                                if (progress > 0.5f) progress -= 0.1f
+                            onAction(AmenitiesAction.OnBackClick)
                         },
-                        text = "Back",
-                        isLoading = false,
-                        enabled = true,
+                        text = stringResource(R.string.go_back),
+                        isLoading = state.isLoading,
+                        enabled = !state.isLoading,
                         modifier = Modifier.weight(1f)
                     )
                 }
 
                 BalkanEstateActionButton(
                     onClick = {
-                        if (progress < 1f) progress += 0.1f
+                        onAction(AmenitiesAction.OnNextClick)
                     },
-                    text = "Next",
-                    isLoading = false,
-                    enabled = selectedAmenities.isNotEmpty(),
+                    text = stringResource(
+                        R.string.next
+                    ),
+                    isLoading = state.isLoading,
+                    enabled = state.savedAmenities.isNotEmpty() && !state.isLoading,
                     modifier = Modifier.weight(1f)
 
                 )
@@ -148,7 +160,7 @@ fun AmenitiesBuyerScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             SkipSurvey(
-                onSkip = onSkip
+                onSkip = { onAction(AmenitiesAction.OnSkipClick) }
             )
         }
     }
@@ -160,24 +172,31 @@ fun AmenitiesBuyerScreen(
 @Composable
 private fun AmenityScreenPreview() {
     BalkanEstateTheme {
-
         var selectedAmenities by remember { mutableStateOf<List<Amenity>>(emptyList()) }
 
         AmenitiesBuyerScreen(
-            selectedAmenities = selectedAmenities,
-            onToggleAmenity = { amenity ->
-                selectedAmenities = if (selectedAmenities.contains(amenity)) {
-                    selectedAmenities - amenity // Remove if already selected
-                } else {
-                    selectedAmenities + amenity // Add if not selected
+            state = AmenityState(selectedAmenities),
+            onAction = { action ->
+                when (action) {
+                    is AmenitiesAction.OnPreferenceSelected -> {
+                        selectedAmenities = if (selectedAmenities.contains(action.amenity)) {
+                            selectedAmenities - action.amenity
+                        } else {
+                            selectedAmenities + action.amenity
+                        }
+                    }
+
+                    AmenitiesAction.OnBackClick -> { /* Handle back */
+                    }
+
+                    AmenitiesAction.OnNextClick -> {
+                        println("Selected amenities: $selectedAmenities")
+                    }
+
+                    AmenitiesAction.OnSkipClick -> { /* Handle skip */
+                    }
                 }
             },
-            onNext = {
-                println("Selected amenities: $selectedAmenities")
-            },
-            onBack = {},
-            onSkip = { },
-            canNavigateBack = true,
         )
     }
 }

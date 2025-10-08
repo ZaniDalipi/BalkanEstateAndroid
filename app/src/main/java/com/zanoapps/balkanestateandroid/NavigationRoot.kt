@@ -13,9 +13,11 @@ import androidx.navigation.navigation
 import com.zanoapps.balkanestateandroid.utils.OnboardingDestinations
 import com.zanoapps.balkanestateandroid.utils.SearchDestinations
 import com.zanoapps.onboarding.domain.enums.buyer.LifeSituation
-import com.zanoapps.onboarding.presentation.buyer.currentlifesituation.CurrentLifeSituationBuyerScreen
+import com.zanoapps.onboarding.presentation.buyer.OnBoardingBuyerViewModel
+import com.zanoapps.onboarding.presentation.buyer.amenities.AmenitiesScreenRoot
+import com.zanoapps.onboarding.presentation.buyer.currentlifesituation.CurrentLifeSituationRoot
+import com.zanoapps.onboarding.presentation.buyer.propertyintent.PropertyIntentScreenRoot
 import com.zanoapps.onboarding.presentation.clientintent.ClientIntentScreenRoot
-import kotlin.collections.plus
 
 @Composable
 fun NavigationRoot(
@@ -30,41 +32,87 @@ fun NavigationRoot(
 }
 
 
+// OnboardingNavigation.kt
 private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
     navigation(
         startDestination = OnboardingDestinations.CLIENT_INTENT,
         route = OnboardingDestinations.ROOT,
     ) {
+        // Screen 1: Client Intent
         composable(route = OnboardingDestinations.CLIENT_INTENT) {
             ClientIntentScreenRoot(
-                onActionOptionSelectClicked = {
+                onActionOptionSelectClicked = { selectedIntent ->
+                    // ViewModel will be handled inside the composable
                     navController.navigate(OnboardingDestinations.ON_BOARDING_BUYER_LIFE_SITUATION)
                 },
                 onSkipClicked = {
-                    navController.navigate(SearchDestinations.ROOT)
-
+                    navController.navigate(SearchDestinations.ROOT) {
+                        popUpTo(OnboardingDestinations.ROOT) { inclusive = true }
+                    }
                 }
             )
-
         }
+
+        // Screen 2: Life Situation
         composable(route = OnboardingDestinations.ON_BOARDING_BUYER_LIFE_SITUATION) {
-            var selectedOptions by remember { mutableStateOf<List<LifeSituation>>(emptyList()) }
-            CurrentLifeSituationBuyerScreen(
-                selectedOptionsLifeSituation = selectedOptions,
-                onToggleBox = { lifeOption ->
-                    selectedOptions = if (selectedOptions.contains(lifeOption)) {
-                        selectedOptions - lifeOption
-                    } else {
-                        selectedOptions + lifeOption
+            CurrentLifeSituationRoot(
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onNextClicked = {
+                    navController.navigate(OnboardingDestinations.ON_BOARDING_BUYER_PROPERTY_INTENT)
+                },
+                onSkipClicked = {
+                    navController.navigate(SearchDestinations.ROOT) {
+                        popUpTo(OnboardingDestinations.ROOT) { inclusive = true }
                     }
+                },
+                onActionCurrentLifeSituation = {
 
                 },
-                onNext = { },
-                onBack = {},
-                onSkip = { },
-                canNavigateBack = true,
             )
+        }
 
+        // Screen 3: Property Intent
+        composable(route = OnboardingDestinations.ON_BOARDING_BUYER_PROPERTY_INTENT) {
+            PropertyIntentScreenRoot(
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onNextClicked = {
+                    navController.navigate(OnboardingDestinations.ON_BOARDING_BUYER_AMENITIES)
+                },
+                onSkipClicked = {
+                    navController.navigate(SearchDestinations.ROOT) {
+                        popUpTo(OnboardingDestinations.ROOT) { inclusive = true }
+                    }
+                },
+                onActionPropertyIntent = {
+
+                },
+            )
+        }
+
+        // Screen 4: Amenities
+        composable(route = OnboardingDestinations.ON_BOARDING_BUYER_AMENITIES) {
+            AmenitiesScreenRoot(
+                onNextClicked = {
+                    navController.navigate(SearchDestinations.ROOT) {
+                        popUpTo(OnboardingDestinations.ROOT) { inclusive = true }
+                    }
+                },
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onSkipClicked = {
+                    navController.navigate(SearchDestinations.ROOT) {
+                        popUpTo(OnboardingDestinations.ROOT) { inclusive = true }
+                    }
+                },
+                onActionOptionsSelected = {
+
+                },
+            )
         }
     }
 }

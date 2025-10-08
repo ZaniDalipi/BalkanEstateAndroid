@@ -44,6 +44,8 @@ class UserPreferenceAnalyzer {
         )
     }
 
+
+
     private fun generateAmenitySuggestions(
         lifeSituations: List<LifeSituation>, propertyIntents: List<PropertyIntent>
     ): List<Amenity> {

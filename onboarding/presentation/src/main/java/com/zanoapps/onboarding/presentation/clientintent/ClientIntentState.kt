@@ -4,6 +4,4 @@ import com.zanoapps.onboarding.domain.enums.ClientIntent
 
 data class ClientIntentState(
     val clientSelectedOption: ClientIntent? = null,
-
-
 )

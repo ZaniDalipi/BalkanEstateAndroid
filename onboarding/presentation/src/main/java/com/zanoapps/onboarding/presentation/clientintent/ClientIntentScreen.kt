@@ -54,6 +54,7 @@ fun ClientIntentScreenRoot(
                     viewModel.onAction(action)
                     onActionOptionSelectClicked(action.intent)
                 }
+
                 ClientIntentAction.OnSkipClick -> {
                     viewModel.onAction(action)
                     onSkipClicked()
@@ -62,7 +63,6 @@ fun ClientIntentScreenRoot(
             }
         }
     )
-
 }
 
 
