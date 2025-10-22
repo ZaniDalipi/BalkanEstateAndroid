@@ -11,104 +11,7 @@ import com.zanoapps.onboarding.presentation.buyer.currentlifesituation.CurrentLi
 import com.zanoapps.onboarding.presentation.buyer.currentlifesituation.CurrentLifeSituationBuyerState
 import com.zanoapps.onboarding.presentation.buyer.propertyintent.PropertyIntentAction
 import com.zanoapps.onboarding.presentation.buyer.propertyintent.PropertyIntentState
-
-/*
-class OnBoardingBuyerViewModel : ViewModel() {
-
-
-    var lifeSituationState by mutableStateOf(CurrentLifeSituationBuyerState())
-        private set
-
-    var propertyIntentState by mutableStateOf(PropertyIntentState())
-        private set
-    var amenityState by mutableStateOf(AmenityState())
-        private set
-
-
-    fun onActionLifeSituation(lifeSituationAction: CurrentLifeSituationAction) {
-        when (lifeSituationAction) {
-            is CurrentLifeSituationAction.OnPreferenceSelected -> {
-                val currentLifeSituationOptionSelected = lifeSituationState.savedLifeSituation
-                lifeSituationState =
-                    if (currentLifeSituationOptionSelected.contains(lifeSituationAction.preference)) {
-
-                        lifeSituationState.copy(savedLifeSituation = currentLifeSituationOptionSelected - lifeSituationAction.preference)
-                    } else {
-
-                        lifeSituationState.copy(savedLifeSituation = currentLifeSituationOptionSelected + lifeSituationAction.preference)
-                    }
-            }
-
-            CurrentLifeSituationAction.OnSkipClick -> {
-                amenityState = amenityState.copy(savedAmenities = emptyList())
-            }
-
-            CurrentLifeSituationAction.OnBackClick -> {
-
-            }
-
-            CurrentLifeSituationAction.OnNextClick -> {
-
-            }
-        }
-    }
-
-    fun onActionPropertyIntent(propertyIntentAction: PropertyIntentAction) {
-        when (propertyIntentAction) {
-            is PropertyIntentAction.OnPreferenceSelected -> {
-
-
-            }
-
-            else -> Unit
-
-        }
-    }
-
-
-    fun onActionAmenity(amenityAction: AmenitiesAction) {
-        when (amenityAction) {
-            is AmenitiesAction.OnPreferenceSelected -> {
-                val currentAmenities = amenityState.savedAmenities
-                amenityState = if (currentAmenities.contains(amenityAction.amenity)) {
-
-                    amenityState.copy(savedAmenities = currentAmenities - amenityAction.amenity)
-                } else {
-
-                    amenityState.copy(savedAmenities = currentAmenities + amenityAction.amenity)
-                }
-            }
-
-            AmenitiesAction.OnSkipClick -> {
-                amenityState = amenityState.copy(savedAmenities = emptyList())
-            }
-
-            AmenitiesAction.OnBackClick -> {
-
-            }
-
-            AmenitiesAction.OnNextClick -> {
-
-            }
-        }
-    }
-
-
-    var selectedAmenities by mutableStateOf<List<Amenity>>(emptyList())
-        private set
-
-    fun onAmenitySelected(amenity: Amenity) {
-        selectedAmenities = if (selectedAmenities.contains(amenity)) {
-            selectedAmenities - amenity
-        } else {
-            selectedAmenities + amenity
-        }
-    }
-
-
-}
-*/
-
+import com.zanoapps.onboarding.presentation.buyer.thankyoubuyer.ThankYouAction
 
 
 class OnBoardingBuyerViewModel : ViewModel() {
@@ -118,23 +21,14 @@ class OnBoardingBuyerViewModel : ViewModel() {
     val amenityState: AmenityState get() = _amenityState.value
 
 
+
     fun onAmenitiesAction(action: AmenitiesAction) {
         when (action) {
             is AmenitiesAction.OnPreferenceSelected -> {
                 toggleAmenitySelection(action.amenity)
             }
 
-            is AmenitiesAction.OnBackClick -> {
-
-            }
-
-            is AmenitiesAction.OnNextClick -> {
-
-            }
-
-            is AmenitiesAction.OnSkipClick -> {
-
-            }
+            else -> Unit
         }
     }
 
@@ -167,7 +61,6 @@ class OnBoardingBuyerViewModel : ViewModel() {
     }
 
 
-
     private val _lifeSituationState = mutableStateOf(CurrentLifeSituationBuyerState())
     val lifeSituation: CurrentLifeSituationBuyerState get() = _lifeSituationState.value
 
@@ -177,17 +70,7 @@ class OnBoardingBuyerViewModel : ViewModel() {
                 toggleLifeSituationSelection(action.preference)
             }
 
-            is CurrentLifeSituationAction.OnBackClick -> {
-
-            }
-
-            is CurrentLifeSituationAction.OnNextClick -> {
-
-            }
-
-            is CurrentLifeSituationAction.OnSkipClick -> {
-
-            }
+            else -> Unit
         }
     }
 
@@ -225,33 +108,23 @@ class OnBoardingBuyerViewModel : ViewModel() {
                 togglePropertyIntentSelection(action.propertyIntent)
             }
 
-            is PropertyIntentAction.OnBackClick -> {
-
-            }
-
-            is PropertyIntentAction.OnNextClick -> {
-
-            }
-
-            is PropertyIntentAction.OnSkipClick -> {
-
-            }
+            else -> Unit
         }
     }
 
     private fun togglePropertyIntentSelection(propertyIntent: PropertyIntent) {
-        val currentSelection = _propertyIntentState.value.savedIntents
+        val currentSelection = _propertyIntentState.value.propertyIntent
 
 
         _propertyIntentState.value = _propertyIntentState.value.copy(
-            savedIntents = propertyIntent
+            propertyIntent = propertyIntent
         )
     }
 
 
     fun clearPropertyIntentOptions() {
         _propertyIntentState.value = _propertyIntentState.value.copy(
-            savedIntents = null
+            propertyIntent = null
         )
     }
 
@@ -261,5 +134,8 @@ class OnBoardingBuyerViewModel : ViewModel() {
             progress = progress
         )
     }
+
 }
+
+
 

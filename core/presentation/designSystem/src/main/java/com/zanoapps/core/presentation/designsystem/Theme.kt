@@ -11,7 +11,7 @@ import androidx.core.view.WindowCompat
 
 
 val LightColorScheme = lightColorScheme(
-    primary = balkanEstateGradientStartPrimary,
+    primary = BalkanEstateGradientStartPrimary,
     background = BalkanEstateWhite95Background,
     surface = BalkanEstateGray40,
     secondary = BalkanEstateWhite95,

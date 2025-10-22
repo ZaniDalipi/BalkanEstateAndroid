@@ -6,10 +6,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 
-val balkanEstateGradientStartPrimary = Color(0xFF667EEA)
-val balkanEstateGradientEnd = Color(0xFF764BA2)
-val PrimaryGradient = Brush.linearGradient(
-    colors = listOf(balkanEstateGradientStartPrimary, balkanEstateGradientEnd)
+val BalkanEstateGradientStartPrimary = Color(0xFF667EEA)
+val BalkanEstateGradientEnd = Color(0xFF764BA2)
+val BalkanEstatePrimaryGradient = Brush.linearGradient(
+    colors = listOf(BalkanEstateGradientStartPrimary, BalkanEstateGradientEnd)
 )
 
 

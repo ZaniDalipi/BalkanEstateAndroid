@@ -21,8 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.zanoapps.core.presentation.designsystem.balkanEstateGradientEnd
-import com.zanoapps.core.presentation.designsystem.balkanEstateGradientStartPrimary
+import com.zanoapps.core.presentation.designsystem.BalkanEstateGradientEnd
+import com.zanoapps.core.presentation.designsystem.BalkanEstateGradientStartPrimary
 
 @Composable
 fun ProgressBar(
@@ -30,8 +30,8 @@ fun ProgressBar(
     modifier: Modifier = Modifier,
     height: Dp = 8.dp,
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
-    startingColor: Color = balkanEstateGradientStartPrimary,
-    endingColor: Color = balkanEstateGradientEnd,
+    startingColor: Color = BalkanEstateGradientStartPrimary,
+    endingColor: Color = BalkanEstateGradientEnd,
     animationDurationMs: Int = 600
 ) {
     val animatedProgress by animateFloatAsState(
@@ -71,8 +71,8 @@ private fun ProgressBarPreview() {
 
             ProgressBar(
                 progress = 0.8f,
-                startingColor = balkanEstateGradientStartPrimary,
-                endingColor = balkanEstateGradientEnd,
+                startingColor = BalkanEstateGradientStartPrimary,
+                endingColor = BalkanEstateGradientEnd,
                 backgroundColor = MaterialTheme.colorScheme.background,
                 height = 6.dp
             )

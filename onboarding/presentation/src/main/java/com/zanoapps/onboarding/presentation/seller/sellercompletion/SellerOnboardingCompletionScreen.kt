@@ -16,33 +16,49 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
+import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
 import com.zanoapps.onboarding.presentation.components.SuccessLogoComp
+import com.zanoapps.onboarding.presentation.seller.OnBoardingSellerViewModel
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun SellerOnboardingCompletionRoot(
+    viewModel: OnBoardingSellerViewModel = koinViewModel(),
+    onAction: (SellerCompletionAction) -> Unit
+) {
+
+    SellerOnboardingCompletionScreen(
+        state = viewModel.sellerCompletionState,
+        onAction = onAction
+    )
+
+
+}
 
 @Composable
 fun SellerOnboardingCompletionScreen(
-    onSearchPropertyClicked: () -> Unit,
-    onCreateAccountClicked: () -> Unit,
-    iconSize: Dp = 25.dp,
-    modifier: Modifier = Modifier
+    state: SellerCompletionState,
+    onAction: (SellerCompletionAction) -> Unit
 ) {
     GradientBackground(
         modifier = Modifier.fillMaxHeight()
     ) {
 
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .weight(1f)
-                .padding(18.dp),
+                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp)
+                .padding(top = 48.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
+
 
             SuccessLogoComp(
                 modifier = Modifier
@@ -68,27 +84,31 @@ fun SellerOnboardingCompletionScreen(
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center,
             )
+            Spacer(modifier = Modifier.height(12.dp))
 
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(bottom = 48.dp)
+                    .padding(bottom = 32.dp)
             ) {
 
                 BalkanEstateActionButton(
                     text = stringResource(R.string.get_property_valuation),
-                    isLoading = false,
-                    enabled = true,
-                    onClick = { }
+                    isLoading = state.isLoading,
+                    enabled = !state.isLoading,
+                    onClick = {
+
+
+                    }
                 )
             }
+
         }
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(18.dp),
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -105,9 +125,21 @@ fun SellerOnboardingCompletionScreen(
 
             BalkanEstateActionButton(
                 text = stringResource(R.string.create_account),
+                isLoading = state.isLoading,
+                enabled = !state.isLoading,
+                onClick = {
+                    onAction(SellerCompletionAction.OnRegister)
+                }
+            )
+
+            BalkanEstateOutlinedActionButton(
+                onClick = {
+                    onAction(SellerCompletionAction.OnBackClick)
+                },
+                text = stringResource(R.string.go_back),
+                modifier = Modifier.padding(top = 12.dp),
                 isLoading = false,
-                enabled = true,
-                onClick = { }
+                enabled = true
             )
         }
     }
@@ -119,8 +151,12 @@ fun PreFinalMessageScreenPreview() {
     BalkanEstateTheme {
 
         SellerOnboardingCompletionScreen(
-            onSearchPropertyClicked = { },
-            onCreateAccountClicked = {  },
+            state = SellerCompletionState(
+                isLoading = false
+            ),
+            onAction = {
+
+            }
         )
     }
 }

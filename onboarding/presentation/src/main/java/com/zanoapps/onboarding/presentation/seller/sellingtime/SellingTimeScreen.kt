@@ -31,21 +31,42 @@ import com.zanoapps.core.presentation.designsystem.components.BalkanEstateAction
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
 import com.zanoapps.onboarding.domain.enums.buyer.LifeSituation
+import com.zanoapps.onboarding.domain.enums.seller.PropertyTypeSeller
 import com.zanoapps.onboarding.domain.enums.seller.SellingTime
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.ProgressBar
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
+import com.zanoapps.onboarding.presentation.seller.OnBoardingSellerViewModel
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun SellingTimeRoot(
+    viewModel: OnBoardingSellerViewModel = koinViewModel(),
+    onActionSellingTime: (SellingTime) -> Unit,
+    onSkipClicked: () -> Unit,
+    onBackClicked: () -> Unit,
+    onNextClicked: () -> Unit,
+) {
+    SellingTimeScreen(
+        state = viewModel.sellingTimeState,
+        onAction = {sellingTimeAction ->
+            viewModel.onSellingTimeAction(sellingTimeAction)
+            when(sellingTimeAction){
+                SellingTimeAction.OnBackClick -> onBackClicked()
+                SellingTimeAction.OnNextClick -> onNextClicked()
+                SellingTimeAction.OnSkipClick -> onSkipClicked()
+                else -> Unit
+            }
+        }
+    )
+
+}
 
 @Composable
 fun SellingTimeScreen(
-    sellingTimeList: List<SellingTime>,
-    onToggleSelection: (SellingTime) -> Unit,
-    onNext: () -> Unit,
-    onBack: () -> Unit,
-    onSkip: () -> Unit,
-    canNavigateBack: Boolean,
-    modifier: Modifier = Modifier
+    state: SellingTimeState,
+    onAction: (SellingTimeAction) -> Unit
 ) {
     GradientBackground {
         Column(
@@ -55,7 +76,7 @@ fun SellingTimeScreen(
         ) {
 
             ProgressBar(
-                progress = 0.66f,
+                progress = state.progress,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -88,45 +109,40 @@ fun SellingTimeScreen(
                     BalkanEstateSelectionCard(
                         title = sellingTime.displayName,
                         description = sellingTime.description,
-                        isSelected = sellingTimeList.contains(sellingTime),
+                        isSelected = state.sellingTime == sellingTime,
                         onClick = {
-                            onToggleSelection(sellingTime)
+                            onAction(SellingTimeAction.OnPreferenceSelected(sellingTime))
                         },
-                        selectionType = SelectionType.CHECKBOX,
+                        selectionType = SelectionType.RADIO,
                         showSelectionIndicator = true
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = "Selected: ${sellingTimeList.size} options",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-
-            )
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if(canNavigateBack) {
+                if(state.canNavigateBack) {
                     BalkanEstateOutlinedActionButton(
                         text = stringResource(R.string.go_back),
-                        isLoading = false,
-                        enabled = true,
-                        onClick = onBack,
+                        onClick = {
+                            onAction(SellingTimeAction.OnBackClick)
+                        },
+                        isLoading = state.isLoading,
+                        enabled = !state.isLoading,
                         modifier = Modifier.weight(1f)
                     )
                 }
                 BalkanEstateActionButton(
                     text = stringResource(R.string.next),
-                    isLoading = false,
-                    enabled = sellingTimeList.isNotEmpty(),
-                    onClick = onNext,
+                    isLoading = state.isLoading,
+                    enabled = state.sellingTime != null && !state.isLoading,
+                    onClick = {
+                        onAction(SellingTimeAction.OnNextClick)
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -134,7 +150,9 @@ fun SellingTimeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             SkipSurvey(
-                onSkip = onSkip
+                onSkip = {
+                    onAction(SellingTimeAction.OnSkipClick)
+                }
             )
         }
     }
@@ -146,23 +164,19 @@ fun SellingTimeScreen(
 fun SellingTimeScreenPreview() {
     BalkanEstateTheme {
 
-        var selectedOptions by remember { mutableStateOf<List<SellingTime>>(emptyList())}
+        var selectedOptions by remember { mutableStateOf(SellingTime.THREE_MONTHS) }
 
-
-        SellingTimeScreen(
-            sellingTimeList = selectedOptions,
-            onToggleSelection = {options ->
-                selectedOptions = if (selectedOptions.contains(options)) {
-                    selectedOptions - options
-                } else {
-                    selectedOptions + options
+        SellingTimeScreen (
+            state = SellingTimeState(selectedOptions),
+            onAction = {sellingTime ->
+                when(sellingTime) {
+                    SellingTimeAction.OnBackClick -> TODO()
+                    SellingTimeAction.OnNextClick -> TODO()
+                    SellingTimeAction.OnSkipClick -> TODO()
+                    else -> Unit
                 }
-
-            },
-            onNext = { },
-            onBack = { },
-            onSkip = { },
-            canNavigateBack = true,
+            }
         )
+
     }
 }

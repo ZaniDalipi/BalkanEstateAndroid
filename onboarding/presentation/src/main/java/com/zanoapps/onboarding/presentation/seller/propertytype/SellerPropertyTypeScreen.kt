@@ -17,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,20 +30,42 @@ import com.zanoapps.core.presentation.designsystem.components.BalkanEstateAction
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
 import com.zanoapps.onboarding.domain.enums.seller.PropertyTypeSeller
+import com.zanoapps.onboarding.presentation.buyer.currentlifesituation.CurrentLifeSituationAction
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.ProgressBar
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
+import com.zanoapps.onboarding.presentation.seller.OnBoardingSellerViewModel
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun SellerPropertyTypeRoot(
+    viewModel: OnBoardingSellerViewModel = koinViewModel(),
+    onActionSellerPropertyType: (PropertyTypeSeller) -> Unit,
+    onSkipClicked: () -> Unit,
+    onBackClicked: () -> Unit,
+    onNextClicked: () -> Unit,
+    ) {
+    SellerPropertyTypeScreen (
+        state = viewModel.propertyTypeState,
+        onAction = { action ->
+            viewModel.onPropertyTypeAction(action)
+            when (action) {
+                SellerPropertyTypeAction.OnBackClick -> onBackClicked()
+                SellerPropertyTypeAction.OnNextClick -> onNextClicked()
+                SellerPropertyTypeAction.OnSkipClick -> onSkipClicked()
+                else -> Unit
+            }
+
+        }
+    )
+
+}
 
 @Composable
 fun SellerPropertyTypeScreen(
-    sellerPropertyType: List<PropertyTypeSeller>,
-    onToggleSelection: (PropertyTypeSeller) -> Unit,
-    onNext: () -> Unit,
-    onBack: () -> Unit,
-    onSkip: () -> Unit,
-    canNavigateBack: Boolean,
-    modifier: Modifier = Modifier
+    state: PropertyTypeState,
+    onAction: (SellerPropertyTypeAction) -> Unit,
 ) {
     GradientBackground {
         Column(
@@ -83,51 +104,43 @@ fun SellerPropertyTypeScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(PropertyTypeSeller.entries.toTypedArray()) { type ->
+                items(PropertyTypeSeller.entries.toTypedArray()) { propertyTypeSeller ->
                     BalkanEstateSelectionCard(
-                        title = type.displayName,
-                        description = type.description,
-                        isSelected = sellerPropertyType.contains(type),
+                        title = propertyTypeSeller.displayName,
+                        description = propertyTypeSeller.description,
+                        isSelected = state.propertyTypeSeller == propertyTypeSeller,
                         onClick = {
-                            onToggleSelection(type)
+                            onAction(SellerPropertyTypeAction.OnPreferenceSelected(propertyTypeSeller))
                         },
-                        selectionType = SelectionType.CHECKBOX,
+                        selectionType = SelectionType.RADIO,
                         showSelectionIndicator = true
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "Selected: ${sellerPropertyType.size} types",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-
-            )
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if (canNavigateBack) {
+                if (state.canNavigateBack) {
                     BalkanEstateOutlinedActionButton(
                         text = stringResource(R.string.go_back),
-                        isLoading = false,
-                        enabled = true,
-                        onClick = { },
+                        onClick = {
+                            onAction(SellerPropertyTypeAction.OnBackClick)
+                        },
+                        isLoading = state.isLoading,
+                        enabled = !state.isLoading,
                         modifier = Modifier.weight(1f)
                     )
                 }
                 BalkanEstateActionButton(
                     text = stringResource(R.string.next),
-                    isLoading = false,
-                    enabled = sellerPropertyType.isNotEmpty(),
-                    onClick = onNext,
+                    onClick = {
+                        onAction(SellerPropertyTypeAction.OnNextClick)
+                    },
+                    isLoading = state.isLoading,
+                    enabled = state.propertyTypeSeller != null && !state.isLoading,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -135,7 +148,7 @@ fun SellerPropertyTypeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             SkipSurvey(
-                onSkip = onSkip
+                onSkip = { SellerPropertyTypeAction.OnSkipClick}
             )
         }
     }
@@ -146,25 +159,19 @@ fun SellerPropertyTypeScreen(
 @Composable
 fun PropertyTypeScreenPreview() {
     BalkanEstateTheme {
+        var selectedOptions by remember { mutableStateOf(PropertyTypeSeller.VILLA_LUXURY_HOME) }
 
-        var propertiesListSelected by remember { mutableStateOf<List<PropertyTypeSeller>>(emptyList()) }
-
-        SellerPropertyTypeScreen(
-            sellerPropertyType = propertiesListSelected,
-            onToggleSelection = { property ->
-                propertiesListSelected = if (propertiesListSelected.contains(property)) {
-                    propertiesListSelected - property
-                } else {
-                    propertiesListSelected + property
+        SellerPropertyTypeScreen (
+            state = PropertyTypeState(selectedOptions),
+            onAction = {currentLifeSituationAction ->
+                when(currentLifeSituationAction) {
+                    CurrentLifeSituationAction.OnBackClick -> TODO()
+                    CurrentLifeSituationAction.OnNextClick -> TODO()
+                    CurrentLifeSituationAction.OnSkipClick -> TODO()
+                    is CurrentLifeSituationAction.OnPreferenceSelected -> TODO()
                 }
-
-            },
-            onNext = {
-                println("Selected properties: $propertiesListSelected")
-            },
-            onBack = { },
-            onSkip = { },
-            canNavigateBack = true,
+            }
         )
+
     }
 }

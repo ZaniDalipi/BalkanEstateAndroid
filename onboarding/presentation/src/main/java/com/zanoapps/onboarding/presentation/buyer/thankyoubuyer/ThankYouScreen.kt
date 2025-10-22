@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,12 +26,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.CheckIcon
+import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateActionButton
+import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
+import com.zanoapps.onboarding.presentation.buyer.OnBoardingBuyerViewModel
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun ThankYouRoot(
+    onAction: (ThankYouAction) -> Unit
+) {
+
+    ThankYouScreen(
+        onAction = onAction
+    )
+
+}
 
 @Composable
 fun ThankYouScreen(
-    onSearchPropertyClicked: () -> Unit,
+    onAction: (ThankYouAction) -> Unit,
     iconSize: Dp = 25.dp,
     modifier: Modifier = Modifier
 ) {
@@ -74,7 +90,7 @@ fun ThankYouScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Perfect! We've got your preferences",
+                text = stringResource(R.string.thank_you_title),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
@@ -83,7 +99,7 @@ fun ThankYouScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Let's find properties that match your lifestyle and needs",
+                text =stringResource(R.string.thank_you_description),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Normal,
@@ -99,11 +115,24 @@ fun ThankYouScreen(
                 .padding(bottom = 48.dp)
         ) {
 
+            BalkanEstateOutlinedActionButton(
+                onClick = {
+                    onAction(ThankYouAction.OnBackClick)
+                },
+                text = stringResource(R.string.go_back),
+                modifier = Modifier.padding(bottom = 12.dp),
+                isLoading = false,
+                enabled = true
+            )
+
+
             BalkanEstateActionButton(
-                text = "Start Searching Properties",
+                text = stringResource(R.string.start_searching_properties),
                 isLoading = false,
                 enabled = true,
-                onClick = { }
+                onClick = {
+                    onAction(ThankYouAction.OnSearchPropertiesClicked)
+                }
             )
         }
     }
@@ -116,7 +145,9 @@ fun PreFinalMessageScreenPreview() {
     BalkanEstateTheme {
 
         ThankYouScreen(
-            onSearchPropertyClicked = { }
+            onAction = {
+
+            }
         )
     }
 }
