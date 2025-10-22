@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_to_property_journey_title">Welcome to Your Property Journey</string>
+    <string name="welcome_to_property_journey_description">Let\'s find out how we can help you today</string>
+    <string name="skip_survey">Skip survey and explore properties</string>
+</resources>

@@ -1,46 +1,24 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.balkanEstateAndroid.android.application.compose)
+    alias(libs.plugins.balkanEstateAndroid.jvm.ktor)
     alias(libs.plugins.mapsplatform.secrets.plugin)
 }
 
 android {
     namespace = "com.zanoapps.balkanestateandroid"
-    compileSdk = 36
-
-    defaultConfig {
-        applicationId = "com.zanoapps.balkanestateandroid"
-        minSdk = 24
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
+
+
+    implementation("org.jetbrains:annotations:23.0.0") {
+        exclude(group = "com.intellij", module = "annotations")
+    }
+    // OR if it's a transitive dependency
+    configurations.all {
+        exclude(group = "com.intellij", module = "annotations")
+    }
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -50,6 +28,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -60,6 +40,8 @@ dependencies {
 
     // timber
     implementation(libs.timber)
+
+    implementation(libs.bundles.koin)
 
 
     // all the app modules included here because this is the place where everything is glued together
@@ -120,6 +102,10 @@ dependencies {
         implementation(projects.media.data)
         implementation(projects.media.domain)
         implementation(projects.media.presentation)
+
+        // On Boarding modules
+        implementation(projects.onboarding.domain)
+        implementation(projects.onboarding.presentation)
     }
 
 }

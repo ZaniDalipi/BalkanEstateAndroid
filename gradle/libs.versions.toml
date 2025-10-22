@@ -1,5 +1,5 @@
 [versions]
-agp = "8.12.1"
+agp = "8.9.1"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -12,8 +12,7 @@ appcompat = "1.7.1"
 material = "1.12.0"
 jetbrainsKotlinJvm = "2.0.21"
 androidTools = "31.9.2"
-#noinspection RiskyLibrary
-core = "1.10.3"
+#core = "1.10.3"
 coreSplashscreen = "1.0.1"
 coilCompose = "2.7.0"
 composeCompiler = "1.5.9"
@@ -26,8 +25,8 @@ materialIconsExtended = "1.7.8"
 navigationCompose = "2.8.9"
 securityCryptoKtx = "1.1.0-alpha07"
 timber = "5.0.1"
-ksp = "2.0.21-1.0.28"
-room = "2.7.1"
+ksp = "2.2.0-2.0.2"
+room = "2.7.2"
 org-jetbrains-kotlin-jvm = "1.9.22"
 maps = "4.3.3"
 coroutines = "1.9.0"
@@ -39,17 +38,22 @@ kotlinx-serialization = "1.7.3"
 secretsPlugin = "2.0.1"
 playServicesMaps = "19.2.0"
 annotation = "1.9.1"
-compose-ui = "1.9.0"
+compose-ui = "1.8.0"
+sqldelight = "2.1.0"
 
 # Project versions
 projectApplicationId = "com.zanoapps.balkanestateandroid"
 projectVersionName = "1.0"
 projectMinSdkVersion = "25"
-projectTargetSdkVersion = "35"
-projectCompileSdkVersion = "35"
+projectTargetSdkVersion = "36"
+projectCompileSdkVersion = "36"
 projectVersionCode = "1"
+ui = "1.9.0"
+coreKtxVersion = "1.17.0"
+material3 = "1.4.0"
 
 [libraries]
+#noinspection SimilarGradleDependency
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -70,6 +74,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
@@ -78,8 +83,8 @@ androidx-material-icons-extended = { module = "androidx.compose.material:materia
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCryptoKtx" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
-core = { module = "com.google.android.play:core", version.ref = "core" }
-core-testing = { module = "com.google.android.play:core-testing", version.ref = "core" }
+#core = { module = "com.google.android.play:core", version.ref = "core" }
+#core-testing = { module = "com.google.android.play:core-testing", version.ref = "core" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
@@ -109,6 +114,11 @@ org-mongodb-bson = { module = "org.mongodb:bson", version.ref = "bson" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 google-maps-android-utils-ktx = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsUtils" }
 annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
+#sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
+#sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+#sqldelight-androidDriver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+#sqldelight-jvmDriver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+#sqldelight-nativeDriver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 
 
 # Gradle
@@ -117,11 +127,16 @@ android-tools-common = { group = "com.android.tools", name = "common", version.r
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
+ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtxVersion" }
+material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+#sqldelight-gradlePlugin = { group = "app.cash.sqldelight", name = "sqldelight-gradle-plugin", version = "sqldelight" }
+
 
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.2.0" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
@@ -130,7 +145,18 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 room = { id = "androidx.room", version.ref = "room" }
 androidDynamicFeature = { id = "com.android.dynamic-feature", version.ref = "agp" }
 mapsplatform-secrets-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsPlugin" }
+
 #custom convention plugins
+balkanEstateAndroid-android-application = { id = "balkanEstateAndroid.android.application", version = "unspecified" }
+balkanEstateAndroid-android-application-compose = { id = "balkanEstateAndroid.android.application.compose", version = "unspecified" }
+balkanEstateAndroid-android-library = { id = "balkanEstateAndroid.library", version = "unspecified" }
+balkanEstateAndroid-android-library-compose = { id = "balkanEstateAndroid.library.compose", version = "unspecified" }
+balkanEstateAndroid-android-feature-ui = { id = "balkanEstateAndroid.feature.ui", version = "unspecified" }
+balkanEstateAndroid-android-room = { id = "balkanEstateAndroid.android.room", version = "unspecified" }
+balkanEstateAndroid-jvm-library = { id = "balkanEstateAndroid.jvm.library", version = "unspecified" }
+balkanEstateAndroid-jvm-ktor = { id = "balkanEstateAndroid.jvm.ktor", version = "unspecified" }
+
+
 
 [bundles]
 compose = [

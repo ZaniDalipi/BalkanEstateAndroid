@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="go_back">Go Back</string>
+    <string name="propertyTypeDescription">Help us provide you with the most accurate valuation and marketing strategy</string>
+    <string name="propertyTypeTitle">What type of property are you selling?</string>
+    <string name="next">Next</string>
+    <string name="sellingTimeTitle">How quickly do you need to sell?</string>
+    <string name="sellingTimeDescription">This helps us prioritize your marketing strategy</string>
+    <string name="mainGoalTitle">What\'s your main goal?</string>
+    <string name="mainGoalDescription">Understanding your priorities helps us serve you better</string>
+    <string name="pre_final_message_seller_title">Great! Let\'s get your property sold</string>
+    <string name="pre_final_message_seller_description">We\'ll create a customized selling strategy for you</string>
+    <string name="create_account">Create Account</string>
+    <string name="benefits_create_account">"Do you want to use all the benefits of the app.\n Create an account "</string>
+    <string name="get_property_valuation">Get Free Property Valuation</string>
+    <string name="start_searching_properties">Start Searching Properties</string>
+    <string name="thank_you_title">Perfect! We\'ve got your preference</string>
+    <string name="thank_you_description">Let\'s find properties that match your lifestyle and needs</string>
+</resources>

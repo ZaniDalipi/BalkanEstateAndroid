@@ -1,17 +1,10 @@
 plugins {
-    id("java-library")
-    alias(libs.plugins.jetbrains.kotlin.jvm)
+    alias(libs.plugins.balkanEstateAndroid.android.library)
+    alias(libs.plugins.balkanEstateAndroid.jvm.ktor)
 }
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+android {
+    namespace = "com.zanoapps.map.data"
 }
-kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
-    }
-}
-
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.data)
