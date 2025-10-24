@@ -17,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,21 +30,42 @@ import com.zanoapps.core.presentation.designsystem.components.BalkanEstateAction
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateOutlinedActionButton
 import com.zanoapps.core.presentation.designsystem.components.GradientBackground
 import com.zanoapps.onboarding.domain.enums.seller.MainGoal
+import com.zanoapps.onboarding.presentation.buyer.currentlifesituation.CurrentLifeSituationAction
 import com.zanoapps.onboarding.presentation.components.BalkanEstateSelectionCard
 import com.zanoapps.onboarding.presentation.components.ProgressBar
 import com.zanoapps.onboarding.presentation.components.SelectionType
 import com.zanoapps.onboarding.presentation.components.SkipSurvey
-import kotlin.collections.plus
+import com.zanoapps.onboarding.presentation.seller.OnBoardingSellerViewModel
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun SellerMainGoalRoot(
+    viewModel: OnBoardingSellerViewModel = koinViewModel(),
+    onActionMainGoal: (MainGoal) -> Unit,
+    onBackClicked: () -> Unit,
+    onNextClicked: () -> Unit,
+    onSkipClicked: () -> Unit
+) {
+    SellerMainGoalScreen(
+        state = viewModel.mainGoalState,
+        onAction = { action ->
+            viewModel.onMainGoalAction(action)
+            when (action) {
+                SellerMainGoalAction.OnBackClick -> onBackClicked()
+                SellerMainGoalAction.OnNextClick -> onNextClicked()
+                SellerMainGoalAction.OnSkipClick -> onSkipClicked()
+                else -> Unit
+            }
+
+        }
+    )
+
+}
 
 @Composable
 fun SellerMainGoalScreen(
-    mainGoals: List<MainGoal>,
-    onToggleSelection: (MainGoal) -> Unit,
-    onNext: () -> Unit,
-    onBack: () -> Unit,
-    onSkip: () -> Unit,
-    canNavigateBack: Boolean,
-    modifier: Modifier = Modifier
+    state: SellerMainGoalState,
+    onAction: (SellerMainGoalAction) -> Unit
 ) {
     GradientBackground {
         Column(
@@ -55,7 +75,7 @@ fun SellerMainGoalScreen(
         ) {
 
             ProgressBar(
-                progress = 1f,
+                progress = state.progress,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -84,52 +104,44 @@ fun SellerMainGoalScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(MainGoal.entries.toTypedArray()) { goal ->
+                items(MainGoal.entries.toTypedArray()) { mainGoal ->
                     BalkanEstateSelectionCard(
-                        title = goal.displayName,
-                        description = goal.description,
-                        isSelected = mainGoals.contains(goal),
+                        title = mainGoal.displayName,
+                        description = mainGoal.description,
+                        isSelected = state.sellerMainGoal == mainGoal,
                         onClick = {
-                            onToggleSelection(goal)
+                            onAction(SellerMainGoalAction.OnPreferenceSelected(mainGoal))
                         },
-                        selectionType = SelectionType.CHECKBOX,
+                        selectionType = SelectionType.RADIO,
                         showSelectionIndicator = true
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-
-            Text(
-                text = "Selected: ${mainGoals.size} goals",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-
-            )
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if(canNavigateBack) {
+                if (state.canNavigateBack) {
                     BalkanEstateOutlinedActionButton(
                         text = stringResource(R.string.go_back),
-                        isLoading = false,
-                        enabled = true,
-                        onClick = {  },
+                        onClick = {
+                            onAction(SellerMainGoalAction.OnBackClick)
+                        },
+                        isLoading = state.isLoading,
+                        enabled = !state.isLoading,
                         modifier = Modifier.weight(1f)
                     )
                 }
                 BalkanEstateActionButton(
                     text = stringResource(R.string.next),
-                    isLoading = false,
-                    enabled = mainGoals.isNotEmpty() ,
-                    onClick = onNext,
+                    isLoading = state.isLoading,
+                    enabled = state.sellerMainGoal != null && !state.isLoading,
+                    onClick = {
+                        onAction(SellerMainGoalAction.OnNextClick)
+
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -137,7 +149,7 @@ fun SellerMainGoalScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             SkipSurvey(
-                onSkip = onSkip
+                onSkip = { onAction(SellerMainGoalAction.OnSkipClick) }
             )
         }
     }
@@ -149,23 +161,19 @@ fun SellerMainGoalScreen(
 fun MainGoalScreenPreview() {
     BalkanEstateTheme {
 
-        var mainGoalsSelected by remember { mutableStateOf<List<MainGoal>>(emptyList()) }
+        var selectedOptions by remember { mutableStateOf(MainGoal.MAX_SALE) }
 
         SellerMainGoalScreen(
-            mainGoals = mainGoalsSelected,
-            onToggleSelection = { mainGoal ->
-                mainGoalsSelected = if (mainGoalsSelected.contains(mainGoal)) {
-                    mainGoalsSelected - mainGoal
-                } else {
-                    mainGoalsSelected + mainGoal
+            state = SellerMainGoalState(selectedOptions),
+            onAction = { mainGoal ->
+                when (mainGoal) {
+                    CurrentLifeSituationAction.OnBackClick -> TODO()
+                    CurrentLifeSituationAction.OnNextClick -> TODO()
+                    CurrentLifeSituationAction.OnSkipClick -> TODO()
+                    else -> Unit
                 }
-            },
-            onNext = {
-                println("Selected main goals: $mainGoalsSelected")
-            },
-            onBack = { },
-            onSkip = { },
-            canNavigateBack = true,
+            }
         )
+
     }
 }

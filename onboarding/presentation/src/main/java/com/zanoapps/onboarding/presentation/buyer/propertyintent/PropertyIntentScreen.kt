@@ -118,7 +118,7 @@ fun PropertyIntentScreen(
                     BalkanEstateSelectionCard(
                         title = propertyIntent.title,
                         description = propertyIntent.description,
-                        isSelected = state.savedIntents == propertyIntent,
+                        isSelected = state.propertyIntent == propertyIntent,
                         onClick = {
                             onAction(PropertyIntentAction.OnPreferenceSelected(propertyIntent))
                         },
@@ -151,7 +151,7 @@ fun PropertyIntentScreen(
                     },
                     text = stringResource(R.string.next),
                     isLoading = state.isLoading,
-                    enabled = state.savedIntents != null && !state.isLoading,
+                    enabled = state.propertyIntent != null && !state.isLoading,
                     modifier = Modifier.weight(1f)
                 )
             }

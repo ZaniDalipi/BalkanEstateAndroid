@@ -54,7 +54,6 @@ fun CurrentLifeSituationRoot(
         onAction = { action ->
             viewModel.onLifeSituationAction(action)
 
-            // Handle navigation actions
             when (action) {
                 is CurrentLifeSituationAction.OnBackClick -> onBackClicked()
                 is CurrentLifeSituationAction.OnNextClick -> onNextClicked()
@@ -177,6 +176,7 @@ private fun CurrentLifeSituationScreenPreview() {
     BalkanEstateTheme {
 
         var selectedOptions by remember { mutableStateOf(LifeSituation.GROWING_FAMILY) }
+
         CurrentLifeSituationBuyerScreen(
             state = CurrentLifeSituationBuyerState(selectedOptions),
             onAction = {currentLifeSituationAction ->

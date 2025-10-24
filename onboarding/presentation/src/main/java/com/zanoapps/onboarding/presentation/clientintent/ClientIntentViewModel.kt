@@ -11,20 +11,28 @@ class ClientIntentViewModel: ViewModel() {
     var state by mutableStateOf(ClientIntentState())
         private set
 
+
     fun onAction(action: ClientIntentAction) {
         when(action) {
             is ClientIntentAction.OnOptionSelected -> {
-
-                state = state.copy(clientSelectedOption = action.intent)
+                state = state.copy(
+                    clientSelectedOption = action.intent,
+                    shouldNavigate = true,
+                    navigationPath = action.intent.navigationPath
+                )
             }
             ClientIntentAction.OnSkipClick -> {
-
-                state = state.copy(clientSelectedOption = null)
+                state = state.copy(
+                    clientSelectedOption = null,
+                    shouldNavigate = true,
+                    navigationPath = "skip_path"
+                )
             }
-            ClientIntentAction.OnNavigateToNextScreen -> {
-
-            }
+            else -> Unit
         }
     }
 
+    fun resetNavigation() {
+        state = state.copy(shouldNavigate = false, navigationPath = null)
+    }
 }
