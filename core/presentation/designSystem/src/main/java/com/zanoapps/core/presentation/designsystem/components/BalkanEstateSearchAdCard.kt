@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.zanoapps.core.domain.model.BalkanEstateProperty
 import com.zanoapps.core.presentation.designsystem.AddedToFavIcon
 import com.zanoapps.core.presentation.designsystem.BathroomsIcon
 import com.zanoapps.core.presentation.designsystem.BedroomsIcon
@@ -55,10 +56,10 @@ data class PropertyCardData(
 
 @Composable
 fun PropertyCard(
-    property: PropertyCardData,
+    property: BalkanEstateProperty,
     isFavorite: Boolean = false,
-    onPropertyClick: (PropertyCardData) -> Unit = {},
-    onFavoriteClick: (PropertyCardData) -> Unit = {},
+    onPropertyClick: (BalkanEstateProperty) -> Unit = {},
+    onFavoriteClick: (BalkanEstateProperty) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -69,8 +70,8 @@ fun PropertyCard(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp,
-            pressedElevation = 10.dp
+            defaultElevation = 3.dp,
+            pressedElevation = 6.dp
         )
     ) {
         Column {
@@ -329,16 +330,25 @@ fun PropertyCardCompact(
 private fun PropertyCardPreview() {
     MaterialTheme {
         PropertyCard(
-            property = PropertyCardData(
+            property = BalkanEstateProperty(
                 id = "1",
-                price = 417500000000.0,
-                currency = "LEK",
+                title = "Beautiful 3BR Villa in Tirana",
+                price = 350000.0,
+                currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
                 bedrooms = 3,
                 bathrooms = 2,
                 squareFootage = 1800,
-                address = "Rruga Myslym Shyri 27, Tirana",
-                imageUrl = "https://example.com/property.jpg",
-                agentName = "Besmir Kola"
+                address = "Rruga Myslym Shyri 27",
+                city = "Tirana",
+                country = "Albania",
+                latitude = 41.3275,
+                longitude = 19.8187,
+                propertyType = "Villa",
+                listingType = "Sale",
+                agentName = "Besmir Kola",
+                isFeatured = true,
+                isUrgent = false
             ),
             isFavorite = false,
             modifier = Modifier.padding(16.dp)
@@ -351,15 +361,25 @@ private fun PropertyCardPreview() {
 private fun PropertyCardFavoritePreview() {
     MaterialTheme {
         PropertyCard(
-            property = PropertyCardData(
-                id = "2",
-                price = 450000.0,
+            property = BalkanEstateProperty(
+                id = "3",
+                title = "Luxury Penthouse with City Views",
+                price = 580000.0,
                 currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
                 bedrooms = 4,
                 bathrooms = 3,
-                squareFootage = 2000,
-                address = "456 European Avenue, Belgrade, Serbia",
-                imageUrl = "https://example.com/apartment.jpg"
+                squareFootage = 2500,
+                address = "Rruga e Durrësit 45",
+                city = "Tirana",
+                country = "Albania",
+                latitude = 41.3290,
+                longitude = 19.8150,
+                propertyType = "Apartment",
+                listingType = "Sale",
+                agentName = "Arben Dedja",
+                isFeatured = true,
+                isUrgent = false
             ),
             isFavorite = true,
             modifier = Modifier.padding(16.dp)
