@@ -13,6 +13,8 @@
     <string name="create_account">Create Account</string>
     <string name="benefits_create_account">"Do you want to use all the benefits of the app.\n Create an account "</string>
     <string name="get_property_valuation">Get Free Property Valuation</string>
+    <string name="clear">Clear</string>
+    <string name="search_bar_hint">Search address</string>
     <string name="start_searching_properties">Start Searching Properties</string>
     <string name="thank_you_title">Perfect! We\'ve got your preference</string>
     <string name="thank_you_description">Let\'s find properties that match your lifestyle and needs</string>

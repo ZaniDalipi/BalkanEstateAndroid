@@ -18,4 +18,5 @@ dependencies {
     api (libs.androidx.compose.material3)
 
     implementation(libs.coil.compose)
+    implementation(projects.core.domain)
 }

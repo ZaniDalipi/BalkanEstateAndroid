@@ -1,16 +1,16 @@
 package com.zanoapps.property_details.domain.model
 
-import com.zanoapps.property_details.domain.enums.Amenity
-import com.zanoapps.property_details.domain.enums.Appliance
-import com.zanoapps.property_details.domain.enums.CoolingType
-import com.zanoapps.property_details.domain.enums.FurnishedType
-import com.zanoapps.property_details.domain.enums.HeatingType
-import com.zanoapps.property_details.domain.enums.LeaseLength
-import com.zanoapps.property_details.domain.enums.ListingType
-import com.zanoapps.property_details.domain.enums.ParkingType
-import com.zanoapps.property_details.domain.enums.PetPolicy
-import com.zanoapps.property_details.domain.enums.PropertySubType
-import com.zanoapps.property_details.domain.enums.PropertyType
+import com.zanoapps.core.domain.enums.Amenity
+import com.zanoapps.core.domain.enums.Appliance
+import com.zanoapps.core.domain.enums.CoolingType
+import com.zanoapps.core.domain.enums.FurnishedType
+import com.zanoapps.core.domain.enums.HeatingType
+import com.zanoapps.core.domain.enums.LeaseLength
+import com.zanoapps.core.domain.enums.ListingType
+import com.zanoapps.core.domain.enums.ParkingType
+import com.zanoapps.core.domain.enums.PetPolicy
+import com.zanoapps.core.domain.enums.PropertySubType
+import com.zanoapps.core.domain.enums.PropertyType
 import java.time.LocalDateTime
 
 data class CreatePropertyForm(
