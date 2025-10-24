@@ -196,6 +196,8 @@ class UserPreferenceAnalyzer {
                             )
                     )
                 }
+
+                PropertyIntent.JUST_LOOKING_AROUND -> TODO()
             }
         }
 
