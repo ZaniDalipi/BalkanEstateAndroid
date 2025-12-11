@@ -36,6 +36,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.zanoapps.core.domain.model.BalkanEstateProperty
 import com.zanoapps.core.presentation.designsystem.AddedToFavIcon
+import com.zanoapps.core.presentation.designsystem.BalkanEstateGray
+import com.zanoapps.core.presentation.designsystem.BalkanEstateRed
 import com.zanoapps.core.presentation.designsystem.BathroomsIcon
 import com.zanoapps.core.presentation.designsystem.BedroomsIcon
 import com.zanoapps.core.presentation.designsystem.SquareMetersIcon
@@ -75,7 +77,7 @@ fun PropertyCard(
         )
     ) {
         Column {
-            // Property Image Section
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -93,7 +95,6 @@ fun PropertyCard(
                     contentScale = ContentScale.Crop
                 )
 
-                // Favorite Button with better styling
                 IconButton(
                     onClick = { onFavoriteClick(property) },
                     modifier = Modifier
@@ -103,13 +104,12 @@ fun PropertyCard(
                     Icon(
                         imageVector = if (isFavorite) AddedToFavIcon else AddedToFavIcon,
                         contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                        tint = if (isFavorite) Color(0xFFE53E3E) else Color.White,
+                        tint = if (isFavorite) Color.Red else BalkanEstateGray,
                         modifier = Modifier.size(24.dp)
                     )
                 }
             }
 
-            // Property Details Section
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
@@ -284,13 +284,12 @@ fun PropertyCardCompact(
                     Icon(
                         imageVector = if (isFavorite) AddedToFavIcon else AddedToFavIcon,
                         contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                        tint = if (isFavorite) Color(0xFFE53E3E) else Color.White,
+                        tint = if (isFavorite) BalkanEstateRed else BalkanEstateGray,
                         modifier = Modifier.size(20.dp)
                     )
                 }
             }
 
-            // Compact Details
             Column(
                 modifier = Modifier.padding(12.dp)
             ) {
