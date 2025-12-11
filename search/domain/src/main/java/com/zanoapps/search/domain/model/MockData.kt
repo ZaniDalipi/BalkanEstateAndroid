@@ -125,6 +125,26 @@ object MockData {
                 agentName = "Klodian Mëhilli",
                 isFeatured = true,
                 isUrgent = false
+            ),
+            BalkanEstateProperty(
+                id = "7",
+                title = "Beautiful 3BR Villa in Tirana",
+                price = 350000.0,
+                currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+                bedrooms = 3,
+                bathrooms = 2,
+                squareFootage = 1800,
+                address = "Rruga Myslym Shyri 27",
+                city = "Tirana",
+                country = "Albania",
+                latitude = 41.3275,
+                longitude = 19.8187,
+                propertyType = "Villa",
+                listingType = "Sale",
+                agentName = "Besmir Kola",
+                isFeatured = true,
+                isUrgent = false
             )
         )
     }

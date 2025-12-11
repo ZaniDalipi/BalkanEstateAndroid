@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,9 +16,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -183,7 +184,7 @@ private fun PropertyListBottomSheet(
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = "Properties in Area",
@@ -250,9 +251,11 @@ private fun SortDropdown(
         expanded = expanded,
         onExpandedChange = { expanded = it }
     ) {
+        // FIX: Remove the 'Ex' argument from Modifier.menuAnchor().
+        // It should be called with no arguments when inside ExposedDropdownMenuBox.
         OutlinedButton(
             onClick = { expanded = true },
-            modifier = Modifier.menuAnchor()
+            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable,enabled = true, )
         ) {
             Icon(SortResultsIcon, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
@@ -264,7 +267,9 @@ private fun SortDropdown(
 
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            // Pass the scope's Modifier to the menu to ensure correct sizing and positioning
+            modifier = Modifier.exposedDropdownSize()
         ) {
             SortOption.entries.forEach { sortOption ->
                 DropdownMenuItem(
@@ -278,5 +283,4 @@ private fun SortDropdown(
         }
     }
 }
-
 
