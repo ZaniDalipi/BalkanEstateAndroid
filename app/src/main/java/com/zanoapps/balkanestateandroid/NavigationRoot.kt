@@ -19,6 +19,7 @@ import com.zanoapps.onboarding.presentation.seller.propertytype.SellerPropertyTy
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerCompletionAction
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerOnboardingCompletionRoot
 import com.zanoapps.onboarding.presentation.seller.sellingtime.SellingTimeRoot
+import com.zanoapps.search.presentation.search.SearchPropertyScreenRoot
 
 @Composable
 fun NavigationRoot(
@@ -29,6 +30,24 @@ fun NavigationRoot(
         startDestination = OnboardingDestinations.ROOT
     ) {
         onBoardingGraph(navController)
+        searchGraph(navController)
+    }
+}
+
+// Search Navigation Graph
+private fun NavGraphBuilder.searchGraph(navController: NavHostController) {
+    navigation(
+        startDestination = SearchDestinations.BUYER_SEARCH,
+        route = SearchDestinations.ROOT,
+    ) {
+        composable(route = SearchDestinations.BUYER_SEARCH) {
+            SearchPropertyScreenRoot()
+        }
+
+        composable(route = SearchDestinations.SELLER_DASHBOARD) {
+            // TODO: Implement SellerDashboardScreen
+            SearchPropertyScreenRoot()
+        }
     }
 }
 
