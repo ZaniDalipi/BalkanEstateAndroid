@@ -75,13 +75,32 @@ import com.zanoapps.search.domain.model.SearchFilters
 import org.koin.androidx.compose.koinViewModel
 
 
+/**
+ * Callback interface for navigation from Search screen
+ */
+interface SearchNavigationCallback {
+    fun onNavigateToSavedSearches()
+    fun onNavigateToSavedProperties()
+    fun onNavigateToTopAgents()
+    fun onNavigateToAgencies()
+    fun onNavigateToNewListing()
+    fun onNavigateToSubscription()
+    fun onNavigateToInbox()
+    fun onNavigateToProfile()
+    fun onNavigateToFavorites()
+    fun onNavigateToNotifications()
+    fun onLogout()
+}
+
 @Composable
 fun SearchPropertyScreenRoot(
-    viewModel: SearchPropertyViewModel = koinViewModel()
+    viewModel: SearchPropertyViewModel = koinViewModel(),
+    navigationCallback: SearchNavigationCallback? = null
 ) {
     SearchPropertyScreen(
         state = viewModel.state,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        navigationCallback = navigationCallback
     )
 }
 
@@ -96,7 +115,8 @@ fun SearchPropertyScreenRot(
 @Composable
 private fun SearchPropertyScreen(
     state: SearchState,
-    onAction: (SearchAction) -> Unit
+    onAction: (SearchAction) -> Unit,
+    navigationCallback: SearchNavigationCallback? = null
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
@@ -107,7 +127,7 @@ private fun SearchPropertyScreen(
                     onMenuClick = { onAction(SearchAction.OnOpenDrawer) },
                     onFilterClick = { onAction(SearchAction.OnFilterClick) },
                     onQueryChange = { query -> onAction(SearchAction.OnSearchQueryChanged(query)) },
-                    onProfileClick = { /* Navigate to profile */ }
+                    onProfileClick = { navigationCallback?.onNavigateToProfile() }
                 )
             },
             bottomBar = {
@@ -129,8 +149,8 @@ private fun SearchPropertyScreen(
 
                     // Bottom action buttons
                     BottomActionButtons(
-                        onFavoriteClick = { /* Navigate to favorites */ },
-                        onNotificationClick = { /* Navigate to notifications */ },
+                        onFavoriteClick = { navigationCallback?.onNavigateToFavorites() },
+                        onNotificationClick = { navigationCallback?.onNavigateToNotifications() },
                         onSparkleClick = { /* AI features */ }
                     )
 
@@ -191,9 +211,24 @@ private fun SearchPropertyScreen(
         BalkanEstateNavigationDrawer(
             isOpen = state.isDrawerOpen,
             selectedItem = DrawerMenuItem.Search,
+            isLoggedIn = true,
+            userName = "User",
             onItemClick = { item ->
                 onAction(SearchAction.OnDrawerItemClick(item.title))
                 onAction(SearchAction.OnCloseDrawer)
+                // Handle navigation based on drawer item
+                when (item) {
+                    DrawerMenuItem.Search -> { /* Already on search */ }
+                    DrawerMenuItem.SavedSearches -> navigationCallback?.onNavigateToSavedSearches()
+                    DrawerMenuItem.SavedProperties -> navigationCallback?.onNavigateToSavedProperties()
+                    DrawerMenuItem.TopAgents -> navigationCallback?.onNavigateToTopAgents()
+                    DrawerMenuItem.Agencies -> navigationCallback?.onNavigateToAgencies()
+                    DrawerMenuItem.NewListing -> navigationCallback?.onNavigateToNewListing()
+                    DrawerMenuItem.Subscription -> navigationCallback?.onNavigateToSubscription()
+                    DrawerMenuItem.Inbox -> navigationCallback?.onNavigateToInbox()
+                    DrawerMenuItem.MyAccount -> navigationCallback?.onNavigateToProfile()
+                    DrawerMenuItem.Logout -> navigationCallback?.onLogout()
+                }
             },
             onCloseClick = {
                 onAction(SearchAction.OnCloseDrawer)

@@ -104,10 +104,23 @@ sealed interface DrawerMenuItem {
     }
 }
 
+/**
+ * Navigation Drawer for Balkan Estate
+ *
+ * @param isOpen Whether the drawer is open
+ * @param selectedItem The currently selected menu item
+ * @param isLoggedIn Whether the user is logged in (shows subscribe and new listing options)
+ * @param userName Optional user name to display
+ * @param onItemClick Callback when a menu item is clicked
+ * @param onCloseClick Callback when close button is clicked
+ * @param modifier Optional modifier
+ */
 @Composable
 fun BalkanEstateNavigationDrawer(
     isOpen: Boolean,
     selectedItem: DrawerMenuItem = DrawerMenuItem.Search,
+    isLoggedIn: Boolean = true,
+    userName: String? = null,
     onItemClick: (DrawerMenuItem) -> Unit,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -130,8 +143,12 @@ fun BalkanEstateNavigationDrawer(
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    // Header
-                    DrawerHeader(onCloseClick = onCloseClick)
+                    // Header with optional user info
+                    DrawerHeader(
+                        onCloseClick = onCloseClick,
+                        userName = userName,
+                        isLoggedIn = isLoggedIn
+                    )
 
                     // Menu Items
                     Column(
@@ -165,20 +182,25 @@ fun BalkanEstateNavigationDrawer(
                             onClick = { onItemClick(DrawerMenuItem.Agencies) }
                         )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        // Show New Listing button for logged-in users
+                        if (isLoggedIn) {
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                        // New Listing Button
-                        NewListingButton(
-                            onClick = { onItemClick(DrawerMenuItem.NewListing) }
-                        )
+                            // New Listing Button
+                            NewListingButton(
+                                onClick = { onItemClick(DrawerMenuItem.NewListing) }
+                            )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                        DrawerItem(
-                            item = DrawerMenuItem.Subscription,
-                            isSelected = selectedItem == DrawerMenuItem.Subscription,
-                            onClick = { onItemClick(DrawerMenuItem.Subscription) }
-                        )
+                            // Subscription option for logged-in users
+                            DrawerItem(
+                                item = DrawerMenuItem.Subscription,
+                                isSelected = selectedItem == DrawerMenuItem.Subscription,
+                                onClick = { onItemClick(DrawerMenuItem.Subscription) }
+                            )
+                        }
+
                         DrawerItem(
                             item = DrawerMenuItem.Inbox,
                             isSelected = selectedItem == DrawerMenuItem.Inbox,
@@ -200,9 +222,11 @@ fun BalkanEstateNavigationDrawer(
                             isSelected = selectedItem == DrawerMenuItem.MyAccount,
                             onClick = { onItemClick(DrawerMenuItem.MyAccount) }
                         )
-                        LogoutItem(
-                            onClick = { onItemClick(DrawerMenuItem.Logout) }
-                        )
+                        if (isLoggedIn) {
+                            LogoutItem(
+                                onClick = { onItemClick(DrawerMenuItem.Logout) }
+                            )
+                        }
                     }
                 }
             }
@@ -212,46 +236,89 @@ fun BalkanEstateNavigationDrawer(
 
 @Composable
 private fun DrawerHeader(
-    onCloseClick: () -> Unit
+    onCloseClick: () -> Unit,
+    userName: String? = null,
+    isLoggedIn: Boolean = false
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(16.dp)
     ) {
         Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = BalkanEstateLogo,
-                contentDescription = "Balkan Estate Logo",
-                tint = BalkanEstatePrimaryBlue,
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Row {
-                Text(
-                    text = "Balkan",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = BalkanEstatePrimaryBlue
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = BalkanEstateLogo,
+                    contentDescription = "Balkan Estate Logo",
+                    tint = BalkanEstatePrimaryBlue,
+                    modifier = Modifier.size(32.dp)
                 )
-                Text(
-                    text = " Estate",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = BalkanEstateBlue
+                Spacer(modifier = Modifier.width(8.dp))
+                Row {
+                    Text(
+                        text = "Balkan",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = BalkanEstatePrimaryBlue
+                    )
+                    Text(
+                        text = " Estate",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = BalkanEstateBlue
+                    )
+                }
+            }
+            IconButton(onClick = onCloseClick) {
+                Icon(
+                    imageVector = CrossIcon,
+                    contentDescription = "Close",
+                    tint = Color.Gray
                 )
             }
         }
-        IconButton(onClick = onCloseClick) {
-            Icon(
-                imageVector = CrossIcon,
-                contentDescription = "Close",
-                tint = Color.Gray
-            )
+
+        // Show user info when logged in
+        if (isLoggedIn && userName != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(BalkanEstatePrimaryBlue),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = userName.take(1).uppercase(),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = userName,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.DarkGray
+                    )
+                    Text(
+                        text = "View Profile",
+                        fontSize = 12.sp,
+                        color = BalkanEstatePrimaryBlue
+                    )
+                }
+            }
         }
     }
 }
@@ -356,6 +423,22 @@ private fun BalkanEstateNavigationDrawerPreview() {
         BalkanEstateNavigationDrawer(
             isOpen = true,
             selectedItem = DrawerMenuItem.Search,
+            isLoggedIn = true,
+            userName = "John Doe",
+            onItemClick = {},
+            onCloseClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun BalkanEstateNavigationDrawerLoggedOutPreview() {
+    BalkanEstateTheme {
+        BalkanEstateNavigationDrawer(
+            isOpen = true,
+            selectedItem = DrawerMenuItem.Search,
+            isLoggedIn = false,
             onItemClick = {},
             onCloseClick = {}
         )

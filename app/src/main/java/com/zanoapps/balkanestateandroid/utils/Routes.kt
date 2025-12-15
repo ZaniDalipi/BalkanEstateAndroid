@@ -22,3 +22,21 @@ object SearchDestinations {
     const val BUYER_SEARCH = "buyer_search"
     const val SELLER_DASHBOARD = "seller_dashboard"
 }
+
+object MainDestinations {
+    const val ROOT = "main"
+    const val HOME = "home"
+    const val SEARCH = "main_search"
+    const val SAVED = "saved"
+    const val INBOX = "inbox"
+    const val PROFILE = "profile"
+    const val PROPERTY_DETAILS = "property_details/{propertyId}"
+    const val FILTERS = "filters"
+    const val NEW_LISTING = "new_listing"
+    const val SUBSCRIPTION = "subscription"
+    const val SAVED_SEARCHES = "saved_searches"
+    const val TOP_AGENTS = "top_agents"
+    const val AGENCIES = "agencies"
+
+    fun propertyDetails(propertyId: String) = "property_details/$propertyId"
+}
