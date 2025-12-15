@@ -5,7 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,14 +44,16 @@ import com.zanoapps.core.presentation.designsystem.BalkanEstateOrange
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateRed
 import com.zanoapps.core.presentation.designsystem.EditPenIcon
-import com.zanoapps.core.presentation.designsystem.HomeIcon
 import com.zanoapps.core.presentation.designsystem.InboxIcon
 import com.zanoapps.core.presentation.designsystem.LogoutIcon
 import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.SavedHomesIcon
+import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
 import com.zanoapps.core.presentation.designsystem.StarIcon
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateBottomNavigationBar
+import com.zanoapps.core.presentation.designsystem.components.BalkanEstateNavigationRail
 import com.zanoapps.core.presentation.designsystem.components.BottomNavItem
+import com.zanoapps.core.presentation.designsystem.util.rememberWindowSizeClass
 import com.zanoapps.onboarding.presentation.buyer.amenities.AmenitiesScreenRoot
 import com.zanoapps.onboarding.presentation.buyer.currentlifesituation.CurrentLifeSituationRoot
 import com.zanoapps.onboarding.presentation.buyer.propertyintent.PropertyIntentScreenRoot
@@ -80,32 +84,29 @@ fun NavigationRoot(
 // Main App Navigation Graph with bottom navigation screens
 private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
     navigation(
-        startDestination = MainDestinations.HOME,
+        startDestination = MainDestinations.SEARCH,
         route = MainDestinations.ROOT
     ) {
-        // Home Screen
-        composable(route = MainDestinations.HOME) {
-            MainAppScaffold(
-                navController = navController,
-                currentRoute = MainDestinations.HOME
-            ) {
-                HomeScreenContent(
-                    onNavigateToSearch = {
-                        navController.navigate(MainDestinations.SEARCH)
-                    }
-                )
-            }
-        }
-
-        // Search Screen
+        // Search Screen (Main landing screen)
         composable(route = MainDestinations.SEARCH) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.SEARCH
-            ) {
+            ) { showDrawer ->
                 SearchPropertyScreenRoot(
-                    navigationCallback = createSearchNavigationCallback(navController)
+                    navigationCallback = createSearchNavigationCallback(navController),
+                    showDrawer = showDrawer
                 )
+            }
+        }
+
+        // Saved Searches Screen
+        composable(route = MainDestinations.SAVED_SEARCHES) {
+            MainAppScaffold(
+                navController = navController,
+                currentRoute = MainDestinations.SAVED_SEARCHES
+            ) { _ ->
+                SavedSearchesScreenContent()
             }
         }
 
@@ -114,7 +115,7 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.SAVED
-            ) {
+            ) { _ ->
                 SavedPropertiesScreenContent()
             }
         }
@@ -124,7 +125,7 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.INBOX
-            ) {
+            ) { _ ->
                 InboxScreenContent()
             }
         }
@@ -134,7 +135,7 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.PROFILE
-            ) {
+            ) { _ ->
                 ProfileScreenContent(
                     onLogout = {
                         navController.navigate(OnboardingDestinations.ROOT) {
@@ -145,22 +146,12 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
             }
         }
 
-        // Saved Searches Screen
-        composable(route = MainDestinations.SAVED_SEARCHES) {
-            MainAppScaffold(
-                navController = navController,
-                currentRoute = MainDestinations.SAVED
-            ) {
-                SavedSearchesScreenContent()
-            }
-        }
-
         // Top Agents Screen
         composable(route = MainDestinations.TOP_AGENTS) {
             MainAppScaffold(
                 navController = navController,
-                currentRoute = MainDestinations.HOME
-            ) {
+                currentRoute = MainDestinations.SEARCH
+            ) { _ ->
                 TopAgentsScreenContent()
             }
         }
@@ -169,8 +160,8 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
         composable(route = MainDestinations.AGENCIES) {
             MainAppScaffold(
                 navController = navController,
-                currentRoute = MainDestinations.HOME
-            ) {
+                currentRoute = MainDestinations.SEARCH
+            ) { _ ->
                 AgenciesScreenContent()
             }
         }
@@ -180,7 +171,7 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.PROFILE
-            ) {
+            ) { _ ->
                 NewListingScreenContent()
             }
         }
@@ -190,7 +181,7 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.PROFILE
-            ) {
+            ) { _ ->
                 SubscriptionScreenContent()
             }
         }
@@ -201,9 +192,10 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
         MainAppScaffold(
             navController = navController,
             currentRoute = MainDestinations.SEARCH
-        ) {
+        ) { showDrawer ->
             SearchPropertyScreenRoot(
-                navigationCallback = createSearchNavigationCallback(navController)
+                navigationCallback = createSearchNavigationCallback(navController),
+                showDrawer = showDrawer
             )
         }
     }
@@ -460,63 +452,97 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
     }
 }
 
-// Main App Scaffold with Bottom Navigation
+// Main App Scaffold with Adaptive Navigation (Bottom Bar for mobile, Rail for tablet)
 @Composable
 private fun MainAppScaffold(
     navController: NavHostController,
     currentRoute: String,
-    content: @Composable () -> Unit
+    content: @Composable (showDrawer: Boolean) -> Unit
 ) {
+    val windowSizeClass = rememberWindowSizeClass()
+    val useNavigationRail = windowSizeClass.shouldUseNavigationRail
+    val showDrawer = windowSizeClass.shouldShowDrawer
+
     val selectedItem = when (currentRoute) {
-        MainDestinations.HOME -> BottomNavItem.Home
         MainDestinations.SEARCH -> BottomNavItem.Search
-        MainDestinations.SAVED -> BottomNavItem.Saved
+        MainDestinations.SAVED_SEARCHES -> BottomNavItem.SavedSearches
+        MainDestinations.SAVED -> BottomNavItem.SavedProperties
         MainDestinations.INBOX -> BottomNavItem.Inbox
         MainDestinations.PROFILE -> BottomNavItem.Profile
-        else -> BottomNavItem.Home
+        else -> BottomNavItem.Search
     }
 
-    Scaffold(
-        containerColor = Color(0xFFF8FAFC),
-        bottomBar = {
-            BalkanEstateBottomNavigationBar(
-                selectedItem = selectedItem,
-                onItemSelected = { item ->
-                    val route = when (item) {
-                        BottomNavItem.Home -> MainDestinations.HOME
-                        BottomNavItem.Search -> MainDestinations.SEARCH
-                        BottomNavItem.Saved -> MainDestinations.SAVED
-                        BottomNavItem.Inbox -> MainDestinations.INBOX
-                        BottomNavItem.Profile -> MainDestinations.PROFILE
-                    }
-                    if (route != currentRoute) {
-                        navController.navigate(route) {
-                            popUpTo(MainDestinations.ROOT) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                }
-            )
+    val onItemSelected: (BottomNavItem) -> Unit = { item ->
+        val route = when (item) {
+            BottomNavItem.Search -> MainDestinations.SEARCH
+            BottomNavItem.SavedSearches -> MainDestinations.SAVED_SEARCHES
+            BottomNavItem.SavedProperties -> MainDestinations.SAVED
+            BottomNavItem.Inbox -> MainDestinations.INBOX
+            BottomNavItem.Profile -> MainDestinations.PROFILE
         }
-    ) { paddingValues ->
-        Box(
+        if (route != currentRoute) {
+            navController.navigate(route) {
+                popUpTo(MainDestinations.ROOT) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
+    }
+
+    val onFabClick: () -> Unit = {
+        navController.navigate(MainDestinations.NEW_LISTING)
+    }
+
+    if (useNavigationRail) {
+        // Tablet/Larger screen layout with Navigation Rail
+        Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .background(Color(0xFFF8FAFC))
         ) {
-            content()
+            BalkanEstateNavigationRail(
+                selectedItem = selectedItem,
+                onItemSelected = onItemSelected,
+                onFabClick = onFabClick,
+                modifier = Modifier.fillMaxHeight()
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+            ) {
+                content(showDrawer)
+            }
+        }
+    } else {
+        // Mobile layout with Bottom Navigation Bar
+        Scaffold(
+            containerColor = Color(0xFFF8FAFC),
+            bottomBar = {
+                BalkanEstateBottomNavigationBar(
+                    selectedItem = selectedItem,
+                    onItemSelected = onItemSelected,
+                    onFabClick = onFabClick,
+                    showFab = true
+                )
+            }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                content(showDrawer)
+            }
         }
     }
 }
 
 // Placeholder Screen Contents
 @Composable
-private fun HomeScreenContent(
-    onNavigateToSearch: () -> Unit
-) {
+private fun SavedSearchesScreenContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -525,33 +551,25 @@ private fun HomeScreenContent(
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            imageVector = HomeIcon,
+            imageVector = AddSearchIcon,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
             tint = BalkanEstatePrimaryBlue
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Welcome to Balkan Estate",
+            text = "Saved Searches",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = BalkanEstatePrimaryBlue
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Find your dream property in the Balkans",
+            text = "Your saved search criteria will appear here.\nGet notified when new properties match your searches.",
             fontSize = 16.sp,
             color = Color.Gray,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(
-            onClick = onNavigateToSearch,
-            colors = ButtonDefaults.buttonColors(containerColor = BalkanEstateOrange),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text("Start Searching", color = Color.White)
-        }
     }
 }
 
@@ -674,38 +692,6 @@ private fun ProfileScreenContent(
             Spacer(modifier = Modifier.width(8.dp))
             Text("Logout", color = BalkanEstateRed)
         }
-    }
-}
-
-@Composable
-private fun SavedSearchesScreenContent() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = AddSearchIcon,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = BalkanEstatePrimaryBlue
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Saved Searches",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = BalkanEstatePrimaryBlue
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Your saved searches will appear here",
-            fontSize = 16.sp,
-            color = Color.Gray,
-            textAlign = TextAlign.Center
-        )
     }
 }
 

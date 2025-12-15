@@ -32,7 +32,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,20 +52,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.domain.enums.SortOption
 import com.zanoapps.core.domain.model.BalkanEstateProperty
-import com.zanoapps.core.presentation.designsystem.AddedToFavIcon
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.FiltersIcon
 import com.zanoapps.core.presentation.designsystem.KeyboardArrowDownIcon
 import com.zanoapps.core.presentation.designsystem.MenuHamburgerIcon
-import com.zanoapps.core.presentation.designsystem.NotificationBellIcon
 import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
-import com.zanoapps.core.presentation.designsystem.SparkleIcon
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateNavigationDrawer
 import com.zanoapps.core.presentation.designsystem.components.DrawerMenuItem
-import com.zanoapps.core.presentation.designsystem.components.EmailSubscriptionBar
 import com.zanoapps.core.presentation.designsystem.components.ListMapToggle
 import com.zanoapps.core.presentation.designsystem.components.PropertyCard
 import com.zanoapps.search.domain.model.MapLocation
@@ -92,15 +87,23 @@ interface SearchNavigationCallback {
     fun onLogout()
 }
 
+/**
+ * Root composable for the Search Property screen
+ * @param viewModel The ViewModel for managing state
+ * @param navigationCallback Callback for navigation events
+ * @param showDrawer Whether to show the navigation drawer (typically for tablet mode)
+ */
 @Composable
 fun SearchPropertyScreenRoot(
     viewModel: SearchPropertyViewModel = koinViewModel(),
-    navigationCallback: SearchNavigationCallback? = null
+    navigationCallback: SearchNavigationCallback? = null,
+    showDrawer: Boolean = false
 ) {
     SearchPropertyScreen(
         state = viewModel.state,
         onAction = viewModel::onAction,
-        navigationCallback = navigationCallback
+        navigationCallback = navigationCallback,
+        showDrawer = showDrawer
     )
 }
 
@@ -112,134 +115,125 @@ fun SearchPropertyScreenRot(
     SearchPropertyScreenRoot(viewModel)
 }
 
+/**
+ * Main Search Property screen content
+ * For mobile: No drawer, uses bottom navigation from parent scaffold
+ * For tablet: Shows drawer for additional navigation options
+ */
 @Composable
 private fun SearchPropertyScreen(
     state: SearchState,
     onAction: (SearchAction) -> Unit,
-    navigationCallback: SearchNavigationCallback? = null
+    navigationCallback: SearchNavigationCallback? = null,
+    showDrawer: Boolean = false
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            containerColor = Color(0xFFF8FAFC),
-            topBar = {
-                SearchTopBar(
-                    state = state,
-                    onMenuClick = { onAction(SearchAction.OnOpenDrawer) },
-                    onFilterClick = { onAction(SearchAction.OnFilterClick) },
-                    onQueryChange = { query -> onAction(SearchAction.OnSearchQueryChanged(query)) },
-                    onProfileClick = { navigationCallback?.onNavigateToProfile() }
-                )
-            },
-            bottomBar = {
-                Column {
-                    // List/Map Toggle
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        ListMapToggle(
-                            isListView = state.isListView,
-                            onToggle = { isListView ->
-                                onAction(SearchAction.OnViewModeToggle(isListView))
-                            }
-                        )
-                    }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF8FAFC))
+        ) {
+            // Top Bar
+            SearchTopBar(
+                state = state,
+                showMenuButton = showDrawer, // Only show menu button when drawer is available
+                onMenuClick = { onAction(SearchAction.OnOpenDrawer) },
+                onFilterClick = { onAction(SearchAction.OnFilterClick) },
+                onQueryChange = { query -> onAction(SearchAction.OnSearchQueryChanged(query)) },
+                onProfileClick = { navigationCallback?.onNavigateToProfile() }
+            )
 
-                    // Bottom action buttons
-                    BottomActionButtons(
-                        onFavoriteClick = { navigationCallback?.onNavigateToFavorites() },
-                        onNotificationClick = { navigationCallback?.onNavigateToNotifications() },
-                        onSparkleClick = { /* AI features */ }
-                    )
-
-                    // Email subscription bar
-                    EmailSubscriptionBar(
-                        onSubscribe = { email ->
-                            onAction(SearchAction.OnSubscribe(email))
-                        }
-                    )
+            // Results count and sort
+            ResultsHeader(
+                resultsCount = state.filteredProperties.size.takeIf { it > 0 } ?: MockData.getMockProperties().size,
+                sortOption = state.sortOption,
+                onSortChange = { sortOption ->
+                    onAction(SearchAction.OnSortChanged(sortOption))
                 }
-            }
-        ) { paddingValues ->
-            Column(
+            )
+
+            // List/Map Toggle
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.Center
             ) {
-                // Results count and sort
-                ResultsHeader(
-                    resultsCount = state.filteredProperties.size.takeIf { it > 0 } ?: MockData.getMockProperties().size,
-                    sortOption = state.sortOption,
-                    onSortChange = { sortOption ->
-                        onAction(SearchAction.OnSortChanged(sortOption))
+                ListMapToggle(
+                    isListView = state.isListView,
+                    onToggle = { isListView ->
+                        onAction(SearchAction.OnViewModeToggle(isListView))
                     }
                 )
+            }
 
-                // Property list
-                if (state.isListView) {
-                    PropertyList(
-                        properties = state.filteredProperties,
-                        favorites = state.favoritePropertyIds,
-                        isLoading = state.isLoadingProperties,
-                        onPropertyClick = { property ->
-                            onAction(SearchAction.OnPropertyClicked(property))
-                        },
-                        onFavoriteClick = { propertyId ->
-                            onAction(SearchAction.OnFavoriteToggle(propertyId))
-                        },
-                        onViewDetailsClick = { property ->
-                            onAction(SearchAction.OnViewDetailsClick(property))
-                        }
-                    )
-                } else {
-                    // Map view placeholder
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.LightGray),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Map View - Coming Soon")
-                    }
+            // Property list or map
+            if (state.isListView) {
+                PropertyList(
+                    properties = state.filteredProperties,
+                    favorites = state.favoritePropertyIds,
+                    isLoading = state.isLoadingProperties,
+                    onPropertyClick = { property ->
+                        onAction(SearchAction.OnPropertyClicked(property))
+                    },
+                    onFavoriteClick = { propertyId ->
+                        onAction(SearchAction.OnFavoriteToggle(propertyId))
+                    },
+                    onViewDetailsClick = { property ->
+                        onAction(SearchAction.OnViewDetailsClick(property))
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            } else {
+                // Map view placeholder
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .background(Color.LightGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Map View - Coming Soon")
                 }
             }
         }
 
-        // Navigation Drawer
-        BalkanEstateNavigationDrawer(
-            isOpen = state.isDrawerOpen,
-            selectedItem = DrawerMenuItem.Search,
-            isLoggedIn = true,
-            userName = "User",
-            onItemClick = { item ->
-                onAction(SearchAction.OnDrawerItemClick(item.title))
-                onAction(SearchAction.OnCloseDrawer)
-                // Handle navigation based on drawer item
-                when (item) {
-                    DrawerMenuItem.Search -> { /* Already on search */ }
-                    DrawerMenuItem.SavedSearches -> navigationCallback?.onNavigateToSavedSearches()
-                    DrawerMenuItem.SavedProperties -> navigationCallback?.onNavigateToSavedProperties()
-                    DrawerMenuItem.TopAgents -> navigationCallback?.onNavigateToTopAgents()
-                    DrawerMenuItem.Agencies -> navigationCallback?.onNavigateToAgencies()
-                    DrawerMenuItem.NewListing -> navigationCallback?.onNavigateToNewListing()
-                    DrawerMenuItem.Subscription -> navigationCallback?.onNavigateToSubscription()
-                    DrawerMenuItem.Inbox -> navigationCallback?.onNavigateToInbox()
-                    DrawerMenuItem.MyAccount -> navigationCallback?.onNavigateToProfile()
-                    DrawerMenuItem.Logout -> navigationCallback?.onLogout()
+        // Navigation Drawer - Only shown for tablet mode
+        if (showDrawer) {
+            BalkanEstateNavigationDrawer(
+                isOpen = state.isDrawerOpen,
+                selectedItem = DrawerMenuItem.Search,
+                isLoggedIn = true,
+                userName = "User",
+                onItemClick = { item ->
+                    onAction(SearchAction.OnDrawerItemClick(item.title))
+                    onAction(SearchAction.OnCloseDrawer)
+                    // Handle navigation based on drawer item
+                    when (item) {
+                        DrawerMenuItem.Search -> { /* Already on search */ }
+                        DrawerMenuItem.SavedSearches -> navigationCallback?.onNavigateToSavedSearches()
+                        DrawerMenuItem.SavedProperties -> navigationCallback?.onNavigateToSavedProperties()
+                        DrawerMenuItem.TopAgents -> navigationCallback?.onNavigateToTopAgents()
+                        DrawerMenuItem.Agencies -> navigationCallback?.onNavigateToAgencies()
+                        DrawerMenuItem.NewListing -> navigationCallback?.onNavigateToNewListing()
+                        DrawerMenuItem.Subscription -> navigationCallback?.onNavigateToSubscription()
+                        DrawerMenuItem.Inbox -> navigationCallback?.onNavigateToInbox()
+                        DrawerMenuItem.MyAccount -> navigationCallback?.onNavigateToProfile()
+                        DrawerMenuItem.Logout -> navigationCallback?.onLogout()
+                    }
+                },
+                onCloseClick = {
+                    onAction(SearchAction.OnCloseDrawer)
                 }
-            },
-            onCloseClick = {
-                onAction(SearchAction.OnCloseDrawer)
-            }
-        )
+            )
+        }
     }
 }
 
 @Composable
 private fun SearchTopBar(
     state: SearchState,
+    showMenuButton: Boolean = false,
     onMenuClick: () -> Unit,
     onFilterClick: () -> Unit,
     onQueryChange: (String) -> Unit,
@@ -251,16 +245,18 @@ private fun SearchTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(horizontal = 12.dp, vertical = 12.dp),
+            .padding(horizontal = if (showMenuButton) 12.dp else 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Hamburger menu
-        IconButton(onClick = onMenuClick) {
-            Icon(
-                imageVector = MenuHamburgerIcon,
-                contentDescription = "Menu",
-                tint = Color.DarkGray
-            )
+        // Hamburger menu - only shown for tablet mode with drawer
+        if (showMenuButton) {
+            IconButton(onClick = onMenuClick) {
+                Icon(
+                    imageVector = MenuHamburgerIcon,
+                    contentDescription = "Menu",
+                    tint = Color.DarkGray
+                )
+            }
         }
 
         // Search field
@@ -409,11 +405,12 @@ private fun PropertyList(
     isLoading: Boolean,
     onPropertyClick: (BalkanEstateProperty) -> Unit,
     onFavoriteClick: (String) -> Unit,
-    onViewDetailsClick: (BalkanEstateProperty) -> Unit
+    onViewDetailsClick: (BalkanEstateProperty) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     if (isLoading) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(32.dp),
             contentAlignment = Alignment.Center
@@ -424,7 +421,7 @@ private fun PropertyList(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            modifier = Modifier.fillMaxSize()
+            modifier = modifier.fillMaxWidth()
         ) {
             items(
                 items = if (properties.isEmpty()) MockData.getMockProperties() else properties,
@@ -439,74 +436,6 @@ private fun PropertyList(
                     onViewDetailsClick = { onViewDetailsClick(property) }
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun BottomActionButtons(
-    onFavoriteClick: () -> Unit,
-    onNotificationClick: () -> Unit,
-    onSparkleClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Favorite button
-        IconButton(
-            onClick = onFavoriteClick,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color(0xFFF1F5F9))
-        ) {
-            Icon(
-                imageVector = AddedToFavIcon,
-                contentDescription = "Favorites",
-                tint = Color.Gray,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        // Notification button
-        IconButton(
-            onClick = onNotificationClick,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color(0xFFF1F5F9))
-        ) {
-            Icon(
-                imageVector = NotificationBellIcon,
-                contentDescription = "Notifications",
-                tint = Color.Gray,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        // Sparkle/AI button
-        IconButton(
-            onClick = onSparkleClick,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color(0xFFF1F5F9))
-        ) {
-            Icon(
-                imageVector = SparkleIcon,
-                contentDescription = "AI Features",
-                tint = Color.Gray,
-                modifier = Modifier.size(20.dp)
-            )
         }
     }
 }
@@ -541,12 +470,13 @@ private fun SearchPropertyScreenPreview() {
                 isListView = true,
                 subscriptionEmail = ""
             ),
-            onAction = {}
+            onAction = {},
+            showDrawer = false
         )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Tablet with Drawer")
 @Composable
 private fun SearchPropertyScreenWithDrawerPreview() {
     BalkanEstateTheme {
@@ -576,7 +506,8 @@ private fun SearchPropertyScreenWithDrawerPreview() {
                 isListView = true,
                 subscriptionEmail = ""
             ),
-            onAction = {}
+            onAction = {},
+            showDrawer = true
         )
     }
 }
