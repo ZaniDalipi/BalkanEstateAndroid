@@ -1,9 +1,13 @@
 package com.zanoapps.search.presentation.search
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,15 +17,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,18 +41,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.domain.enums.SortOption
 import com.zanoapps.core.domain.model.BalkanEstateProperty
+import com.zanoapps.core.presentation.designsystem.AddedToFavIcon
+import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
+import com.zanoapps.core.presentation.designsystem.FiltersIcon
+import com.zanoapps.core.presentation.designsystem.KeyboardArrowDownIcon
+import com.zanoapps.core.presentation.designsystem.MenuHamburgerIcon
+import com.zanoapps.core.presentation.designsystem.NotificationBellIcon
+import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.R
-import com.zanoapps.core.presentation.designsystem.SortResultsIcon
-import com.zanoapps.core.presentation.designsystem.components.BalkanEstateSearchBar
-import com.zanoapps.core.presentation.designsystem.components.GradientBackground
+import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
+import com.zanoapps.core.presentation.designsystem.SparkleIcon
+import com.zanoapps.core.presentation.designsystem.components.BalkanEstateNavigationDrawer
+import com.zanoapps.core.presentation.designsystem.components.DrawerMenuItem
+import com.zanoapps.core.presentation.designsystem.components.EmailSubscriptionBar
+import com.zanoapps.core.presentation.designsystem.components.ListMapToggle
 import com.zanoapps.core.presentation.designsystem.components.PropertyCard
 import com.zanoapps.search.domain.model.MapLocation
 import com.zanoapps.search.domain.model.MockData
@@ -50,86 +76,411 @@ import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
-
-fun SearchPropertyScreenRot(
-
+fun SearchPropertyScreenRoot(
     viewModel: SearchPropertyViewModel = koinViewModel()
-
 ) {
-
     SearchPropertyScreen(
-
         state = viewModel.state,
-
         onAction = viewModel::onAction
-
     )
+}
 
+// Keep the old name for backward compatibility
+@Composable
+fun SearchPropertyScreenRot(
+    viewModel: SearchPropertyViewModel = koinViewModel()
+) {
+    SearchPropertyScreenRoot(viewModel)
 }
 
 @Composable
-
 private fun SearchPropertyScreen(
-
     state: SearchState,
-
     onAction: (SearchAction) -> Unit
-
 ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            containerColor = Color(0xFFF8FAFC),
+            topBar = {
+                SearchTopBar(
+                    state = state,
+                    onMenuClick = { onAction(SearchAction.OnOpenDrawer) },
+                    onFilterClick = { onAction(SearchAction.OnFilterClick) },
+                    onQueryChange = { query -> onAction(SearchAction.OnSearchQueryChanged(query)) },
+                    onProfileClick = { /* Navigate to profile */ }
+                )
+            },
+            bottomBar = {
+                Column {
+                    // List/Map Toggle
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ListMapToggle(
+                            isListView = state.isListView,
+                            onToggle = { isListView ->
+                                onAction(SearchAction.OnViewModeToggle(isListView))
+                            }
+                        )
+                    }
 
-    GradientBackground {
+                    // Bottom action buttons
+                    BottomActionButtons(
+                        onFavoriteClick = { /* Navigate to favorites */ },
+                        onNotificationClick = { /* Navigate to notifications */ },
+                        onSparkleClick = { /* AI features */ }
+                    )
 
-
-        Box(modifier = Modifier.fillMaxWidth()) {
-
-            BalkanEstateSearchBar(
-                state = state.searchQuery,
-                hint = stringResource(R.string.search_bar_hint),
-                query = state.searchQuery.text.toString(),
-                onQueryChange = { query ->
-                    onAction(SearchAction.OnSearchQueryChanged(query))
-
-                },
-                onFilterClick = {
-                    onAction(SearchAction.OnFilterClick)
-
-                },
-                hasActiveFilters = state.hasActiveFilter,
+                    // Email subscription bar
+                    EmailSubscriptionBar(
+                        onSubscribe = { email ->
+                            onAction(SearchAction.OnSubscribe(email))
+                        }
+                    )
+                }
+            }
+        ) { paddingValues ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .align(Alignment.TopCenter)
-            )
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                // Results count and sort
+                ResultsHeader(
+                    resultsCount = state.filteredProperties.size.takeIf { it > 0 } ?: MockData.getMockProperties().size,
+                    sortOption = state.sortOption,
+                    onSortChange = { sortOption ->
+                        onAction(SearchAction.OnSortChanged(sortOption))
+                    }
+                )
+
+                // Property list
+                if (state.isListView) {
+                    PropertyList(
+                        properties = state.filteredProperties,
+                        favorites = state.favoritePropertyIds,
+                        isLoading = state.isLoadingProperties,
+                        onPropertyClick = { property ->
+                            onAction(SearchAction.OnPropertyClicked(property))
+                        },
+                        onFavoriteClick = { propertyId ->
+                            onAction(SearchAction.OnFavoriteToggle(propertyId))
+                        },
+                        onViewDetailsClick = { property ->
+                            onAction(SearchAction.OnViewDetailsClick(property))
+                        }
+                    )
+                } else {
+                    // Map view placeholder
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.LightGray),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("Map View - Coming Soon")
+                    }
+                }
+            }
         }
 
-        PropertyListBottomSheet(
-            properties = state.filteredProperties,
-            favorites = state.favoritePropertyIds,
-            sortOption = state.sortOption,
-            isLoading = state.isLoadingProperties,
-            onPropertyClick = { property ->
-                onAction(SearchAction.OnPropertyClicked(property))
+        // Navigation Drawer
+        BalkanEstateNavigationDrawer(
+            isOpen = state.isDrawerOpen,
+            selectedItem = DrawerMenuItem.Search,
+            onItemClick = { item ->
+                onAction(SearchAction.OnDrawerItemClick(item.title))
+                onAction(SearchAction.OnCloseDrawer)
             },
-            onFavoriteClick = { propertyId ->
-                onAction(SearchAction.OnFavoriteToggle(propertyId))
-            },
-            onSortChange = { sortOption ->
-                onAction(SearchAction.OnSortChanged(sortOption))
+            onCloseClick = {
+                onAction(SearchAction.OnCloseDrawer)
             }
         )
     }
 }
 
+@Composable
+private fun SearchTopBar(
+    state: SearchState,
+    onMenuClick: () -> Unit,
+    onFilterClick: () -> Unit,
+    onQueryChange: (String) -> Unit,
+    onProfileClick: () -> Unit
+) {
+    var isFocused by remember { mutableStateOf(false) }
 
-@Preview
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Hamburger menu
+        IconButton(onClick = onMenuClick) {
+            Icon(
+                imageVector = MenuHamburgerIcon,
+                contentDescription = "Menu",
+                tint = Color.DarkGray
+            )
+        }
+
+        // Search field
+        BasicTextField(
+            state = state.searchQuery,
+            textStyle = LocalTextStyle.current.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 14.sp
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            lineLimits = TextFieldLineLimits.SingleLine,
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
+            modifier = Modifier
+                .weight(1f)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(0xFFF1F5F9))
+                .border(
+                    width = 1.dp,
+                    color = if (isFocused) BalkanEstatePrimaryBlue else Color.Transparent,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(horizontal = 12.dp, vertical = 10.dp)
+                .onFocusChanged { isFocused = it.isFocused },
+            decorator = { innerBox ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = SaveSearchIcon,
+                        contentDescription = null,
+                        tint = Color.Gray,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(modifier = Modifier.weight(1f)) {
+                        if (state.searchQuery.text.isEmpty() && !isFocused) {
+                            Text(
+                                text = stringResource(R.string.search_bar_hint),
+                                color = Color.Gray,
+                                fontSize = 14.sp
+                            )
+                        }
+                        innerBox()
+                    }
+                }
+            }
+        )
+
+        // Filter button
+        IconButton(onClick = onFilterClick) {
+            Icon(
+                imageVector = FiltersIcon,
+                contentDescription = "Filter",
+                tint = Color.DarkGray
+            )
+        }
+
+        // Profile button
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(BalkanEstatePrimaryBlue)
+                .clickable { onProfileClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = PersonIcon,
+                contentDescription = "Profile",
+                tint = Color.White,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ResultsHeader(
+    resultsCount: Int,
+    sortOption: SortOption,
+    onSortChange: (SortOption) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "$resultsCount results found",
+            color = BalkanEstatePrimaryBlue,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium
+        )
+
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it }
+        ) {
+            OutlinedButton(
+                onClick = { expanded = true },
+                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = sortOption.displayName,
+                    fontSize = 12.sp,
+                    color = Color.DarkGray
+                )
+                Spacer(Modifier.width(4.dp))
+                Icon(
+                    imageVector = KeyboardArrowDownIcon,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = Color.DarkGray
+                )
+            }
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.exposedDropdownSize()
+            ) {
+                SortOption.entries.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option.displayName) },
+                        onClick = {
+                            onSortChange(option)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PropertyList(
+    properties: List<BalkanEstateProperty>,
+    favorites: Set<String>,
+    isLoading: Boolean,
+    onPropertyClick: (BalkanEstateProperty) -> Unit,
+    onFavoriteClick: (String) -> Unit,
+    onViewDetailsClick: (BalkanEstateProperty) -> Unit
+) {
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = BalkanEstatePrimaryBlue)
+        }
+    } else {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(
+                items = if (properties.isEmpty()) MockData.getMockProperties() else properties,
+                key = { it.id }
+            ) { property ->
+                PropertyCard(
+                    property = property,
+                    isFavorite = favorites.contains(property.id),
+                    isNew = true,
+                    onPropertyClick = { onPropertyClick(property) },
+                    onFavoriteClick = { onFavoriteClick(property.id) },
+                    onViewDetailsClick = { onViewDetailsClick(property) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun BottomActionButtons(
+    onFavoriteClick: () -> Unit,
+    onNotificationClick: () -> Unit,
+    onSparkleClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Favorite button
+        IconButton(
+            onClick = onFavoriteClick,
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFF1F5F9))
+        ) {
+            Icon(
+                imageVector = AddedToFavIcon,
+                contentDescription = "Favorites",
+                tint = Color.Gray,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Notification button
+        IconButton(
+            onClick = onNotificationClick,
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFF1F5F9))
+        ) {
+            Icon(
+                imageVector = NotificationBellIcon,
+                contentDescription = "Notifications",
+                tint = Color.Gray,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Sparkle/AI button
+        IconButton(
+            onClick = onSparkleClick,
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFF1F5F9))
+        ) {
+            Icon(
+                imageVector = SparkleIcon,
+                contentDescription = "AI Features",
+                tint = Color.Gray,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
 @Composable
 private fun SearchPropertyScreenPreview() {
-
     BalkanEstateTheme {
-
-
         SearchPropertyScreen(
-
             state = SearchState(
                 mapLocation = MapLocation(
                     latitude = 41.3275,
@@ -139,148 +490,58 @@ private fun SearchPropertyScreenPreview() {
                 isMapTypeRoad = true,
                 properties = MockData.getMockProperties(),
                 filteredProperties = MockData.getMockProperties(),
-                selectedBalkanEstateProperty = MockData.getMockProperties()[2],
+                selectedBalkanEstateProperty = null,
                 favoritePropertyIds = emptySet(),
                 searchQuery = SearchState().searchQuery,
                 filters = SearchFilters(),
-                sortOption = SortOption.FEATURED,
+                sortOption = SortOption.NEWEST,
                 hasActiveFilter = false,
                 isLoadingProperties = false,
                 isRefreshing = false,
                 isSavingSearch = false,
                 isBottomSheetExpanded = false,
-                savedSearchCount = 1,
-                errorMessage = null
+                savedSearchCount = 0,
+                errorMessage = null,
+                isDrawerOpen = false,
+                isListView = true,
+                subscriptionEmail = ""
             ),
-            onAction = {
-
-            }
-
+            onAction = {}
         )
     }
-
 }
 
-
+@Preview(showBackground = true)
 @Composable
-private fun PropertyListBottomSheet(
-    properties: List<BalkanEstateProperty>,
-    favorites: Set<String>,
-    sortOption: SortOption,
-    isLoading: Boolean,
-    onPropertyClick: (BalkanEstateProperty) -> Unit,
-    onFavoriteClick: (String) -> Unit,
-    onSortChange: (SortOption) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = "Properties in Area",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "${properties.size} properties found",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                SortDropdown(
-                    currentSort = sortOption,
-                    onSortChange = onSortChange
-                )
-            }
-
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(bottom = 16.dp)
-            ) {
-                items(MockData.getMockProperties()) { property ->
-
-                    PropertyCard(
-                        property = property,
-                        isFavorite = favorites.contains(property.id),
-                        onPropertyClick = { onPropertyClick(property) },
-                        onFavoriteClick = { onFavoriteClick(property.id) },
-
-                        )
-                }
-            }
-        }
+private fun SearchPropertyScreenWithDrawerPreview() {
+    BalkanEstateTheme {
+        SearchPropertyScreen(
+            state = SearchState(
+                mapLocation = MapLocation(
+                    latitude = 41.3275,
+                    longitude = 19.8187,
+                    zoom = 12f
+                ),
+                isMapTypeRoad = true,
+                properties = MockData.getMockProperties(),
+                filteredProperties = MockData.getMockProperties(),
+                selectedBalkanEstateProperty = null,
+                favoritePropertyIds = emptySet(),
+                searchQuery = SearchState().searchQuery,
+                filters = SearchFilters(),
+                sortOption = SortOption.NEWEST,
+                hasActiveFilter = false,
+                isLoadingProperties = false,
+                isRefreshing = false,
+                isSavingSearch = false,
+                isBottomSheetExpanded = false,
+                savedSearchCount = 0,
+                errorMessage = null,
+                isDrawerOpen = true,
+                isListView = true,
+                subscriptionEmail = ""
+            ),
+            onAction = {}
+        )
     }
 }
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SortDropdown(
-    currentSort: SortOption,
-    onSortChange: (SortOption) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = it }
-    ) {
-        // FIX: Remove the 'Ex' argument from Modifier.menuAnchor().
-        // It should be called with no arguments when inside ExposedDropdownMenuBox.
-        OutlinedButton(
-            onClick = { expanded = true },
-            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable,enabled = true, )
-        ) {
-            Icon(SortResultsIcon, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(8.dp))
-            Text(
-                currentSort.displayName,
-                fontSize = 12.sp
-            )
-        }
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            // Pass the scope's Modifier to the menu to ensure correct sizing and positioning
-            modifier = Modifier.exposedDropdownSize()
-        ) {
-            SortOption.entries.forEach { sortOption ->
-                DropdownMenuItem(
-                    text = { Text(sortOption.displayName) },
-                    onClick = {
-                        onSortChange(sortOption)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
-

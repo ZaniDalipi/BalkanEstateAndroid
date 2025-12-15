@@ -22,7 +22,7 @@ data class SearchState(
 
     val searchQuery: TextFieldState = TextFieldState(),
     val filters: SearchFilters = SearchFilters(),
-    val sortOption: SortOption = SortOption.FEATURED,
+    val sortOption: SortOption = SortOption.NEWEST,
     val hasActiveFilter: Boolean = false,
 
     val isLoadingProperties: Boolean = false,
@@ -33,9 +33,12 @@ data class SearchState(
 
     val savedSearchCount: Int = 0,
 
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 
+    // Drawer and view mode states
+    val isDrawerOpen: Boolean = false,
+    val isListView: Boolean = true,
 
-
-
+    // Subscription
+    val subscriptionEmail: String = ""
 )
