@@ -1,6 +1,7 @@
 package com.zanoapps.search.presentation.search
 
-import com.zanoapps.core.presentation.ui.UiText
+import com.zanoapps.presentation.ui.UiText
+
 
 sealed interface SearchEvent {
     data class Error(val error: UiText) : SearchEvent
