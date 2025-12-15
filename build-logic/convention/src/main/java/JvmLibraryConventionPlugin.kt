@@ -16,6 +16,8 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
                 apply("org.jetbrains.kotlin.jvm")
                 configureKotlinJvm()
             }
+            dependencies.add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+            dependencies.add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3")
         }
     }
 }

@@ -7,9 +7,10 @@ android {
     namespace = "com.zanoapps.search.data"
 }
 
-
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.data)
     implementation(projects.search.domain)
+    
+    implementation(libs.bundles.koin)
 }

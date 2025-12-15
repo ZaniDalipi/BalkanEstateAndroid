@@ -20,5 +20,28 @@ data class SearchFilters(
     val amenities: Set<Amenity> = emptySet(),
     val furnishedType: Set<FurnishedType> = emptySet(),
     val petPolicy: Set<PetPolicy> = emptySet(),
-    val parkingType: Set<ParkingType> = emptySet()
+    val parkingType: Set<ParkingType> = emptySet(),
+    val boundingBox: BoundingBox? = null
+) {
+    fun hasActiveFilters(): Boolean {
+        return minPrice != null ||
+                maxPrice != null ||
+                propertyTypes.isNotEmpty() ||
+                bedrooms != null ||
+                bathrooms != null ||
+                minSquareFootage != null ||
+                maxSquareFootage != null ||
+                listingTypes.isNotEmpty() ||
+                amenities.isNotEmpty() ||
+                furnishedType.isNotEmpty() ||
+                petPolicy.isNotEmpty() ||
+                parkingType.isNotEmpty()
+    }
+}
+
+data class BoundingBox(
+    val northEastLat: Double,
+    val northEastLng: Double,
+    val southWestLat: Double,
+    val southWestLng: Double
 )

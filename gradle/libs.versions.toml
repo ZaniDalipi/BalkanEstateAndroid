@@ -27,6 +27,7 @@ securityCryptoKtx = "1.1.0-alpha07"
 timber = "5.0.1"
 ksp = "2.2.0-2.0.2"
 room = "2.7.2"
+coil = "2.7.0"
 org-jetbrains-kotlin-jvm = "1.9.22"
 maps = "4.3.3"
 coroutines = "1.9.0"
@@ -119,6 +120,14 @@ annotation = { group = "androidx.annotation", name = "annotation", version.ref =
 #sqldelight-androidDriver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 #sqldelight-jvmDriver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 #sqldelight-nativeDriver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+
+#Androidx-coil
+coil-kt-coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
+coil-kt-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+# For Coil 3.x with network support (e.g., OkHttp)
+coil-kt-coil-network-okhttp = { group = "io.coil-kt", name = "coil-network-okhttp", version.ref = "coil" }
+
+
 
 
 # Gradle
