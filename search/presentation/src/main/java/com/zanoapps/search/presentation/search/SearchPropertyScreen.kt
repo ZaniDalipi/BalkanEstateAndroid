@@ -500,7 +500,7 @@ private fun SearchPropertyScreenWithDrawerPreview() {
                 isRefreshing = false,
                 isSavingSearch = false,
                 isBottomSheetExpanded = false,
-                savedSearchCount = 0,
+                savedSearchCount = 2,
                 errorMessage = null,
                 isDrawerOpen = true,
                 isListView = true,
