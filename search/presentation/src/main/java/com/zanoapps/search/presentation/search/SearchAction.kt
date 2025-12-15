@@ -39,5 +39,17 @@ sealed interface SearchAction {
     data object OnCreateListingClick : SearchAction
     data object OnFilterClick : SearchAction
 
+    // Drawer actions
+    data object OnOpenDrawer : SearchAction
+    data object OnCloseDrawer : SearchAction
+    data class OnDrawerItemClick(val item: String) : SearchAction
 
+    // View mode toggle
+    data class OnViewModeToggle(val isListView: Boolean) : SearchAction
+
+    // Subscription
+    data class OnSubscribe(val email: String) : SearchAction
+
+    // View details
+    data class OnViewDetailsClick(val property: BalkanEstateProperty) : SearchAction
 }

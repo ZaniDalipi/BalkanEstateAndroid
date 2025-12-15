@@ -119,3 +119,39 @@ val MoneyBackIcon: ImageVector
     @Composable() get() = ImageVector.vectorResource(id = R.drawable.money_back_guarantee)
 val SuccessChartIcon: ImageVector
     @Composable() get() = ImageVector.vectorResource(id = R.drawable.success_chart)
+
+val MenuHamburgerIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.menu_hamburger)
+
+val ListViewIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.list_view)
+
+val MapViewIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.map_view)
+
+val NotificationBellIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.notification_bell)
+
+val StarIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.star)
+
+val InboxIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.inbox)
+
+val LogoutIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.logout)
+
+val EditPenIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.edit_pen)
+
+val AddSearchIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.add_search)
+
+val AgencyIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.agency)
+
+val DrawPolygonIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.draw_polygon)
+
+val SparkleIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.sparkle)

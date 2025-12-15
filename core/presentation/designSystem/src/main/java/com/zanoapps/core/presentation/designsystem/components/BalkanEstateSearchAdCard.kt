@@ -1,6 +1,7 @@
 package com.zanoapps.core.presentation.designsystem.components
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -32,14 +36,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.zanoapps.core.domain.model.BalkanEstateProperty
 import com.zanoapps.core.presentation.designsystem.AddedToFavIcon
 import com.zanoapps.core.presentation.designsystem.BalkanEstateGray
+import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateRed
 import com.zanoapps.core.presentation.designsystem.BathroomsIcon
 import com.zanoapps.core.presentation.designsystem.BedroomsIcon
+import com.zanoapps.core.presentation.designsystem.LocationIcon
+import com.zanoapps.core.presentation.designsystem.NotAddedToFavIcon
+import com.zanoapps.core.presentation.designsystem.ParkingSpotIcon
+import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.SquareMetersIcon
 import java.text.NumberFormat
 import java.util.Currency
@@ -53,15 +63,19 @@ data class PropertyCardData(
     val squareFootage: Int,
     val address: String,
     val imageUrl: String,
-    val agentName: String? = null
+    val agentName: String? = null,
+    val parking: Int = 0,
+    val isNew: Boolean = false
 )
 
 @Composable
 fun PropertyCard(
     property: BalkanEstateProperty,
     isFavorite: Boolean = false,
+    isNew: Boolean = true,
     onPropertyClick: (BalkanEstateProperty) -> Unit = {},
     onFavoriteClick: (BalkanEstateProperty) -> Unit = {},
+    onViewDetailsClick: (BalkanEstateProperty) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -77,7 +91,7 @@ fun PropertyCard(
         )
     ) {
         Column {
-
+            // Image section with NEW badge and favorite button
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -95,89 +109,171 @@ fun PropertyCard(
                     contentScale = ContentScale.Crop
                 )
 
-                IconButton(
-                    onClick = { onFavoriteClick(property) },
+                // NEW badge
+                if (isNew) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(12.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(BalkanEstatePrimaryBlue)
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "NEW",
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                // Favorite button
+                Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(12.dp)
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.9f)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = if (isFavorite) AddedToFavIcon else AddedToFavIcon,
-                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                        tint = if (isFavorite) Color.Red else BalkanEstateGray,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    IconButton(
+                        onClick = { onFavoriteClick(property) },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isFavorite) AddedToFavIcon else NotAddedToFavIcon,
+                            contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                            tint = if (isFavorite) Color.Red else BalkanEstateGray,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
 
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                // Price - more prominent styling
+                // Address with location icon - Blue color
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = LocationIcon,
+                        contentDescription = null,
+                        tint = BalkanEstatePrimaryBlue,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = property.address,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = BalkanEstatePrimaryBlue,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Price - prominent styling
                 Text(
-                    text = formatPrice(property.price, property.currency),
+                    text = formatPriceWithEuro(property.price),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                // Property Features Row
+                // Property Features Row with icons
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     if (property.bedrooms > 0) {
-                        PropertyFeature(
+                        PropertyFeatureCompact(
                             icon = BedroomsIcon,
-                            value = property.bedrooms.toString(),
-                            label = if (property.bedrooms == 1) "bed" else "beds"
+                            value = property.bedrooms.toString()
                         )
                     }
 
                     if (property.bathrooms > 0) {
-                        PropertyFeature(
+                        PropertyFeatureCompact(
                             icon = BathroomsIcon,
-                            value = property.bathrooms.toString(),
-                            label = if (property.bathrooms == 1) "bath" else "baths"
+                            value = property.bathrooms.toString()
                         )
                     }
 
+                    // Parking (using a default value for now)
+                    PropertyFeatureCompact(
+                        icon = ParkingSpotIcon,
+                        value = "1"
+                    )
+
                     if (property.squareFootage > 0) {
-                        PropertyFeature(
+                        PropertyFeatureCompact(
                             icon = SquareMetersIcon,
-                            value = formatSquareFootage(property.squareFootage),
-                            label = "sqft"
+                            value = "${formatSquareFootage(property.squareFootage)} m\u00B2"
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                // Address
-                Text(
-                    text = property.address,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
-                )
-
-                // Agent info if available
-                property.agentName?.let { agentName ->
-                    Spacer(modifier = Modifier.height(6.dp))
+                // View Details Button
+                Button(
+                    onClick = { onViewDetailsClick(property) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BalkanEstatePrimaryBlue
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Icon(
+                        imageVector = PersonIcon,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "• Agent: $agentName",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium
+                        text = "View Details",
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PropertyFeatureCompact(
+    icon: ImageVector,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = BalkanEstateGray,
+            modifier = Modifier.size(16.dp)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodySmall,
+            color = BalkanEstateGray,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
 
@@ -225,6 +321,12 @@ private fun formatPrice(price: Double, currencyCode: String): String {
             else -> "${formatNumber(price)} $currencyCode"
         }
     }
+}
+
+private fun formatPriceWithEuro(price: Double): String {
+    val formatter = NumberFormat.getNumberInstance()
+    formatter.maximumFractionDigits = 0
+    return "${formatter.format(price).replace(",", ".")} €"
 }
 
 private fun formatSquareFootage(sqft: Int): String {
@@ -275,18 +377,45 @@ fun PropertyCardCompact(
                     contentScale = ContentScale.Crop
                 )
 
-                IconButton(
-                    onClick = { onFavoriteClick(property) },
+                // NEW badge
+                if (property.isNew) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(BalkanEstatePrimaryBlue)
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "NEW",
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(8.dp)
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.9f)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = if (isFavorite) AddedToFavIcon else AddedToFavIcon,
-                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                        tint = if (isFavorite) BalkanEstateRed else BalkanEstateGray,
-                        modifier = Modifier.size(20.dp)
-                    )
+                    IconButton(
+                        onClick = { onFavoriteClick(property) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isFavorite) AddedToFavIcon else NotAddedToFavIcon,
+                            contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                            tint = if (isFavorite) BalkanEstateRed else BalkanEstateGray,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
 
@@ -332,13 +461,13 @@ private fun PropertyCardPreview() {
             property = BalkanEstateProperty(
                 id = "1",
                 title = "Beautiful 3BR Villa in Tirana",
-                price = 350000.0,
+                price = 29999.0,
                 currency = "EUR",
                 imageUrl = "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
-                bedrooms = 3,
-                bathrooms = 2,
-                squareFootage = 1800,
-                address = "Rruga Myslym Shyri 27",
+                bedrooms = 1,
+                bathrooms = 1,
+                squareFootage = 60,
+                address = "Τσιφλικόπουλου, Λούτσα, Σεισμόπληκτα, Ιωάννινα, Σταυρ...",
                 city = "Tirana",
                 country = "Albania",
                 latitude = 41.3275,
@@ -350,6 +479,7 @@ private fun PropertyCardPreview() {
                 isUrgent = false
             ),
             isFavorite = false,
+            isNew = true,
             modifier = Modifier.padding(16.dp)
         )
     }
@@ -363,13 +493,13 @@ private fun PropertyCardFavoritePreview() {
             property = BalkanEstateProperty(
                 id = "3",
                 title = "Luxury Penthouse with City Views",
-                price = 580000.0,
+                price = 100000000.0,
                 currency = "EUR",
                 imageUrl = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
-                bedrooms = 4,
-                bathrooms = 3,
-                squareFootage = 2500,
-                address = "Rruga e Durrësit 45",
+                bedrooms = 10,
+                bathrooms = 4,
+                squareFootage = 835,
+                address = "Κοινότητα Γουριωτίσσης, Δημοτική Ενότητα Στράτου, Δήμο...",
                 city = "Tirana",
                 country = "Albania",
                 latitude = 41.3290,
@@ -381,6 +511,7 @@ private fun PropertyCardFavoritePreview() {
                 isUrgent = false
             ),
             isFavorite = true,
+            isNew = true,
             modifier = Modifier.padding(16.dp)
         )
     }
@@ -399,7 +530,8 @@ private fun PropertyCardCompactPreview() {
                 bathrooms = 1,
                 squareFootage = 1200,
                 address = "Downtown Apartment Complex",
-                imageUrl = "https://example.com/compact.jpg"
+                imageUrl = "https://example.com/compact.jpg",
+                isNew = true
             ),
             isFavorite = false,
             modifier = Modifier.padding(8.dp)

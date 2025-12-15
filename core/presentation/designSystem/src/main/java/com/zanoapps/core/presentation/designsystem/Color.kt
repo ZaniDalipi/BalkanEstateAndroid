@@ -36,3 +36,18 @@ val BalkanEstateEnterpriseColorCardView = Color(0xFF1E293B)
 val ActionButtonGradient = Brush.linearGradient(
     colors = listOf(BalkanEstateGradient30, BalkanEstateGray)
 )
+
+// Primary Blue colors for headers and buttons
+val BalkanEstatePrimaryBlue = Color(0xFF1565C0)
+val BalkanEstateDarkBlue = Color(0xFF0D47A1)
+val BalkanEstateLightBlue = Color(0xFF1976D2)
+val BalkanEstateBlue = Color(0xFF2196F3)
+
+// Text colors
+val BalkanEstateTextPrimary = Color(0xFF1A1A2E)
+val BalkanEstateTextSecondary = Color(0xFF6B7280)
+
+// Background colors
+val BalkanEstateBackground = Color(0xFFF8FAFC)
+val BalkanEstateCardBackground = Color(0xFFFFFFFF)
+val BalkanEstateSurface = Color(0xFFFFFFFF)
