@@ -16,4 +16,40 @@
     <string name="confirm">Confirm</string>
     <string name="searches">Searches</string>
     <string name="listings">Listings</string>
+
+    <!-- Edit Profile -->
+    <string name="first_name_label">First Name</string>
+    <string name="first_name_hint">Enter your first name</string>
+    <string name="last_name_label">Last Name</string>
+    <string name="last_name_hint">Enter your last name</string>
+    <string name="email_label">Email</string>
+    <string name="phone_label">Phone Number</string>
+    <string name="phone_hint">Enter your phone number</string>
+    <string name="bio_label">Bio</string>
+    <string name="bio_hint">Tell us about yourself</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="profile_updated">Profile updated successfully</string>
+    <string name="error_updating_profile">Error updating profile</string>
+    <string name="error_invalid_name">Name must be at least 2 characters</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_title">Delete Account?</string>
+    <string name="delete_account_message">This action cannot be undone. All your data will be permanently deleted.</string>
+    <string name="delete">Delete</string>
+    <string name="error_deleting_account">Error deleting account</string>
+
+    <!-- Settings -->
+    <string name="preferences">Preferences</string>
+    <string name="notifications">Notifications</string>
+    <string name="notifications_description">Receive push notifications</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="dark_mode_description">Switch to dark theme</string>
+    <string name="language">Language</string>
+    <string name="privacy_security">Privacy &amp; Security</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="support">Support</string>
+    <string name="help_center">Help Center</string>
+    <string name="rate_app">Rate App</string>
+    <string name="about">About</string>
+    <string name="version_format">Version %1$s</string>
+    <string name="balkan_estate_version">Balkan Estate v%1$s</string>
 </resources>

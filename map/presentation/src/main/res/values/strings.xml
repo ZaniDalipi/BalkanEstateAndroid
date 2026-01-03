@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="property_map">Property Map</string>
+    <string name="my_location">My Location</string>
+    <string name="zoom_in">Zoom In</string>
+    <string name="zoom_out">Zoom Out</string>
+    <string name="map_type">Map Type</string>
+    <string name="normal_map">Normal</string>
+    <string name="satellite_map">Satellite</string>
+    <string name="properties_in_area">Properties in this area</string>
+    <string name="view_details">View Details</string>
+    <string name="location_permission_required">Location permission is required to show your location</string>
+</resources>

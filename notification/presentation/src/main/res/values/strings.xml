@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notifications">Notifications</string>
+    <string name="no_notifications">No notifications</string>
+    <string name="no_notifications_description">You\'ll see notifications here when there are updates</string>
+    <string name="mark_all_read">Mark all as read</string>
+    <string name="clear_all">Clear all</string>
+    <string name="error_delete_notification">Failed to delete notification</string>
+    <string name="error_mark_as_read">Failed to mark as read</string>
+    <string name="error_clear_notifications">Failed to clear notifications</string>
+</resources>

@@ -17,6 +17,9 @@ import com.zanoapps.balkanestateandroid.utils.FavouritesDestinations
 import com.zanoapps.balkanestateandroid.utils.OnboardingDestinations
 import com.zanoapps.balkanestateandroid.utils.ProfileDestinations
 import com.zanoapps.balkanestateandroid.utils.SearchDestinations
+import com.zanoapps.balkanestateandroid.utils.MessagingDestinations
+import com.zanoapps.balkanestateandroid.utils.SettingsDestinations
+import com.zanoapps.balkanestateandroid.utils.NotificationDestinations
 import com.zanoapps.core.domain.model.BalkanEstateProperty
 import com.zanoapps.favourites.presentation.favourites.FavouritesScreenRoot
 import com.zanoapps.onboarding.presentation.buyer.amenities.AmenitiesScreenRoot
@@ -31,8 +34,13 @@ import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerComple
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerOnboardingCompletionRoot
 import com.zanoapps.onboarding.presentation.seller.sellingtime.SellingTimeRoot
 import com.zanoapps.profile.presentation.profile.ProfileScreenRoot
+import com.zanoapps.profile.presentation.edit_profile.EditProfileScreenRoot
 import com.zanoapps.property_details.presentation.property_detail.PropertyDetailScreenRoot
 import com.zanoapps.search.presentation.search.SearchPropertyScreenRoot
+import com.zanoapps.messaging.presentation.conversations.ConversationsScreenRoot
+import com.zanoapps.messaging.presentation.chat.ChatScreenRoot
+import com.zanoapps.profile.presentation.settings.SettingsScreenRoot
+import com.zanoapps.notification.presentation.notifications.NotificationsScreenRoot
 
 @Composable
 fun NavigationRoot(
@@ -50,6 +58,9 @@ fun NavigationRoot(
         searchGraph(navController, onPropertySelected = { selectedProperty = it })
         profileGraph(navController)
         favouritesGraph(navController, onPropertySelected = { selectedProperty = it })
+        messagingGraph(navController, onPropertySelected = { selectedProperty = it })
+        settingsGraph(navController)
+        notificationsGraph(navController)
 
         // Property Details (shared across features)
         composable(route = SearchDestinations.PROPERTY_DETAILS) {
@@ -122,14 +133,30 @@ private fun NavGraphBuilder.profileGraph(navController: NavHostController) {
         composable(route = ProfileDestinations.PROFILE_MAIN) {
             ProfileScreenRoot(
                 onBackClick = { navController.popBackStack() },
-                onEditProfileClick = { /* TODO: Navigate to edit profile */ },
+                onEditProfileClick = {
+                    navController.navigate(ProfileDestinations.EDIT_PROFILE)
+                },
                 onFavouritesClick = {
                     navController.navigate(FavouritesDestinations.ROOT)
                 },
                 onSavedSearchesClick = { /* TODO: Navigate to saved searches */ },
                 onMyListingsClick = { /* TODO: Navigate to my listings */ },
-                onSettingsClick = { /* TODO: Navigate to settings */ },
+                onSettingsClick = {
+                    navController.navigate(SettingsDestinations.ROOT)
+                },
                 onLogout = {
+                    navController.navigate(AuthDestinations.ROOT) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(route = ProfileDestinations.EDIT_PROFILE) {
+            EditProfileScreenRoot(
+                onBackClick = { navController.popBackStack() },
+                onProfileUpdated = { navController.popBackStack() },
+                onAccountDeleted = {
                     navController.navigate(AuthDestinations.ROOT) {
                         popUpTo(0) { inclusive = true }
                     }
@@ -333,6 +360,72 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
                         }
                     }
                 },
+            )
+        }
+    }
+}
+
+// Messaging Navigation Graph
+private fun NavGraphBuilder.messagingGraph(
+    navController: NavHostController,
+    onPropertySelected: (BalkanEstateProperty) -> Unit
+) {
+    navigation(
+        startDestination = MessagingDestinations.CONVERSATIONS_LIST,
+        route = MessagingDestinations.ROOT
+    ) {
+        composable(route = MessagingDestinations.CONVERSATIONS_LIST) {
+            ConversationsScreenRoot(
+                onBackClick = { navController.popBackStack() },
+                onNavigateToChat = { conversationId ->
+                    navController.navigate(MessagingDestinations.chat(conversationId))
+                }
+            )
+        }
+
+        composable(route = MessagingDestinations.CHAT) {
+            ChatScreenRoot(
+                onBackClick = { navController.popBackStack() },
+                onNavigateToProperty = { propertyId ->
+                    navController.navigate(SearchDestinations.propertyDetails(propertyId))
+                }
+            )
+        }
+    }
+}
+
+// Settings Navigation Graph
+private fun NavGraphBuilder.settingsGraph(navController: NavHostController) {
+    navigation(
+        startDestination = SettingsDestinations.SETTINGS_MAIN,
+        route = SettingsDestinations.ROOT
+    ) {
+        composable(route = SettingsDestinations.SETTINGS_MAIN) {
+            SettingsScreenRoot(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+    }
+}
+
+// Notifications Navigation Graph
+private fun NavGraphBuilder.notificationsGraph(navController: NavHostController) {
+    navigation(
+        startDestination = NotificationDestinations.NOTIFICATIONS_LIST,
+        route = NotificationDestinations.ROOT
+    ) {
+        composable(route = NotificationDestinations.NOTIFICATIONS_LIST) {
+            NotificationsScreenRoot(
+                onBackClick = { navController.popBackStack() },
+                onNavigateToMessage = { conversationId ->
+                    navController.navigate(MessagingDestinations.chat(conversationId))
+                },
+                onNavigateToProperty = { propertyId ->
+                    navController.navigate(SearchDestinations.propertyDetails(propertyId))
+                },
+                onNavigateToSavedSearch = { searchId ->
+                    // TODO: Navigate to saved search results
+                }
             )
         }
     }

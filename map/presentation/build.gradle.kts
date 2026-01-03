@@ -4,12 +4,16 @@ plugins {
 
 android {
     namespace = "com.zanoapps.map.presentation"
-
 }
 
 dependencies {
-
     implementation(projects.core.domain)
     implementation(projects.core.presentation)
+    implementation(projects.core.presentation.ui)
     implementation(projects.map.domain)
+
+    // Google Maps
+    implementation(libs.google.maps.android.compose)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
 }

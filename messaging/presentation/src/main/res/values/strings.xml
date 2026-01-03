@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="messages">Messages</string>
+    <string name="no_conversations">No conversations yet</string>
+    <string name="no_conversations_description">Start a conversation by contacting a property agent</string>
+    <string name="no_messages">No messages yet</string>
+    <string name="type_message">Type a message…</string>
+    <string name="send">Send</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="about_property">About this property</string>
+    <string name="view">View</string>
+    <string name="error_send_message">Failed to send message</string>
+    <string name="error_delete_conversation">Failed to delete conversation</string>
+    <string name="delete_conversation">Delete Conversation</string>
+    <string name="yesterday">Yesterday</string>
+</resources>

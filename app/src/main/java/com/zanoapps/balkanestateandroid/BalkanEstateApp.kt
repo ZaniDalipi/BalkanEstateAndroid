@@ -10,6 +10,11 @@ import com.zanoapps.onboarding.presentation.di.onBoardingViewModelModule
 import com.zanoapps.profile.data.di.profileDataModule
 import com.zanoapps.profile.presentation.di.profilePresentationModule
 import com.zanoapps.property_details.presentation.di.propertyDetailsPresentationModule
+import com.zanoapps.map.presentation.di.mapPresentationModule
+import com.zanoapps.messaging.data.di.messagingDataModule
+import com.zanoapps.messaging.presentation.di.messagingPresentationModule
+import com.zanoapps.notification.data.di.notificationDataModule
+import com.zanoapps.notification.presentation.di.notificationPresentationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -45,7 +50,18 @@ class BalkanEstateApp: Application() {
                 favouritesPresentationModule,
 
                 // Property Details
-                propertyDetailsPresentationModule
+                propertyDetailsPresentationModule,
+
+                // Map
+                mapPresentationModule,
+
+                // Messaging
+                messagingDataModule,
+                messagingPresentationModule,
+
+                // Notifications
+                notificationDataModule,
+                notificationPresentationModule
             )
         }
     }
