@@ -496,7 +496,7 @@ private fun SearchPropertyScreenWithDrawerPreview() {
                 filters = SearchFilters(),
                 sortOption = SortOption.NEWEST,
                 hasActiveFilter = false,
-                isLoadingProperties = false,
+                isLoadingProperties = true,
                 isRefreshing = false,
                 isSavingSearch = false,
                 isBottomSheetExpanded = false,
