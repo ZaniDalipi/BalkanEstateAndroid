@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favourites">Favourites</string>
+    <string name="saved_properties">Saved Properties</string>
+    <string name="no_favourites_title">No Saved Properties Yet</string>
+    <string name="no_favourites_message">Start exploring and save properties you love. They will appear here for easy access.</string>
+    <string name="explore_properties">Explore Properties</string>
+    <string name="remove_from_favourites">Remove from favourites</string>
+    <string name="removed_from_favourites">Removed from favourites</string>
+    <string name="error_removing_favourite">Error removing from favourites</string>
+    <string name="pull_to_refresh">Pull to refresh</string>
+</resources>

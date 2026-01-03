@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="property_details">Property Details</string>
+    <string name="contact_agent">Contact Agent</string>
+    <string name="schedule_tour">Schedule Tour</string>
+    <string name="virtual_tour">Virtual Tour</string>
+    <string name="view_on_map">View on Map</string>
+    <string name="share_property">Share Property</string>
+    <string name="bedrooms">Bedrooms</string>
+    <string name="bathrooms">Bathrooms</string>
+    <string name="square_feet">Sq Ft</string>
+    <string name="year_built">Year Built</string>
+    <string name="property_type">Property Type</string>
+    <string name="listing_type">Listing Type</string>
+    <string name="description">Description</string>
+    <string name="location">Location</string>
+    <string name="features">Features</string>
+    <string name="agent_info">Agent Information</string>
+    <string name="for_sale">For Sale</string>
+    <string name="for_rent">For Rent</string>
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="property_shared">Property shared</string>
+    <string name="price_per_month">/month</string>
+    <string name="call_agent">Call Agent</string>
+    <string name="email_agent">Email Agent</string>
+    <string name="parking">Parking</string>
+    <string name="featured">Featured</string>
+    <string name="urgent">Urgent</string>
+</resources>

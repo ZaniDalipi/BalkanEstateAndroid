@@ -11,7 +11,8 @@ dependencies {
 
     implementation(projects.core.domain)
     implementation(projects.core.presentation)
-    implementation(projects.ads.domain)
+    implementation(projects.core.presentation.ui)
+    implementation(projects.auth.domain)
 
     implementation(libs.coil.compose)
 

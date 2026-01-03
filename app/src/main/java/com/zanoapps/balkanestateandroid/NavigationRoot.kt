@@ -1,13 +1,24 @@
 package com.zanoapps.balkanestateandroid
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.zanoapps.auth.presentation.login.LoginScreenRoot
+import com.zanoapps.auth.presentation.register.RegisterScreenRoot
+import com.zanoapps.balkanestateandroid.utils.AuthDestinations
+import com.zanoapps.balkanestateandroid.utils.FavouritesDestinations
 import com.zanoapps.balkanestateandroid.utils.OnboardingDestinations
+import com.zanoapps.balkanestateandroid.utils.ProfileDestinations
 import com.zanoapps.balkanestateandroid.utils.SearchDestinations
+import com.zanoapps.core.domain.model.BalkanEstateProperty
+import com.zanoapps.favourites.presentation.favourites.FavouritesScreenRoot
 import com.zanoapps.onboarding.presentation.buyer.amenities.AmenitiesScreenRoot
 import com.zanoapps.onboarding.presentation.buyer.currentlifesituation.CurrentLifeSituationRoot
 import com.zanoapps.onboarding.presentation.buyer.propertyintent.PropertyIntentScreenRoot
@@ -19,21 +30,142 @@ import com.zanoapps.onboarding.presentation.seller.propertytype.SellerPropertyTy
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerCompletionAction
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerOnboardingCompletionRoot
 import com.zanoapps.onboarding.presentation.seller.sellingtime.SellingTimeRoot
+import com.zanoapps.profile.presentation.profile.ProfileScreenRoot
+import com.zanoapps.property_details.presentation.property_detail.PropertyDetailScreenRoot
+import com.zanoapps.search.presentation.search.SearchPropertyScreenRoot
 
 @Composable
 fun NavigationRoot(
     navController: NavHostController
 ) {
+    // Shared state for selected property (for passing between screens)
+    var selectedProperty by remember { mutableStateOf<BalkanEstateProperty?>(null) }
+
     NavHost(
         navController = navController,
         startDestination = OnboardingDestinations.ROOT
     ) {
         onBoardingGraph(navController)
+        authGraph(navController)
+        searchGraph(navController, onPropertySelected = { selectedProperty = it })
+        profileGraph(navController)
+        favouritesGraph(navController, onPropertySelected = { selectedProperty = it })
+
+        // Property Details (shared across features)
+        composable(route = SearchDestinations.PROPERTY_DETAILS) {
+            selectedProperty?.let { property ->
+                PropertyDetailScreenRoot(
+                    property = property,
+                    onBackClick = { navController.popBackStack() },
+                    onContactAgent = { /* TODO: Open contact form */ }
+                )
+            }
+        }
     }
 }
 
+// Auth Navigation Graph
+private fun NavGraphBuilder.authGraph(navController: NavHostController) {
+    navigation(
+        startDestination = AuthDestinations.LOGIN,
+        route = AuthDestinations.ROOT
+    ) {
+        composable(route = AuthDestinations.LOGIN) {
+            LoginScreenRoot(
+                onLoginSuccess = {
+                    navController.navigate(SearchDestinations.ROOT) {
+                        popUpTo(AuthDestinations.ROOT) { inclusive = true }
+                    }
+                },
+                onNavigateToRegister = {
+                    navController.navigate(AuthDestinations.REGISTER)
+                }
+            )
+        }
 
-// OnboardingNavigation.kt
+        composable(route = AuthDestinations.REGISTER) {
+            RegisterScreenRoot(
+                onRegistrationSuccess = {
+                    navController.navigate(AuthDestinations.LOGIN) {
+                        popUpTo(AuthDestinations.REGISTER) { inclusive = true }
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.popBackStack()
+                }
+            )
+        }
+    }
+}
+
+// Search Navigation Graph
+private fun NavGraphBuilder.searchGraph(
+    navController: NavHostController,
+    onPropertySelected: (BalkanEstateProperty) -> Unit
+) {
+    navigation(
+        startDestination = SearchDestinations.BUYER_SEARCH,
+        route = SearchDestinations.ROOT
+    ) {
+        composable(route = SearchDestinations.BUYER_SEARCH) {
+            SearchPropertyScreenRoot()
+        }
+    }
+}
+
+// Profile Navigation Graph
+private fun NavGraphBuilder.profileGraph(navController: NavHostController) {
+    navigation(
+        startDestination = ProfileDestinations.PROFILE_MAIN,
+        route = ProfileDestinations.ROOT
+    ) {
+        composable(route = ProfileDestinations.PROFILE_MAIN) {
+            ProfileScreenRoot(
+                onBackClick = { navController.popBackStack() },
+                onEditProfileClick = { /* TODO: Navigate to edit profile */ },
+                onFavouritesClick = {
+                    navController.navigate(FavouritesDestinations.ROOT)
+                },
+                onSavedSearchesClick = { /* TODO: Navigate to saved searches */ },
+                onMyListingsClick = { /* TODO: Navigate to my listings */ },
+                onSettingsClick = { /* TODO: Navigate to settings */ },
+                onLogout = {
+                    navController.navigate(AuthDestinations.ROOT) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+    }
+}
+
+// Favourites Navigation Graph
+private fun NavGraphBuilder.favouritesGraph(
+    navController: NavHostController,
+    onPropertySelected: (BalkanEstateProperty) -> Unit
+) {
+    navigation(
+        startDestination = FavouritesDestinations.FAVOURITES_LIST,
+        route = FavouritesDestinations.ROOT
+    ) {
+        composable(route = FavouritesDestinations.FAVOURITES_LIST) {
+            FavouritesScreenRoot(
+                onBackClick = { navController.popBackStack() },
+                onPropertyClick = { property ->
+                    onPropertySelected(property)
+                    navController.navigate(SearchDestinations.propertyDetails(property.id))
+                },
+                onExploreClick = {
+                    navController.navigate(SearchDestinations.ROOT) {
+                        popUpTo(FavouritesDestinations.ROOT) { inclusive = true }
+                    }
+                }
+            )
+        }
+    }
+}
+
+// Onboarding Navigation Graph
 private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
     navigation(
         startDestination = OnboardingDestinations.CLIENT_INTENT,
@@ -58,11 +190,9 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
                     }
                 },
             )
-
         }
 
-        //Buyer
-        // Screen 2: Life Situation
+        // Buyer Flow
         composable(route = OnboardingDestinations.ON_BOARDING_BUYER_LIFE_SITUATION) {
             CurrentLifeSituationRoot(
                 onBackClicked = {
@@ -76,18 +206,13 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
                         popUpTo(OnboardingDestinations.ROOT) { inclusive = true }
                     }
                 },
-                onActionCurrentLifeSituation = {
-
-                },
+                onActionCurrentLifeSituation = {},
             )
         }
 
-        // Screen 3: Property Intent
         composable(route = OnboardingDestinations.ON_BOARDING_BUYER_PROPERTY_INTENT) {
             PropertyIntentScreenRoot(
-                onBackClicked = {
-                    navController.popBackStack()
-                },
+                onBackClicked = { navController.popBackStack() },
                 onNextClicked = {
                     navController.navigate(OnboardingDestinations.ON_BOARDING_BUYER_AMENITIES)
                 },
@@ -96,13 +221,10 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
                         popUpTo(OnboardingDestinations.ROOT) { inclusive = true }
                     }
                 },
-                onActionPropertyIntent = {
-
-                },
+                onActionPropertyIntent = {},
             )
         }
 
-        // Screen 4: Amenities
         composable(route = OnboardingDestinations.ON_BOARDING_BUYER_AMENITIES) {
             AmenitiesScreenRoot(
                 onNextClicked = {
@@ -110,17 +232,13 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
                         popUpTo(OnboardingDestinations.ROOT) { inclusive = true }
                     }
                 },
-                onBackClicked = {
-                    navController.popBackStack()
-                },
+                onBackClicked = { navController.popBackStack() },
                 onSkipClicked = {
                     navController.navigate(SearchDestinations.ROOT) {
                         popUpTo(OnboardingDestinations.ROOT) { inclusive = true }
                     }
                 },
-                onActionOptionsSelected = {
-
-                },
+                onActionOptionsSelected = {},
             )
         }
 
@@ -131,21 +249,17 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
                         ThankYouAction.OnBackClick -> {
                             navController.navigate(OnboardingDestinations.CLIENT_INTENT)
                         }
-
                         ThankYouAction.OnSearchPropertiesClicked -> {
-
+                            navController.navigate(SearchDestinations.ROOT) {
+                                popUpTo(OnboardingDestinations.ROOT) { inclusive = true }
+                            }
                         }
                     }
                 },
             )
-
         }
 
-
-        /* Seller */
-
-
-        // Screen 1: Property Type
+        // Seller Flow
         composable(route = OnboardingDestinations.ON_BOARDING_SELLER_PROPERTY_TYPE) {
             SellerPropertyTypeRoot(
                 onActionSellerPropertyType = {},
@@ -165,7 +279,6 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
             )
         }
 
-        // Screen 2: SellingTime
         composable(route = OnboardingDestinations.ON_BOARDING_SELLER_SELLING_TIME) {
             SellingTimeRoot(
                 onActionSellingTime = {},
@@ -185,7 +298,6 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
             )
         }
 
-        // Screen 3: Main Goal
         composable(route = OnboardingDestinations.ON_BOARDING_SELLER_MAIN_GOAL) {
             SellerMainGoalRoot(
                 onActionMainGoal = {},
@@ -207,7 +319,6 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
             )
         }
 
-        // Screen 4: Final Message
         composable(route = OnboardingDestinations.ON_BOARDING_SELLER_FINAL_MESSAGE) {
             SellerOnboardingCompletionRoot(
                 onAction = { action ->
@@ -215,10 +326,11 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
                         SellerCompletionAction.OnBackClick -> {
                             navController.navigate(OnboardingDestinations.CLIENT_INTENT)
                         }
-
                         SellerCompletionAction.OnRegister -> {
+                            navController.navigate(AuthDestinations.ROOT) {
+                                popUpTo(OnboardingDestinations.ROOT) { inclusive = true }
+                            }
                         }
-
                     }
                 },
             )
