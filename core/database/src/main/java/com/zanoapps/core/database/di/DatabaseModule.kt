@@ -22,4 +22,5 @@ val databaseModule = module {
     single { get<BalkanEstateDatabase>().conversationDao() }
     single { get<BalkanEstateDatabase>().messageDao() }
     single { get<BalkanEstateDatabase>().notificationDao() }
+    single { get<BalkanEstateDatabase>().onboardingPreferencesDao() }
 }

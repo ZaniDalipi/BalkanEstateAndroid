@@ -3,6 +3,7 @@ package com.zanoapps.core.data.di
 import com.zanoapps.core.data.networking.HttpClientFactory
 import com.zanoapps.core.data.remote.MessagingApiService
 import com.zanoapps.core.data.remote.NotificationApiService
+import com.zanoapps.core.data.remote.ProfileApiService
 import com.zanoapps.core.data.remote.PropertyApiService
 import com.zanoapps.core.data.repository.MessagingRepositorySSOTImpl
 import com.zanoapps.core.data.repository.NotificationRepositorySSOTImpl
@@ -21,6 +22,7 @@ val coreDataModule = module {
     single { PropertyApiService(get()) }
     single { MessagingApiService(get()) }
     single { NotificationApiService(get()) }
+    single { ProfileApiService(get()) }
 
     // Repositories with Single Source of Truth pattern
     single { PropertyRepositoryImpl(get(), get()) }

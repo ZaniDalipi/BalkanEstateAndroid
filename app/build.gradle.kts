@@ -49,6 +49,7 @@ dependencies {
         // Core modules
         implementation(projects.core.data)
         implementation(projects.core.domain)
+        implementation(projects.core.database)
         implementation(projects.core.presentation)
         implementation(projects.core.presentation.designSystem)
         implementation(projects.core.presentation.ui)
@@ -104,6 +105,7 @@ dependencies {
         implementation(projects.media.presentation)
 
         // On Boarding modules
+        implementation(projects.onboarding.data)
         implementation(projects.onboarding.domain)
         implementation(projects.onboarding.presentation)
     }

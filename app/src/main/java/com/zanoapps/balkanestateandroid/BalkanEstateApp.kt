@@ -8,6 +8,7 @@ import com.zanoapps.core.data.di.coreDataModule
 import com.zanoapps.core.database.di.databaseModule
 import com.zanoapps.favourites.data.di.favouritesDataModule
 import com.zanoapps.favourites.presentation.di.favouritesPresentationModule
+import com.zanoapps.onboarding.data.di.onboardingDataModule
 import com.zanoapps.onboarding.presentation.di.onBoardingViewModelModule
 import com.zanoapps.profile.data.di.profileDataModule
 import com.zanoapps.profile.presentation.di.profilePresentationModule
@@ -15,6 +16,8 @@ import com.zanoapps.property_details.presentation.di.propertyDetailsPresentation
 import com.zanoapps.map.presentation.di.mapPresentationModule
 import com.zanoapps.messaging.presentation.di.messagingPresentationModule
 import com.zanoapps.notification.presentation.di.notificationPresentationModule
+import com.zanoapps.search.data.di.searchDataModule
+import com.zanoapps.search.presentation.di.searchPresentationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -39,6 +42,7 @@ class BalkanEstateApp: Application() {
                 appModule,
 
                 // Onboarding
+                onboardingDataModule,
                 onBoardingViewModelModule,
 
                 // Auth
@@ -63,7 +67,11 @@ class BalkanEstateApp: Application() {
                 messagingPresentationModule,
 
                 // Notifications (uses core data SSOT repository)
-                notificationPresentationModule
+                notificationPresentationModule,
+
+                // Search (uses core data SSOT repository for properties)
+                searchDataModule,
+                searchPresentationModule
             )
         }
     }

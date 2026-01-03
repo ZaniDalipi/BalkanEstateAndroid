@@ -5,13 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zanoapps.search.domain.model.MockData
+import com.zanoapps.core.domain.util.Result
+import com.zanoapps.search.domain.repository.SearchRepository
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class SearchPropertyViewModel(
-    private val userId: String? = null
+    private val searchRepository: SearchRepository
 ) : ViewModel() {
 
     var state by mutableStateOf(SearchState())
@@ -21,7 +24,8 @@ class SearchPropertyViewModel(
     val events = eventChannel.receiveAsFlow()
 
     init {
-        loadProperties()
+        observeProperties()
+        refreshProperties()
     }
 
     fun onAction(action: SearchAction) {
@@ -29,14 +33,17 @@ class SearchPropertyViewModel(
             SearchAction.OnClearFilters -> {
                 state = state.copy(
                     hasActiveFilter = false,
-                    filteredProperties = state.properties
+                    filters = com.zanoapps.search.domain.model.SearchFilters()
                 )
+                observeProperties() // Re-observe without filters
             }
             SearchAction.OnCollapseBottomSheet -> {
                 state = state.copy(isBottomSheetExpanded = false)
             }
             SearchAction.OnCreateListingClick -> {
-                // Navigate to create listing screen
+                viewModelScope.launch {
+                    eventChannel.send(SearchEvent.NavigateToCreateListing)
+                }
             }
             is SearchAction.OnDeleteSavedSearch -> {
                 // Delete saved search
@@ -54,14 +61,14 @@ class SearchPropertyViewModel(
                 state = state.copy(favoritePropertyIds = currentFavorites)
             }
             SearchAction.OnFilterClick -> {
-                // Open filter dialog
+                state = state.copy(isBottomSheetExpanded = true)
             }
             is SearchAction.OnFiltersApplied -> {
                 state = state.copy(
                     filters = action.filters,
                     hasActiveFilter = true
                 )
-                applyFilters()
+                applyFiltersFromRepository()
             }
             is SearchAction.OnLoadSavedSearch -> {
                 // Load saved search
@@ -82,7 +89,7 @@ class SearchPropertyViewModel(
                 state = state.copy(selectedBalkanEstateProperty = action.balkanEstateProperty)
             }
             SearchAction.OnRefreshProperties -> {
-                loadProperties(isRefresh = true)
+                refreshProperties()
             }
             is SearchAction.OnSaveSearch -> {
                 state = state.copy(isSavingSearch = true)
@@ -95,7 +102,7 @@ class SearchPropertyViewModel(
                 // Query change is handled by TextFieldState
             }
             SearchAction.OnSearchSubmit -> {
-                applyFilters()
+                applyTextSearch()
             }
             is SearchAction.OnSortChanged -> {
                 state = state.copy(sortOption = action.sortOption)
@@ -127,40 +134,123 @@ class SearchPropertyViewModel(
             // View details
             is SearchAction.OnViewDetailsClick -> {
                 state = state.copy(selectedBalkanEstateProperty = action.property)
-                // Navigate to property details
+                viewModelScope.launch {
+                    eventChannel.send(SearchEvent.NavigateToPropertyDetails(action.property))
+                }
             }
         }
     }
 
-    private fun loadProperties(isRefresh: Boolean = false) {
+    /**
+     * Observe properties from Room database (single source of truth).
+     * When data changes in Room, this Flow will emit new values.
+     */
+    private fun observeProperties() {
+        searchRepository.getProperties()
+            .onEach { properties ->
+                state = state.copy(
+                    properties = properties,
+                    filteredProperties = applyLocalFilters(properties),
+                    isLoadingProperties = false,
+                    isRefreshing = false
+                )
+            }
+            .launchIn(viewModelScope)
+    }
+
+    /**
+     * Refresh properties from remote API (MongoDB) and cache to Room.
+     */
+    private fun refreshProperties() {
         viewModelScope.launch {
             state = state.copy(
-                isLoadingProperties = !isRefresh,
-                isRefreshing = isRefresh
+                isLoadingProperties = state.properties.isEmpty(),
+                isRefreshing = state.properties.isNotEmpty()
             )
 
-            // Load mock data for now
-            val properties = MockData.getMockProperties()
-            state = state.copy(
-                properties = properties,
-                filteredProperties = properties,
-                isLoadingProperties = false,
-                isRefreshing = false
+            val result = searchRepository.refreshProperties()
+            when (result) {
+                is Result.Success -> {
+                    // Data will be automatically updated through the Flow observer
+                    state = state.copy(
+                        isLoadingProperties = false,
+                        isRefreshing = false,
+                        errorMessage = null
+                    )
+                }
+                is Result.Error -> {
+                    state = state.copy(
+                        isLoadingProperties = false,
+                        isRefreshing = false,
+                        errorMessage = "Failed to refresh properties. Showing cached data."
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Apply filters using Room database queries.
+     */
+    private fun applyFiltersFromRepository() {
+        val filters = state.filters
+
+        // Build filter parameters
+        val listingType = filters.listingTypes.firstOrNull()?.name
+        val propertyType = filters.propertyTypes.firstOrNull()?.name
+
+        searchRepository.searchProperties(
+            listingType = listingType,
+            propertyType = propertyType,
+            minPrice = filters.minPrice,
+            maxPrice = filters.maxPrice,
+            minBedrooms = filters.bedrooms,
+            city = if (filters.query.isNotEmpty()) filters.query else null
+        )
+            .onEach { properties ->
+                state = state.copy(
+                    properties = properties,
+                    filteredProperties = applyLocalFilters(properties)
+                )
+            }
+            .launchIn(viewModelScope)
+
+        // Also refresh from API with the filters
+        viewModelScope.launch {
+            searchRepository.refreshProperties(
+                listingType = listingType,
+                propertyType = propertyType,
+                minPrice = filters.minPrice,
+                maxPrice = filters.maxPrice,
+                minBedrooms = filters.bedrooms,
+                city = if (filters.query.isNotEmpty()) filters.query else null
             )
         }
     }
 
-    private fun applyFilters() {
+    /**
+     * Apply text search filter locally on cached data.
+     */
+    private fun applyTextSearch() {
         val query = state.searchQuery.text.toString().lowercase()
-        val filtered = state.properties.filter { property ->
-            if (query.isEmpty()) true
-            else {
-                property.title.lowercase().contains(query) ||
-                        property.address.lowercase().contains(query) ||
-                        property.city.lowercase().contains(query)
-            }
-        }
+        val filtered = applyLocalFilters(state.properties, query)
         state = state.copy(filteredProperties = filtered)
+    }
+
+    /**
+     * Apply local filters (text search) on properties.
+     */
+    private fun applyLocalFilters(
+        properties: List<com.zanoapps.core.domain.model.BalkanEstateProperty>,
+        query: String = state.searchQuery.text.toString().lowercase()
+    ): List<com.zanoapps.core.domain.model.BalkanEstateProperty> {
+        if (query.isEmpty()) return properties
+
+        return properties.filter { property ->
+            property.title.lowercase().contains(query) ||
+                    property.address.lowercase().contains(query) ||
+                    property.city.lowercase().contains(query)
+        }
     }
 
     private fun applySorting() {
