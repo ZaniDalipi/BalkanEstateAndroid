@@ -4,6 +4,8 @@ import android.app.Application
 import com.zanoapps.auth.data.di.authDataModule
 import com.zanoapps.auth.presentation.di.authPresentationModule
 import com.zanoapps.balkanestateandroid.di.appModule
+import com.zanoapps.core.data.di.coreDataModule
+import com.zanoapps.core.database.di.databaseModule
 import com.zanoapps.favourites.data.di.favouritesDataModule
 import com.zanoapps.favourites.presentation.di.favouritesPresentationModule
 import com.zanoapps.onboarding.presentation.di.onBoardingViewModelModule
@@ -11,9 +13,7 @@ import com.zanoapps.profile.data.di.profileDataModule
 import com.zanoapps.profile.presentation.di.profilePresentationModule
 import com.zanoapps.property_details.presentation.di.propertyDetailsPresentationModule
 import com.zanoapps.map.presentation.di.mapPresentationModule
-import com.zanoapps.messaging.data.di.messagingDataModule
 import com.zanoapps.messaging.presentation.di.messagingPresentationModule
-import com.zanoapps.notification.data.di.notificationDataModule
 import com.zanoapps.notification.presentation.di.notificationPresentationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -31,6 +31,10 @@ class BalkanEstateApp: Application() {
             androidLogger()
             androidContext(this@BalkanEstateApp)
             modules(
+                // Core - Database (Room) and Network (Single Source of Truth)
+                databaseModule,
+                coreDataModule,
+
                 // App module
                 appModule,
 
@@ -55,12 +59,10 @@ class BalkanEstateApp: Application() {
                 // Map
                 mapPresentationModule,
 
-                // Messaging
-                messagingDataModule,
+                // Messaging (uses core data SSOT repository)
                 messagingPresentationModule,
 
-                // Notifications
-                notificationDataModule,
+                // Notifications (uses core data SSOT repository)
                 notificationPresentationModule
             )
         }
