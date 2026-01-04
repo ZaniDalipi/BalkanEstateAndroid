@@ -17,7 +17,7 @@ dependencies {
     implementation(libs.osmdroid)
 
     // Location services (still needed for user location)
-    implementation(libs.play.services.location)
+    implementation(libs.google.android.gms.play.services.location)
 
     // Coil for images
     implementation(libs.coil.compose)
