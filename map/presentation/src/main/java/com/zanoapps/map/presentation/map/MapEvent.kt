@@ -5,4 +5,7 @@ import com.zanoapps.presentation.ui.UiText
 sealed interface MapEvent {
     data class Error(val error: UiText) : MapEvent
     data object LocationPermissionRequired : MapEvent
+    data object OpenFilters : MapEvent
+    data object NavigateToProfile : MapEvent
+    data object SubscriptionSuccess : MapEvent
 }

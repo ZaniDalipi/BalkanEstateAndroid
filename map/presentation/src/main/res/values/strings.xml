@@ -10,4 +10,9 @@
     <string name="properties_in_area">Properties in this area</string>
     <string name="view_details">View Details</string>
     <string name="location_permission_required">Location permission is required to show your location</string>
+    <string name="search_city_address">Search city, address…</string>
+    <string name="street_view">Street View</string>
+    <string name="draw_area">Draw Area</string>
+    <string name="list_view">List</string>
+    <string name="map_view">Map</string>
 </resources>
