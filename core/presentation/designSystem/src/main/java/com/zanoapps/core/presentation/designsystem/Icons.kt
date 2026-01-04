@@ -155,3 +155,11 @@ val DrawPolygonIcon: ImageVector
 
 val SparkleIcon: ImageVector
     @Composable get() = ImageVector.vectorResource(id = R.drawable.sparkle)
+
+
+val ZoomIn: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.zoom_in)
+
+
+val ZoomOut: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.zoom_out)

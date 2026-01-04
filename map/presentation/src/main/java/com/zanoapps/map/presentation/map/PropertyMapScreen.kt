@@ -61,6 +61,8 @@ import com.zanoapps.core.presentation.designsystem.LocationIcon
 import com.zanoapps.core.presentation.designsystem.LogoutIcon
 import com.zanoapps.core.presentation.designsystem.MapViewIcon
 import com.zanoapps.core.presentation.designsystem.SquareMetersIcon
+import com.zanoapps.core.presentation.designsystem.ZoomIn
+import com.zanoapps.core.presentation.designsystem.ZoomOut
 import com.zanoapps.map.domain.model.PropertyMarker
 import com.zanoapps.map.presentation.R
 import org.koin.androidx.compose.koinViewModel
@@ -229,7 +231,7 @@ private fun PropertyMapScreen(
                 modifier = Modifier.size(40.dp)
             ) {
                 Icon(
-                    imageVector = HomeIcon,
+                    imageVector = ZoomIn,
                     contentDescription = stringResource(R.string.zoom_in),
                     tint = Color.Black
                 )
@@ -240,11 +242,10 @@ private fun PropertyMapScreen(
                 containerColor = Color.White,
                 modifier = Modifier.size(40.dp)
             ) {
-                Text(
-                    text = "−",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                Icon(
+                    imageVector = ZoomOut,
+                    contentDescription = stringResource(R.string.zoom_out),
+                    tint = Color.Black
                 )
             }
         }
@@ -415,7 +416,7 @@ private fun PropertyMapScreenPreview() {
                 )
             ),
             properties = emptyList(),
-            onAction = {},
+            onAction = { },
             onPropertyClick = {}
         )
     }
