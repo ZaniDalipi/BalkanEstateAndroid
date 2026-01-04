@@ -12,4 +12,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.data)
     implementation(projects.search.domain)
+
+    // Koin DI
+    implementation(libs.bundles.koin)
 }

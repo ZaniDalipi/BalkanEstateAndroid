@@ -1,27 +1,45 @@
 package com.zanoapps.favourites.data.repository
 
+import com.zanoapps.core.data.mappers.toDomainList
+import com.zanoapps.core.database.dao.FavoritePropertyDao
+import com.zanoapps.core.database.entity.FavoritePropertyEntity
 import com.zanoapps.core.domain.model.BalkanEstateProperty
 import com.zanoapps.core.domain.util.DataError
 import com.zanoapps.core.domain.util.EmptyResult
 import com.zanoapps.core.domain.util.Result
 import com.zanoapps.favourites.domain.repository.FavouritesRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.time.LocalDateTime
 
-class FavouritesRepositoryImpl : FavouritesRepository {
+/**
+ * Single Source of Truth Implementation for Favourites.
+ *
+ * Room database is the single source of truth.
+ * UI observes Room database through Flow.
+ */
+class FavouritesRepositoryImpl(
+    private val favoritePropertyDao: FavoritePropertyDao
+) : FavouritesRepository {
 
-    // In-memory storage for now - would be replaced with Room database
-    private val favouriteIds = MutableStateFlow<Set<String>>(emptySet())
-    private val favouriteProperties = MutableStateFlow<List<BalkanEstateProperty>>(emptyList())
+    // TODO: Get from auth repository/session
+    private val currentUserId = "current_user"
 
     override fun getFavouriteProperties(): Flow<List<BalkanEstateProperty>> {
-        return favouriteProperties
+        return favoritePropertyDao.getFavoriteProperties(currentUserId)
+            .map { entities -> entities.toDomainList() }
     }
 
     override suspend fun addToFavourites(propertyId: String): EmptyResult<DataError.Local> {
         return try {
-            favouriteIds.value = favouriteIds.value + propertyId
+            favoritePropertyDao.insertFavorite(
+                FavoritePropertyEntity(
+                    propertyId = propertyId,
+                    userId = currentUserId,
+                    saveAt = LocalDateTime.now()
+                )
+            )
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(DataError.Local.DISK_FULL)
@@ -30,8 +48,7 @@ class FavouritesRepositoryImpl : FavouritesRepository {
 
     override suspend fun removeFromFavourites(propertyId: String): EmptyResult<DataError.Local> {
         return try {
-            favouriteIds.value = favouriteIds.value - propertyId
-            favouriteProperties.value = favouriteProperties.value.filter { it.id != propertyId }
+            favoritePropertyDao.removeFavorite(currentUserId, propertyId)
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(DataError.Local.DISK_FULL)
@@ -39,10 +56,13 @@ class FavouritesRepositoryImpl : FavouritesRepository {
     }
 
     override suspend fun isFavourite(propertyId: String): Boolean {
-        return favouriteIds.value.contains(propertyId)
+        return favoritePropertyDao.getFavorite(currentUserId, propertyId) != null
     }
 
     override suspend fun getFavouriteIds(): Set<String> {
-        return favouriteIds.value
+        return favoritePropertyDao.getFavorites(currentUserId)
+            .first()
+            .map { it.propertyId }
+            .toSet()
     }
 }

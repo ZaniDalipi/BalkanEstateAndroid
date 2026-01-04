@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Property Map</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Leaflet Draw CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; width: 100%; }
+        #map { height: 100%; width: 100%; }
+
+        /* Custom price marker styles */
+        .price-marker {
+            background: #1565C0;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            border: 2px solid white;
+        }
+
+        .price-marker.low { background: #4CAF50; }
+        .price-marker.medium { background: #1565C0; }
+        .price-marker.high { background: #9C27B0; }
+        .price-marker.premium { background: #FF9800; }
+        .price-marker.luxury { background: #F44336; }
+
+        .cluster-marker {
+            background: #1565C0;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        /* Leaflet attribution */
+        .leaflet-control-attribution {
+            font-size: 10px;
+            background: rgba(255,255,255,0.8) !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Leaflet Draw -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+    <!-- OSM Buildings -->
+    <script src="https://cdn.osmbuildings.org/classic/0.2.2/OSMBuildings.js"></script>
+
+    <!-- Marker Cluster -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <script>
+        // Initialize map centered on Balkans (Kosovo/Albania region)
+        var map = L.map('map', {
+            zoomControl: false
+        }).setView([42.0, 20.5], 8);
+
+        // Tile layers
+        var streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '<a href="https://leafletjs.com">Leaflet</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+
+        var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        });
+
+        // Default to street view
+        streetLayer.addTo(map);
+        var currentLayer = 'street';
+
+        // OSM Buildings for 3D effect
+        var osmb = new OSMBuildings(map).load('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
+
+        // Marker cluster group
+        var markers = L.markerClusterGroup({
+            iconCreateFunction: function(cluster) {
+                var count = cluster.getChildCount();
+                var size = count < 10 ? 40 : count < 50 ? 50 : 60;
+                return L.divIcon({
+                    html: '<div class="cluster-marker" style="width:' + size + 'px;height:' + size + 'px;">' + count + '</div>',
+                    className: '',
+                    iconSize: [size, size]
+                });
+            },
+            maxClusterRadius: 60
+        });
+        map.addLayer(markers);
+
+        // Drawing controls
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        var drawControl = null;
+        var isDrawing = false;
+
+        // Format price for display
+        function formatPrice(price, currency) {
+            if (price >= 1000000) {
+                return currency + (price / 1000000).toFixed(1) + 'M';
+            } else if (price >= 1000) {
+                return currency + Math.round(price / 1000) + 'K';
+            }
+            return currency + price;
+        }
+
+        // Get price class based on value
+        function getPriceClass(price) {
+            if (price < 50000) return 'low';
+            if (price < 150000) return 'medium';
+            if (price < 500000) return 'high';
+            if (price < 1000000) return 'premium';
+            return 'luxury';
+        }
+
+        // Add property marker
+        function addPropertyMarker(id, lat, lng, price, currency, title, propertyType) {
+            var priceText = formatPrice(price, currency);
+            var priceClass = getPriceClass(price);
+
+            var icon = L.divIcon({
+                html: '<div class="price-marker ' + priceClass + '">' + priceText + '</div>',
+                className: '',
+                iconSize: null,
+                iconAnchor: [30, 15]
+            });
+
+            var marker = L.marker([lat, lng], { icon: icon });
+            marker.propertyId = id;
+            marker.propertyData = {
+                id: id,
+                title: title,
+                price: price,
+                currency: currency,
+                propertyType: propertyType
+            };
+
+            marker.on('click', function() {
+                Android.onMarkerClick(id);
+            });
+
+            markers.addLayer(marker);
+        }
+
+        // Clear all markers
+        function clearMarkers() {
+            markers.clearLayers();
+        }
+
+        // Set map view
+        function setMapView(lat, lng, zoom) {
+            map.setView([lat, lng], zoom);
+        }
+
+        // Toggle map layer (street/satellite)
+        function setMapLayer(type) {
+            if (type === 'satellite' && currentLayer !== 'satellite') {
+                map.removeLayer(streetLayer);
+                satelliteLayer.addTo(map);
+                currentLayer = 'satellite';
+            } else if (type === 'street' && currentLayer !== 'street') {
+                map.removeLayer(satelliteLayer);
+                streetLayer.addTo(map);
+                currentLayer = 'street';
+            }
+        }
+
+        // Toggle drawing mode
+        function toggleDrawing(enable) {
+            if (enable && !isDrawing) {
+                drawControl = new L.Control.Draw({
+                    edit: {
+                        featureGroup: drawnItems
+                    },
+                    draw: {
+                        polygon: {
+                            allowIntersection: false,
+                            showArea: true
+                        },
+                        rectangle: true,
+                        circle: false,
+                        circlemarker: false,
+                        marker: false,
+                        polyline: false
+                    }
+                });
+                map.addControl(drawControl);
+                isDrawing = true;
+            } else if (!enable && isDrawing) {
+                if (drawControl) {
+                    map.removeControl(drawControl);
+                    drawControl = null;
+                }
+                drawnItems.clearLayers();
+                isDrawing = false;
+            }
+        }
+
+        // Handle draw created
+        map.on(L.Draw.Event.CREATED, function(e) {
+            var layer = e.layer;
+            drawnItems.addLayer(layer);
+
+            // Get bounds of drawn area
+            var bounds = layer.getBounds();
+            Android.onAreaDrawn(
+                bounds.getSouth(),
+                bounds.getWest(),
+                bounds.getNorth(),
+                bounds.getEast()
+            );
+        });
+
+        // Handle map move
+        map.on('moveend', function() {
+            var center = map.getCenter();
+            var zoom = map.getZoom();
+            Android.onMapMoved(center.lat, center.lng, zoom);
+        });
+
+        // Show 3D buildings toggle
+        function toggle3DBuildings(show) {
+            if (show) {
+                osmb = new OSMBuildings(map).load('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
+            } else if (osmb) {
+                // Note: OSMBuildings doesn't have a clean remove, page reload needed
+            }
+        }
+
+        // Fit bounds to show all markers
+        function fitBounds() {
+            if (markers.getLayers().length > 0) {
+                map.fitBounds(markers.getBounds(), { padding: [50, 50] });
+            }
+        }
+
+        // Get current map center
+        function getCenter() {
+            var center = map.getCenter();
+            return JSON.stringify({ lat: center.lat, lng: center.lng, zoom: map.getZoom() });
+        }
+    </script>
+</body>
+</html>

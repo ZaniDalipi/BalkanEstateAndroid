@@ -1,11 +1,11 @@
 package com.zanoapps.search.presentation.search
 
-
-import com.zanoapps.presentation.ui.UiText
+import com.zanoapps.core.domain.model.BalkanEstateProperty
+import com.zanoapps.core.presentation.ui.UiText
 
 sealed interface SearchEvent {
     data class Error(val error: UiText) : SearchEvent
-    data object NavigateToPropertyDetails : SearchEvent
+    data class NavigateToPropertyDetails(val property: BalkanEstateProperty) : SearchEvent
     data object NavigateToFilters : SearchEvent
     data object NavigateToSavedSearches : SearchEvent
     data object NavigateToCreateListing : SearchEvent

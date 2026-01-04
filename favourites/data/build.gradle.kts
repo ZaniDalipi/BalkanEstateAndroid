@@ -10,5 +10,9 @@ android {
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.data)
+    implementation(projects.core.database)
     implementation(projects.favourites.domain)
+
+    // Koin DI
+    implementation(libs.bundles.koin)
 }
