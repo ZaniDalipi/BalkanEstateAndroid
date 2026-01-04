@@ -12,8 +12,10 @@ dependencies {
     implementation(projects.core.presentation.ui)
     implementation(projects.map.domain)
 
+    implementation(libs.coil.compose)
+
     // Google Maps
     implementation(libs.google.maps.android.compose)
     implementation(libs.play.services.maps)
-    implementation(libs.play.services.location)
+
 }

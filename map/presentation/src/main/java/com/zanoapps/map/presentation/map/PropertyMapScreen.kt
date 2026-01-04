@@ -1,5 +1,6 @@
 package com.zanoapps.map.presentation.map
 
+import android.graphics.drawable.Icon
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,10 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -53,11 +50,15 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.zanoapps.core.domain.model.BalkanEstateProperty
+import com.zanoapps.core.presentation.designsystem.BackIcon
+import com.zanoapps.core.presentation.designsystem.BalkanEstateLogo
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.BedroomsIcon
 import com.zanoapps.core.presentation.designsystem.BathroomsIcon
+import com.zanoapps.core.presentation.designsystem.HomeIcon
 import com.zanoapps.core.presentation.designsystem.LocationIcon
+import com.zanoapps.core.presentation.designsystem.LogoutIcon
 import com.zanoapps.core.presentation.designsystem.MapViewIcon
 import com.zanoapps.core.presentation.designsystem.SquareMetersIcon
 import com.zanoapps.map.domain.model.PropertyMarker
@@ -176,9 +177,8 @@ private fun PropertyMapScreen(
                 .background(Color.White)
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.Black
+                imageVector = BackIcon,
+                contentDescription = "Back"
             )
         }
 
@@ -209,7 +209,7 @@ private fun PropertyMapScreen(
                 modifier = Modifier.size(48.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.MyLocation,
+                    imageVector = LocationIcon,
                     contentDescription = stringResource(R.string.my_location),
                     tint = BalkanEstatePrimaryBlue
                 )
@@ -229,7 +229,7 @@ private fun PropertyMapScreen(
                 modifier = Modifier.size(40.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = HomeIcon,
                     contentDescription = stringResource(R.string.zoom_in),
                     tint = Color.Black
                 )
