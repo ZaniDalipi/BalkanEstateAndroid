@@ -1,6 +1,8 @@
 package com.zanoapps.balkanestateandroid
 
 import android.app.Application
+import com.zanoapps.agent.data.di.agentDataModule
+import com.zanoapps.agent.presentation.di.agentPresentationModule
 import com.zanoapps.auth.data.di.authDataModule
 import com.zanoapps.auth.presentation.di.authPresentationModule
 import com.zanoapps.balkanestateandroid.di.appModule
@@ -14,6 +16,8 @@ import com.zanoapps.profile.data.di.profileDataModule
 import com.zanoapps.profile.presentation.di.profilePresentationModule
 import com.zanoapps.property_details.presentation.di.propertyDetailsPresentationModule
 import com.zanoapps.map.presentation.di.mapPresentationModule
+import com.zanoapps.media.data.di.mediaDataModule
+import com.zanoapps.media.presentation.di.mediaPresentationModule
 import com.zanoapps.messaging.presentation.di.messagingPresentationModule
 import com.zanoapps.notification.presentation.di.notificationPresentationModule
 import com.zanoapps.search.data.di.searchDataModule
@@ -71,7 +75,15 @@ class BalkanEstateApp: Application() {
 
                 // Search (uses core data SSOT repository for properties)
                 searchDataModule,
-                searchPresentationModule
+                searchPresentationModule,
+
+                // Agent
+                agentDataModule,
+                agentPresentationModule,
+
+                // Media
+                mediaDataModule,
+                mediaPresentationModule
             )
         }
     }

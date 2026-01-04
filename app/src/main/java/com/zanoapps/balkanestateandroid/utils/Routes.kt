@@ -76,3 +76,10 @@ object NotificationDestinations {
     const val ROOT = "notifications"
     const val NOTIFICATIONS_LIST = "notifications_list"
 }
+
+object MediaDestinations {
+    const val ROOT = "media"
+    const val IMAGE_GALLERY = "image_gallery/{propertyId}/{initialIndex}"
+
+    fun imageGallery(propertyId: String, initialIndex: Int = 0) = "image_gallery/$propertyId/$initialIndex"
+}

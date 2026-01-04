@@ -20,7 +20,21 @@ import com.zanoapps.balkanestateandroid.utils.SearchDestinations
 import com.zanoapps.balkanestateandroid.utils.MessagingDestinations
 import com.zanoapps.balkanestateandroid.utils.SettingsDestinations
 import com.zanoapps.balkanestateandroid.utils.NotificationDestinations
+import com.zanoapps.balkanestateandroid.utils.AgentDestinations
+import com.zanoapps.balkanestateandroid.utils.MapDestinations
+import com.zanoapps.balkanestateandroid.utils.MediaDestinations
 import com.zanoapps.core.domain.model.BalkanEstateProperty
+import com.zanoapps.agent.presentation.listings.AgentListingsScreen
+import com.zanoapps.agent.presentation.listings.AgentListingsViewModel
+import com.zanoapps.agent.presentation.profile.AgentProfileScreen
+import com.zanoapps.agent.presentation.profile.AgentProfileViewModel
+import com.zanoapps.map.presentation.map.PropertyMapScreenRoot
+import com.zanoapps.media.presentation.gallery.ImageGalleryScreen
+import com.zanoapps.media.presentation.gallery.ImageGalleryViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.flow.collectLatest
 import com.zanoapps.favourites.presentation.favourites.FavouritesScreenRoot
 import com.zanoapps.onboarding.presentation.buyer.amenities.AmenitiesScreenRoot
 import com.zanoapps.onboarding.presentation.buyer.currentlifesituation.CurrentLifeSituationRoot
@@ -61,6 +75,9 @@ fun NavigationRoot(
         messagingGraph(navController, onPropertySelected = { selectedProperty = it })
         settingsGraph(navController)
         notificationsGraph(navController)
+        agentGraph(navController, onPropertySelected = { selectedProperty = it })
+        mapGraph(navController, onPropertySelected = { selectedProperty = it })
+        mediaGraph(navController)
 
         // Property Details (shared across features)
         composable(route = SearchDestinations.PROPERTY_DETAILS) {
@@ -426,6 +443,137 @@ private fun NavGraphBuilder.notificationsGraph(navController: NavHostController)
                 onNavigateToSavedSearch = { searchId ->
                     // TODO: Navigate to saved search results
                 }
+            )
+        }
+    }
+}
+
+// Agent Navigation Graph
+private fun NavGraphBuilder.agentGraph(
+    navController: NavHostController,
+    onPropertySelected: (BalkanEstateProperty) -> Unit
+) {
+    navigation(
+        startDestination = AgentDestinations.AGENT_LISTINGS,
+        route = AgentDestinations.ROOT
+    ) {
+        composable(route = AgentDestinations.AGENT_LISTINGS) {
+            val viewModel: AgentListingsViewModel = koinViewModel()
+
+            LaunchedEffect(Unit) {
+                viewModel.events.collectLatest { event ->
+                    when (event) {
+                        is com.zanoapps.agent.presentation.listings.AgentListingsEvent.NavigateToAgent -> {
+                            navController.navigate(AgentDestinations.agentProfile(event.agent.id))
+                        }
+                    }
+                }
+            }
+
+            AgentListingsScreen(
+                state = viewModel.state,
+                onAction = { action ->
+                    when (action) {
+                        com.zanoapps.agent.presentation.listings.AgentListingsAction.OnBackClick -> {
+                            navController.popBackStack()
+                        }
+                        else -> viewModel.onAction(action)
+                    }
+                }
+            )
+        }
+
+        composable(route = AgentDestinations.AGENT_PROFILE) { backStackEntry ->
+            val agentId = backStackEntry.arguments?.getString("agentId") ?: return@composable
+            val viewModel: AgentProfileViewModel = koinViewModel { parametersOf(agentId) }
+
+            LaunchedEffect(Unit) {
+                viewModel.events.collectLatest { event ->
+                    when (event) {
+                        is com.zanoapps.agent.presentation.profile.AgentProfileEvent.NavigateBack -> {
+                            navController.popBackStack()
+                        }
+                        is com.zanoapps.agent.presentation.profile.AgentProfileEvent.NavigateToProperty -> {
+                            navController.navigate(SearchDestinations.propertyDetails(event.propertyId))
+                        }
+                        is com.zanoapps.agent.presentation.profile.AgentProfileEvent.OpenPhone -> {
+                            // Handle phone call intent
+                        }
+                        is com.zanoapps.agent.presentation.profile.AgentProfileEvent.OpenEmail -> {
+                            // Handle email intent
+                        }
+                        is com.zanoapps.agent.presentation.profile.AgentProfileEvent.StartChat -> {
+                            navController.navigate(MessagingDestinations.chat(event.conversationId))
+                        }
+                    }
+                }
+            }
+
+            AgentProfileScreen(
+                state = viewModel.state,
+                onAction = viewModel::onAction
+            )
+        }
+    }
+}
+
+// Map Navigation Graph
+private fun NavGraphBuilder.mapGraph(
+    navController: NavHostController,
+    onPropertySelected: (BalkanEstateProperty) -> Unit
+) {
+    navigation(
+        startDestination = MapDestinations.PROPERTY_MAP,
+        route = MapDestinations.ROOT
+    ) {
+        composable(route = MapDestinations.PROPERTY_MAP) {
+            // TODO: Load properties from repository or pass from search
+            PropertyMapScreenRoot(
+                properties = emptyList(),
+                onBackClick = { navController.popBackStack() },
+                onPropertyClick = { property ->
+                    onPropertySelected(property)
+                    navController.navigate(SearchDestinations.propertyDetails(property.id))
+                }
+            )
+        }
+    }
+}
+
+// Media Navigation Graph
+private fun NavGraphBuilder.mediaGraph(navController: NavHostController) {
+    navigation(
+        startDestination = MediaDestinations.IMAGE_GALLERY,
+        route = MediaDestinations.ROOT
+    ) {
+        composable(route = MediaDestinations.IMAGE_GALLERY) { backStackEntry ->
+            val propertyId = backStackEntry.arguments?.getString("propertyId") ?: ""
+            val initialIndex = backStackEntry.arguments?.getString("initialIndex")?.toIntOrNull() ?: 0
+
+            val viewModel: ImageGalleryViewModel = koinViewModel()
+
+            LaunchedEffect(Unit) {
+                viewModel.events.collectLatest { event ->
+                    when (event) {
+                        is com.zanoapps.media.presentation.gallery.ImageGalleryEvent.NavigateBack -> {
+                            navController.popBackStack()
+                        }
+                        is com.zanoapps.media.presentation.gallery.ImageGalleryEvent.ShareImage -> {
+                            // Handle share intent
+                        }
+                        is com.zanoapps.media.presentation.gallery.ImageGalleryEvent.DownloadImage -> {
+                            // Handle download
+                        }
+                        is com.zanoapps.media.presentation.gallery.ImageGalleryEvent.ShowError -> {
+                            // Show error toast
+                        }
+                    }
+                }
+            }
+
+            ImageGalleryScreen(
+                state = viewModel.state,
+                onAction = viewModel::onAction
             )
         }
     }

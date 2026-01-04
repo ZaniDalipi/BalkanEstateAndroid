@@ -8,8 +8,10 @@ android {
 }
 
 dependencies {
-
     implementation(projects.core.domain)
     implementation(projects.core.presentation)
+    implementation(projects.core.presentation.ui)
     implementation(projects.media.domain)
+
+    implementation(libs.coil.compose)
 }
