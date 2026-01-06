@@ -7,5 +7,5 @@ import org.koin.dsl.module
 
 val agentPresentationModule = module {
     viewModel { AgentListingsViewModel(get()) }
-    viewModel { (agentId: String) -> AgentProfileViewModel(agentId, get()) }
+    viewModel { AgentProfileViewModel(get(), get()) }
 }
