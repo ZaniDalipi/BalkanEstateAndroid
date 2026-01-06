@@ -44,6 +44,7 @@ import com.zanoapps.core.presentation.designsystem.EditPenIcon
 import com.zanoapps.core.presentation.designsystem.HomeIcon
 import com.zanoapps.core.presentation.designsystem.InboxIcon
 import com.zanoapps.core.presentation.designsystem.LogoutIcon
+import com.zanoapps.core.presentation.designsystem.MapViewIcon
 import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
 import com.zanoapps.core.presentation.designsystem.SavedHomesIcon
@@ -56,6 +57,11 @@ sealed interface DrawerMenuItem {
     data object Search : DrawerMenuItem {
         override val title = "Search"
         override val icon: @Composable () -> ImageVector = { SaveSearchIcon }
+    }
+
+    data object Map : DrawerMenuItem {
+        override val title = "Map"
+        override val icon: @Composable () -> ImageVector = { MapViewIcon }
     }
 
     data object SavedSearches : DrawerMenuItem {
@@ -143,6 +149,11 @@ fun BalkanEstateNavigationDrawer(
                             item = DrawerMenuItem.Search,
                             isSelected = selectedItem == DrawerMenuItem.Search,
                             onClick = { onItemClick(DrawerMenuItem.Search) }
+                        )
+                        DrawerItem(
+                            item = DrawerMenuItem.Map,
+                            isSelected = selectedItem == DrawerMenuItem.Map,
+                            onClick = { onItemClick(DrawerMenuItem.Map) }
                         )
                         DrawerItem(
                             item = DrawerMenuItem.SavedSearches,
