@@ -15,9 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,14 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zanoapps.core.presentation.designsystem.BackIcon
+import com.zanoapps.core.presentation.designsystem.BalkanEstateLogo
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
-import com.zanoapps.core.presentation.designsystem.BellIcon
-import com.zanoapps.core.presentation.designsystem.GlobeIcon
-import com.zanoapps.core.presentation.designsystem.HelpIcon
-import com.zanoapps.core.presentation.designsystem.InfoIcon
-import com.zanoapps.core.presentation.designsystem.LockIcon
-import com.zanoapps.core.presentation.designsystem.MoonIcon
 import com.zanoapps.core.presentation.designsystem.StarIcon
 import com.zanoapps.profile.presentation.R
 import org.koin.androidx.compose.koinViewModel
@@ -87,7 +80,7 @@ private fun SettingsScreen(
                 navigationIcon = {
                     IconButton(onClick = { onAction(SettingsAction.OnBackClick) }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = BackIcon,
                             contentDescription = "Back"
                         )
                     }
@@ -109,7 +102,7 @@ private fun SettingsScreen(
             // Preferences Section
             SettingsSection(title = stringResource(R.string.preferences)) {
                 SettingsSwitchItem(
-                    icon = BellIcon,
+                    icon = BalkanEstateLogo,
                     title = stringResource(R.string.notifications),
                     subtitle = stringResource(R.string.notifications_description),
                     isChecked = state.notificationsEnabled,
@@ -119,7 +112,7 @@ private fun SettingsScreen(
                 HorizontalDivider(color = Color(0xFFE5E7EB))
 
                 SettingsSwitchItem(
-                    icon = MoonIcon,
+                    icon = BalkanEstateLogo,
                     title = stringResource(R.string.dark_mode),
                     subtitle = stringResource(R.string.dark_mode_description),
                     isChecked = state.darkModeEnabled,
@@ -129,7 +122,7 @@ private fun SettingsScreen(
                 HorizontalDivider(color = Color(0xFFE5E7EB))
 
                 SettingsNavigationItem(
-                    icon = GlobeIcon,
+                    icon = BalkanEstateLogo,
                     title = stringResource(R.string.language),
                     subtitle = state.selectedLanguage,
                     onClick = { onAction(SettingsAction.OnLanguageClick) }
@@ -141,7 +134,7 @@ private fun SettingsScreen(
             // Privacy & Security Section
             SettingsSection(title = stringResource(R.string.privacy_security)) {
                 SettingsNavigationItem(
-                    icon = LockIcon,
+                    icon = BalkanEstateLogo,
                     title = stringResource(R.string.privacy_policy),
                     onClick = { onAction(SettingsAction.OnPrivacyClick) }
                 )
@@ -152,7 +145,7 @@ private fun SettingsScreen(
             // Support Section
             SettingsSection(title = stringResource(R.string.support)) {
                 SettingsNavigationItem(
-                    icon = HelpIcon,
+                    icon = BalkanEstateLogo,
                     title = stringResource(R.string.help_center),
                     onClick = { onAction(SettingsAction.OnHelpClick) }
                 )
@@ -168,7 +161,7 @@ private fun SettingsScreen(
                 HorizontalDivider(color = Color(0xFFE5E7EB))
 
                 SettingsNavigationItem(
-                    icon = InfoIcon,
+                    icon = BalkanEstateLogo,
                     title = stringResource(R.string.about),
                     subtitle = stringResource(R.string.version_format, state.appVersion),
                     onClick = { onAction(SettingsAction.OnAboutClick) }
@@ -257,7 +250,7 @@ private fun SettingsNavigationItem(
         }
 
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            imageVector = BalkanEstateLogo,
             contentDescription = null,
             tint = Color.Gray,
             modifier = Modifier.size(24.dp)

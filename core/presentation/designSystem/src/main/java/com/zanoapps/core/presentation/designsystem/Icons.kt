@@ -163,3 +163,8 @@ val ZoomIn: ImageVector
 
 val ZoomOut: ImageVector
     @Composable get() = ImageVector.vectorResource(id = R.drawable.zoom_out)
+
+
+val VerifiedIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.verified)
+

@@ -24,13 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Apartment
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Landscape
-import androidx.compose.material.icons.filled.MyLocation
+
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -254,37 +248,6 @@ private fun PropertyMapScreen(
                         state = state,
                         onAction = onAction
                     )
-        // Zoom Controls
-        Column(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            FloatingActionButton(
-                onClick = { onAction(MapAction.OnZoomIn) },
-                containerColor = Color.White,
-                modifier = Modifier.size(40.dp)
-            ) {
-                Icon(
-                    imageVector = ZoomIn,
-                    contentDescription = stringResource(R.string.zoom_in),
-                    tint = Color.Black
-                )
-            }
-
-            FloatingActionButton(
-                onClick = { onAction(MapAction.OnZoomOut) },
-                containerColor = Color.White,
-                modifier = Modifier.size(40.dp)
-            ) {
-                Icon(
-                    imageVector = ZoomOut,
-                    contentDescription = stringResource(R.string.zoom_out),
-                    tint = Color.Black
-                )
-            }
-        }
 
                     // Property Card (when selected)
                     if (state.showPropertyCard && state.selectedProperty != null) {

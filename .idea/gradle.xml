@@ -66,6 +66,7 @@
             <option value="$PROJECT_DIR$/notification/domain" />
             <option value="$PROJECT_DIR$/notification/presentation" />
             <option value="$PROJECT_DIR$/onboarding" />
+            <option value="$PROJECT_DIR$/onboarding/data" />
             <option value="$PROJECT_DIR$/onboarding/domain" />
             <option value="$PROJECT_DIR$/onboarding/presentation" />
             <option value="$PROJECT_DIR$/profile" />

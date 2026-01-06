@@ -18,9 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,10 +47,12 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.zanoapps.core.presentation.designsystem.AddedToFavIcon
+import com.zanoapps.core.presentation.designsystem.BackIcon
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.EditPenIcon
 import com.zanoapps.core.presentation.designsystem.HomeIcon
+import com.zanoapps.core.presentation.designsystem.KeyboardArrowUpIcon
 import com.zanoapps.core.presentation.designsystem.LogoutIcon
 import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
@@ -124,7 +123,7 @@ private fun ProfileScreen(
                 navigationIcon = {
                     IconButton(onClick = { onAction(ProfileAction.OnBackClick) }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = BackIcon,
                             contentDescription = "Back"
                         )
                     }
@@ -408,7 +407,7 @@ private fun ProfileMenuCard(items: List<ProfileMenuItem>) {
                         modifier = Modifier.weight(1f)
                     )
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        imageVector = KeyboardArrowUpIcon,
                         contentDescription = null,
                         tint = Color.Gray,
                         modifier = Modifier.size(24.dp)

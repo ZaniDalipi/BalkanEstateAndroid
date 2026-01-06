@@ -17,11 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Verified
+
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -44,6 +40,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.zanoapps.agent.domain.model.Agent
+import com.zanoapps.core.presentation.designsystem.AddSearchIcon
+import com.zanoapps.core.presentation.designsystem.BackIcon
+import com.zanoapps.core.presentation.designsystem.StarIcon
+import com.zanoapps.core.presentation.designsystem.VerifiedIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +57,7 @@ fun AgentListingsScreen(
                 title = { Text("Find an Agent") },
                 navigationIcon = {
                     IconButton(onClick = { onAction(AgentListingsAction.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(BackIcon, contentDescription = "Back")
                     }
                 }
             )
@@ -76,7 +76,7 @@ fun AgentListingsScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 placeholder = { Text("Search agents...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                leadingIcon = { Icon(AddSearchIcon, contentDescription = null) },
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true
             )
@@ -160,7 +160,7 @@ private fun AgentCard(
                 }
                 if (agent.isVerified) {
                     Icon(
-                        imageVector = Icons.Default.Verified,
+                        imageVector = VerifiedIcon,
                         contentDescription = "Verified",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
@@ -194,7 +194,7 @@ private fun AgentCard(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.Star,
+                        imageVector = StarIcon,
                         contentDescription = null,
                         tint = Color(0xFFFFB800),
                         modifier = Modifier.size(16.dp)
