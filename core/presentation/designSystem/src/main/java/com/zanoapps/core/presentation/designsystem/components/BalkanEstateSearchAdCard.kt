@@ -1,7 +1,7 @@
 package com.zanoapps.core.presentation.designsystem.components
 
-
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -42,6 +40,7 @@ import coil.request.ImageRequest
 import com.zanoapps.core.domain.model.BalkanEstateProperty
 import com.zanoapps.core.presentation.designsystem.AddedToFavIcon
 import com.zanoapps.core.presentation.designsystem.BalkanEstateGray
+import com.zanoapps.core.presentation.designsystem.BalkanEstateGreen
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateRed
 import com.zanoapps.core.presentation.designsystem.BathroomsIcon
@@ -49,10 +48,10 @@ import com.zanoapps.core.presentation.designsystem.BedroomsIcon
 import com.zanoapps.core.presentation.designsystem.LocationIcon
 import com.zanoapps.core.presentation.designsystem.NotAddedToFavIcon
 import com.zanoapps.core.presentation.designsystem.ParkingSpotIcon
-import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.SquareMetersIcon
 import java.text.NumberFormat
 import java.util.Currency
+import java.util.Locale
 
 data class PropertyCardData(
     val id: String,
@@ -64,8 +63,14 @@ data class PropertyCardData(
     val address: String,
     val imageUrl: String,
     val agentName: String? = null,
+    val agentImageUrl: String? = null,
+    val agentType: String? = null,
     val parking: Int = 0,
-    val isNew: Boolean = false
+    val isNew: Boolean = false,
+    val propertyType: String = "",
+    val title: String = "",
+    val city: String = "",
+    val country: String = ""
 )
 
 @Composable
@@ -83,19 +88,19 @@ fun PropertyCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = Color.White
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp,
+            defaultElevation = 4.dp,
             pressedElevation = 6.dp
         )
     ) {
         Column {
-            // Image section with NEW badge and favorite button
+            // Image section with badges
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(16f / 9f)
+                    .aspectRatio(16f / 10f)
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -109,142 +114,212 @@ fun PropertyCard(
                     contentScale = ContentScale.Crop
                 )
 
-                // NEW badge
+                // NEW badge (green with dot)
                 if (isNew) {
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(12.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(BalkanEstatePrimaryBlue)
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(BalkanEstateGreen)
+                            .padding(horizontal = 10.dp, vertical = 6.dp)
                     ) {
-                        Text(
-                            text = "NEW",
-                            color = Color.White,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "NEW",
+                                color = Color.White,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
 
-                // Favorite button
+                // Favorite button (white circle)
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(12.dp)
-                        .size(36.dp)
+                        .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.9f)),
+                        .background(Color.White),
                     contentAlignment = Alignment.Center
                 ) {
                     IconButton(
                         onClick = { onFavoriteClick(property) },
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
                             imageVector = if (isFavorite) AddedToFavIcon else NotAddedToFavIcon,
                             contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                            tint = if (isFavorite) Color.Red else BalkanEstateGray,
+                            tint = if (isFavorite) BalkanEstateRed else BalkanEstateGray,
                             modifier = Modifier.size(20.dp)
                         )
                     }
+                }
+
+                // Property type badge (bottom left)
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(12.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color.White)
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = property.propertyType,
+                        color = Color.Black,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                // Price badge (bottom right, blue)
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(12.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(BalkanEstatePrimaryBlue)
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = formatPriceEuropean(property.price),
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                // Address with location icon - Blue color
+                // Title
+                Text(
+                    text = property.title,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Location with icon
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = LocationIcon,
                         contentDescription = null,
-                        tint = BalkanEstatePrimaryBlue,
+                        tint = Color.Gray,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = property.address,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = BalkanEstatePrimaryBlue,
+                        text = "${property.city} , ${property.country}",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                // Price - prominent styling
-                Text(
-                    text = formatPriceWithEuro(property.price),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Property Features Row with icons
+                // Features row with bordered boxes
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    if (property.bedrooms > 0) {
-                        PropertyFeatureCompact(
-                            icon = BedroomsIcon,
-                            value = property.bedrooms.toString()
-                        )
-                    }
-
-                    if (property.bathrooms > 0) {
-                        PropertyFeatureCompact(
-                            icon = BathroomsIcon,
-                            value = property.bathrooms.toString()
-                        )
-                    }
-
-                    // Parking (using a default value for now)
-                    PropertyFeatureCompact(
-                        icon = ParkingSpotIcon,
-                        value = "1"
+                    PropertyFeatureBox(
+                        icon = BedroomsIcon,
+                        value = property.bedrooms.toString(),
+                        modifier = Modifier.weight(1f)
                     )
-
-                    if (property.squareFootage > 0) {
-                        PropertyFeatureCompact(
-                            icon = SquareMetersIcon,
-                            value = "${formatSquareFootage(property.squareFootage)} m\u00B2"
-                        )
-                    }
+                    PropertyFeatureBox(
+                        icon = BathroomsIcon,
+                        value = property.bathrooms.toString(),
+                        modifier = Modifier.weight(1f)
+                    )
+                    PropertyFeatureBox(
+                        icon = ParkingSpotIcon,
+                        value = "1", // Default parking
+                        modifier = Modifier.weight(1f)
+                    )
+                    PropertyFeatureBox(
+                        icon = SquareMetersIcon,
+                        value = property.squareFootage.toString(),
+                        modifier = Modifier.weight(1f)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // View Details Button
-                Button(
-                    onClick = { onViewDetailsClick(property) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = BalkanEstatePrimaryBlue
-                    ),
-                    shape = RoundedCornerShape(8.dp)
+                // Agent info row
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = PersonIcon,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
+                    // Agent avatar
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(Color.LightGray),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data("https://via.placeholder.com/32")
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = "Agent avatar",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "View Details",
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold
-                    )
+
+                    // Agent name
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = property.agentName,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.Black
+                        )
+                    }
+
+                    // Agent type badge
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Color(0xFFF5F5F5))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "Private Seller",
+                            fontSize = 11.sp,
+                            color = Color.Gray
+                        )
+                    }
                 }
             }
         }
@@ -252,61 +327,50 @@ fun PropertyCard(
 }
 
 @Composable
-private fun PropertyFeatureCompact(
+private fun PropertyFeatureBox(
     icon: ImageVector,
     value: String,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Box(
         modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .border(
+                width = 1.dp,
+                color = Color(0xFFE8F4EA),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .background(Color(0xFFF8FBF9))
+            .padding(vertical = 12.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = BalkanEstateGray,
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodySmall,
-            color = BalkanEstateGray,
-            fontWeight = FontWeight.Medium
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = BalkanEstateGray,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = value,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Black
+            )
+        }
     }
 }
 
-@Composable
-private fun PropertyFeature(
-    icon: ImageVector,
-    value: String,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(18.dp)
-        )
-
-        Spacer(modifier = Modifier.width(6.dp))
-
-        Text(
-            text = "$value $label",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = FontWeight.Medium
-        )
-    }
+// European price format: 4.500.000 €
+private fun formatPriceEuropean(price: Double): String {
+    val formatter = NumberFormat.getNumberInstance(Locale.GERMANY)
+    formatter.maximumFractionDigits = 0
+    return "${formatter.format(price)} €"
 }
 
-// Utility functions
 private fun formatPrice(price: Double, currencyCode: String): String {
     return try {
         val formatter = NumberFormat.getCurrencyInstance()
@@ -321,16 +385,6 @@ private fun formatPrice(price: Double, currencyCode: String): String {
             else -> "${formatNumber(price)} $currencyCode"
         }
     }
-}
-
-private fun formatPriceWithEuro(price: Double): String {
-    val formatter = NumberFormat.getNumberInstance()
-    formatter.maximumFractionDigits = 0
-    return "${formatter.format(price).replace(",", ".")} €"
-}
-
-private fun formatSquareFootage(sqft: Int): String {
-    return NumberFormat.getInstance().format(sqft)
 }
 
 private fun formatNumber(number: Double): String {
@@ -351,7 +405,7 @@ fun PropertyCardCompact(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = Color.White
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp,
@@ -359,7 +413,6 @@ fun PropertyCardCompact(
         )
     ) {
         Column {
-            // Property Image Section
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -377,22 +430,30 @@ fun PropertyCardCompact(
                     contentScale = ContentScale.Crop
                 )
 
-                // NEW badge
                 if (property.isNew) {
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(8.dp)
                             .clip(RoundedCornerShape(4.dp))
-                            .background(BalkanEstatePrimaryBlue)
+                            .background(BalkanEstateGreen)
                             .padding(horizontal = 8.dp, vertical = 2.dp)
                     ) {
-                        Text(
-                            text = "NEW",
-                            color = Color.White,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(4.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "NEW",
+                                color = Color.White,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
 
@@ -402,7 +463,7 @@ fun PropertyCardCompact(
                         .padding(8.dp)
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.9f)),
+                        .background(Color.White),
                     contentAlignment = Alignment.Center
                 ) {
                     IconButton(
@@ -417,36 +478,72 @@ fun PropertyCardCompact(
                         )
                     }
                 }
+
+                // Property type badge
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color.White)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = property.propertyType,
+                        color = Color.Black,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                // Price badge
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(BalkanEstatePrimaryBlue)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = formatPriceEuropean(property.price),
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             Column(
                 modifier = Modifier.padding(12.dp)
             ) {
                 Text(
-                    text = formatPrice(property.price, property.currency),
+                    text = property.title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Compact features
-                Text(
-                    text = "${property.bedrooms} beds • ${property.bathrooms} baths",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.height(2.dp))
-
-                Text(
-                    text = property.address,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = LocationIcon,
+                        contentDescription = null,
+                        tint = Color.Gray,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "${property.city}, ${property.country}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }
@@ -460,21 +557,21 @@ private fun PropertyCardPreview() {
         PropertyCard(
             property = BalkanEstateProperty(
                 id = "1",
-                title = "Beautiful 3BR Villa in Tirana",
-                price = 29999.0,
+                title = "Villë luksoze",
+                price = 4500000.0,
                 currency = "EUR",
                 imageUrl = "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
-                bedrooms = 1,
-                bathrooms = 1,
-                squareFootage = 60,
-                address = "Τσιφλικόπουλου, Λούτσα, Σεισμόπληκτα, Ιωάννινα, Σταυρ...",
+                bedrooms = 4,
+                bathrooms = 4,
+                squareFootage = 350,
+                address = "Rruga e Kavajës",
                 city = "Tirana",
                 country = "Albania",
                 latitude = 41.3275,
                 longitude = 19.8187,
                 propertyType = "Villa",
                 listingType = "Sale",
-                agentName = "Besmir Kola",
+                agentName = "zanoin",
                 isFeatured = true,
                 isUrgent = false
             ),
@@ -491,23 +588,23 @@ private fun PropertyCardFavoritePreview() {
     MaterialTheme {
         PropertyCard(
             property = BalkanEstateProperty(
-                id = "3",
-                title = "Luxury Penthouse with City Views",
-                price = 100000000.0,
+                id = "2",
+                title = "Amazing House In Struga",
+                price = 25000.0,
                 currency = "EUR",
                 imageUrl = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
-                bedrooms = 10,
-                bathrooms = 4,
-                squareFootage = 835,
-                address = "Κοινότητα Γουριωτίσσης, Δημοτική Ενότητα Στράτου, Δήμο...",
-                city = "Tirana",
-                country = "Albania",
-                latitude = 41.3290,
-                longitude = 19.8150,
-                propertyType = "Apartment",
+                bedrooms = 3,
+                bathrooms = 2,
+                squareFootage = 120,
+                address = "Lake Side Road",
+                city = "Struga",
+                country = "North Macedonia",
+                latitude = 41.1780,
+                longitude = 20.6830,
+                propertyType = "House",
                 listingType = "Sale",
-                agentName = "Arben Dedja",
-                isFeatured = true,
+                agentName = "Agent Name",
+                isFeatured = false,
                 isUrgent = false
             ),
             isFavorite = true,
@@ -528,10 +625,14 @@ private fun PropertyCardCompactPreview() {
                 currency = "EUR",
                 bedrooms = 2,
                 bathrooms = 1,
-                squareFootage = 1200,
-                address = "Downtown Apartment Complex",
+                squareFootage = 120,
+                address = "Downtown",
                 imageUrl = "https://example.com/compact.jpg",
-                isNew = true
+                isNew = true,
+                propertyType = "Apartment",
+                title = "Modern Apartment",
+                city = "Tirana",
+                country = "Albania"
             ),
             isFavorite = false,
             modifier = Modifier.padding(8.dp)
