@@ -84,6 +84,7 @@ interface SearchNavigationCallback {
     fun onNavigateToProfile()
     fun onNavigateToFavorites()
     fun onNavigateToNotifications()
+    fun onNavigateToPropertyDetails(propertyId: String)
     fun onLogout()
 }
 
@@ -181,6 +182,7 @@ private fun SearchPropertyScreen(
                     },
                     onViewDetailsClick = { property ->
                         onAction(SearchAction.OnViewDetailsClick(property))
+                        navigationCallback?.onNavigateToPropertyDetails(property.id)
                     },
                     modifier = Modifier.weight(1f)
                 )
