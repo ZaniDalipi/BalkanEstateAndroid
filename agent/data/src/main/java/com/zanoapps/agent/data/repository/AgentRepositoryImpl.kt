@@ -1,36 +1,55 @@
 package com.zanoapps.agent.data.repository
 
+import com.zanoapps.agent.data.mappers.toDomain
+import com.zanoapps.agent.data.mappers.toDomainList
+import com.zanoapps.agent.data.mappers.toEntities
 import com.zanoapps.agent.domain.model.Agent
 import com.zanoapps.agent.domain.repository.AgentRepository
+import com.zanoapps.core.data.mappers.toDomainList
+import com.zanoapps.core.database.dao.AgentDao
+import com.zanoapps.core.database.dao.PropertyDao
 import com.zanoapps.core.domain.model.BalkanEstateProperty
 import com.zanoapps.core.domain.util.DataError
 import com.zanoapps.core.domain.util.EmptyResult
 import com.zanoapps.core.domain.util.Result
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
 /**
- * Agent Repository implementation.
- * Uses mock data for now - will be replaced with Room + API integration.
+ * Single Source of Truth Implementation for Agents.
+ *
+ * Room database is the single source of truth.
+ * Data is cached to Room and UI observes Room database through Flow.
  */
-class AgentRepositoryImpl : AgentRepository {
+class AgentRepositoryImpl(
+    private val agentDao: AgentDao,
+    private val propertyDao: PropertyDao
+) : AgentRepository {
 
-    private val agentsFlow = MutableStateFlow(getMockAgents())
-    private val listingsFlow = MutableStateFlow<Map<String, List<BalkanEstateProperty>>>(emptyMap())
+    init {
+        // Seed initial data if empty (for development)
+        kotlinx.coroutines.runBlocking {
+            if (agentDao.getAgentCount() == 0) {
+                agentDao.insertAgents(getInitialAgents().toEntities())
+            }
+        }
+    }
 
-    override fun getAgents(): Flow<List<Agent>> = agentsFlow
+    override fun getAgents(): Flow<List<Agent>> {
+        return agentDao.getAllAgents().map { it.toDomainList() }
+    }
 
     override fun getAgentById(agentId: String): Flow<Agent?> {
-        return agentsFlow.map { agents -> agents.find { it.id == agentId } }
+        return agentDao.getAgentById(agentId).map { it?.toDomain() }
     }
 
     override fun getAgentListings(agentId: String): Flow<List<BalkanEstateProperty>> {
-        return listingsFlow.map { it[agentId] ?: getMockListings(agentId) }
+        return propertyDao.getPropertiesByAgent(agentId).map { it.toDomainList() }
     }
 
     override suspend fun refreshAgents(): EmptyResult<DataError.Network> {
         // TODO: Fetch from API and cache to Room
+        // For now, ensure mock data is present
         return Result.Success(Unit)
     }
 
@@ -56,7 +75,7 @@ class AgentRepositoryImpl : AgentRepository {
         return Result.Success(Unit)
     }
 
-    private fun getMockAgents(): List<Agent> = listOf(
+    private fun getInitialAgents(): List<Agent> = listOf(
         Agent(
             id = "agent1",
             name = "Sarah Johnson",
@@ -128,49 +147,6 @@ class AgentRepositoryImpl : AgentRepository {
             soldCount = 28,
             yearsOfExperience = 8,
             isVerified = false
-        )
-    )
-
-    private fun getMockListings(agentId: String): List<BalkanEstateProperty> = listOf(
-        BalkanEstateProperty(
-            id = "prop_${agentId}_1",
-            title = "Modern Apartment in City Center",
-            price = 185000.0,
-            currency = "EUR",
-            imageUrl = "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
-            bedrooms = 2,
-            bathrooms = 1,
-            squareFootage = 85,
-            address = "Rruga Myslym Shyri",
-            city = "Tirana",
-            country = "Albania",
-            latitude = 41.3275,
-            longitude = 19.8187,
-            propertyType = "Apartment",
-            listingType = "Sale",
-            agentName = agentsFlow.value.find { it.id == agentId }?.name ?: "Agent",
-            isFeatured = true,
-            isUrgent = false
-        ),
-        BalkanEstateProperty(
-            id = "prop_${agentId}_2",
-            title = "Spacious Villa with Garden",
-            price = 450000.0,
-            currency = "EUR",
-            imageUrl = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6",
-            bedrooms = 4,
-            bathrooms = 3,
-            squareFootage = 280,
-            address = "Rruga e Elbasanit",
-            city = "Tirana",
-            country = "Albania",
-            latitude = 41.3290,
-            longitude = 19.8200,
-            propertyType = "Villa",
-            listingType = "Sale",
-            agentName = agentsFlow.value.find { it.id == agentId }?.name ?: "Agent",
-            isFeatured = false,
-            isUrgent = true
         )
     )
 }
