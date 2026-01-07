@@ -4,6 +4,7 @@ import com.zanoapps.core.domain.enums.SortOption
 import com.zanoapps.search.domain.model.MapLocation
 import com.zanoapps.core.domain.model.BalkanEstateProperty
 import com.zanoapps.search.domain.model.SearchFilters
+import com.zanoapps.search.presentation.components.SearchFiltersData
 
 sealed interface SearchAction {
 
@@ -52,4 +53,17 @@ sealed interface SearchAction {
 
     // View details
     data class OnViewDetailsClick(val property: BalkanEstateProperty) : SearchAction
+
+    // Filters screen actions
+    data object OnOpenFiltersScreen : SearchAction
+    data object OnCloseFiltersScreen : SearchAction
+    data class OnFiltersDataChanged(val filtersData: SearchFiltersData) : SearchAction
+    data object OnResetFiltersData : SearchAction
+    data object OnShowFilterResults : SearchAction
+
+    // AI Chat actions
+    data class OnAIChatMessageSend(val message: String) : SearchAction
+
+    // Map visibility banner
+    data object OnSeeAllProperties : SearchAction
 }

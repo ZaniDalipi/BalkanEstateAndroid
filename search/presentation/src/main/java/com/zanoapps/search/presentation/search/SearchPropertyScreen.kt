@@ -45,25 +45,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.zanoapps.core.domain.enums.SortOption
 import com.zanoapps.core.domain.model.BalkanEstateProperty
-import com.zanoapps.core.presentation.designsystem.AddedToFavIcon
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.FiltersIcon
 import com.zanoapps.core.presentation.designsystem.KeyboardArrowDownIcon
+import com.zanoapps.core.presentation.designsystem.LocationIcon
 import com.zanoapps.core.presentation.designsystem.MenuHamburgerIcon
-import com.zanoapps.core.presentation.designsystem.NotificationBellIcon
-import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
-import com.zanoapps.core.presentation.designsystem.SparkleIcon
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateNavigationDrawer
 import com.zanoapps.core.presentation.designsystem.components.DrawerMenuItem
 import com.zanoapps.core.presentation.designsystem.components.EmailSubscriptionBar
@@ -72,6 +73,8 @@ import com.zanoapps.core.presentation.designsystem.components.PropertyCard
 import com.zanoapps.search.domain.model.MapLocation
 import com.zanoapps.search.domain.model.MockData
 import com.zanoapps.search.domain.model.SearchFilters
+import com.zanoapps.search.presentation.components.SearchFiltersData
+import com.zanoapps.search.presentation.components.SearchFiltersScreen
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -105,7 +108,7 @@ private fun SearchPropertyScreen(
                 SearchTopBar(
                     state = state,
                     onMenuClick = { onAction(SearchAction.OnOpenDrawer) },
-                    onFilterClick = { onAction(SearchAction.OnFilterClick) },
+                    onFilterClick = { onAction(SearchAction.OnOpenFiltersScreen) },
                     onQueryChange = { query -> onAction(SearchAction.OnSearchQueryChanged(query)) },
                     onProfileClick = { /* Navigate to profile */ }
                 )
@@ -126,13 +129,6 @@ private fun SearchPropertyScreen(
                             }
                         )
                     }
-
-                    // Bottom action buttons
-                    BottomActionButtons(
-                        onFavoriteClick = { /* Navigate to favorites */ },
-                        onNotificationClick = { /* Navigate to notifications */ },
-                        onSparkleClick = { /* AI features */ }
-                    )
 
                     // Email subscription bar
                     EmailSubscriptionBar(
@@ -156,6 +152,13 @@ private fun SearchPropertyScreen(
                         onAction(SearchAction.OnSortChanged(sortOption))
                     }
                 )
+
+                // Map visibility banner
+                if (state.showingMapVisibleProperties || !state.isListView) {
+                    MapVisibilityBanner(
+                        onSeeAllClick = { onAction(SearchAction.OnSeeAllProperties) }
+                    )
+                }
 
                 // Property list
                 if (state.isListView) {
@@ -197,6 +200,24 @@ private fun SearchPropertyScreen(
             },
             onCloseClick = {
                 onAction(SearchAction.OnCloseDrawer)
+            }
+        )
+
+        // Filters Screen (full screen modal)
+        SearchFiltersScreen(
+            isVisible = state.isFiltersScreenVisible,
+            filters = state.filtersData,
+            aiMessages = state.aiChatMessages,
+            isAITyping = state.isAITyping,
+            onDismiss = { onAction(SearchAction.OnCloseFiltersScreen) },
+            onFiltersChange = { filtersData ->
+                onAction(SearchAction.OnFiltersDataChanged(filtersData))
+            },
+            onResetFilters = { onAction(SearchAction.OnResetFiltersData) },
+            onSaveSearch = { onAction(SearchAction.OnSaveSearchClick) },
+            onShowResults = { onAction(SearchAction.OnShowFilterResults) },
+            onAIMessageSend = { message ->
+                onAction(SearchAction.OnAIChatMessageSend(message))
             }
         )
     }
@@ -283,20 +304,22 @@ private fun SearchTopBar(
             )
         }
 
-        // Profile button
+        // Profile/Logo button
         Box(
             modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(BalkanEstatePrimaryBlue)
-                .clickable { onProfileClick() },
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { onProfileClick() }
+                .padding(4.dp),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = PersonIcon,
-                contentDescription = "Profile",
-                tint = Color.White,
-                modifier = Modifier.size(20.dp)
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("https://balkanestateai.com/logo.png")
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Balkan Estate",
+                modifier = Modifier.size(32.dp),
+                contentScale = ContentScale.Fit
             )
         }
     }
@@ -368,6 +391,45 @@ private fun ResultsHeader(
 }
 
 @Composable
+private fun MapVisibilityBanner(
+    onSeeAllClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(BalkanEstatePrimaryBlue.copy(alpha = 0.1f))
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = LocationIcon,
+                contentDescription = null,
+                tint = BalkanEstatePrimaryBlue,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Showing properties visible on map",
+                fontSize = 13.sp,
+                color = BalkanEstatePrimaryBlue
+            )
+        }
+
+        Text(
+            text = "See All",
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = BalkanEstatePrimaryBlue,
+            modifier = Modifier.clickable { onSeeAllClick() }
+        )
+    }
+}
+
+@Composable
 private fun PropertyList(
     properties: List<BalkanEstateProperty>,
     favorites: Set<String>,
@@ -408,74 +470,6 @@ private fun PropertyList(
     }
 }
 
-@Composable
-private fun BottomActionButtons(
-    onFavoriteClick: () -> Unit,
-    onNotificationClick: () -> Unit,
-    onSparkleClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Favorite button
-        IconButton(
-            onClick = onFavoriteClick,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color(0xFFF1F5F9))
-        ) {
-            Icon(
-                imageVector = AddedToFavIcon,
-                contentDescription = "Favorites",
-                tint = Color.Gray,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        // Notification button
-        IconButton(
-            onClick = onNotificationClick,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color(0xFFF1F5F9))
-        ) {
-            Icon(
-                imageVector = NotificationBellIcon,
-                contentDescription = "Notifications",
-                tint = Color.Gray,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        // Sparkle/AI button
-        IconButton(
-            onClick = onSparkleClick,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color(0xFFF1F5F9))
-        ) {
-            Icon(
-                imageVector = SparkleIcon,
-                contentDescription = "AI Features",
-                tint = Color.Gray,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun SearchPropertyScreenPreview() {
@@ -504,7 +498,10 @@ private fun SearchPropertyScreenPreview() {
                 errorMessage = null,
                 isDrawerOpen = false,
                 isListView = true,
-                subscriptionEmail = ""
+                subscriptionEmail = "",
+                isFiltersScreenVisible = false,
+                filtersData = SearchFiltersData(),
+                showingMapVisibleProperties = true
             ),
             onAction = {}
         )
@@ -539,7 +536,10 @@ private fun SearchPropertyScreenWithDrawerPreview() {
                 errorMessage = null,
                 isDrawerOpen = true,
                 isListView = true,
-                subscriptionEmail = ""
+                subscriptionEmail = "",
+                isFiltersScreenVisible = false,
+                filtersData = SearchFiltersData(),
+                showingMapVisibleProperties = false
             ),
             onAction = {}
         )

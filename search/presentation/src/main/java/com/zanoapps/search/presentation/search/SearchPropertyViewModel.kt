@@ -138,7 +138,122 @@ class SearchPropertyViewModel(
                     eventChannel.send(SearchEvent.NavigateToPropertyDetails(action.property))
                 }
             }
+
+            // Filters screen actions
+            SearchAction.OnOpenFiltersScreen -> {
+                state = state.copy(isFiltersScreenVisible = true)
+            }
+            SearchAction.OnCloseFiltersScreen -> {
+                state = state.copy(isFiltersScreenVisible = false)
+            }
+            is SearchAction.OnFiltersDataChanged -> {
+                state = state.copy(filtersData = action.filtersData)
+            }
+            SearchAction.OnResetFiltersData -> {
+                state = state.copy(
+                    filtersData = com.zanoapps.search.presentation.components.SearchFiltersData(),
+                    hasActiveFilter = false
+                )
+                observeProperties()
+            }
+            SearchAction.OnShowFilterResults -> {
+                state = state.copy(isFiltersScreenVisible = false)
+                applyFiltersDataToRepository()
+            }
+
+            // AI Chat actions
+            is SearchAction.OnAIChatMessageSend -> {
+                handleAIChatMessage(action.message)
+            }
+
+            // Map visibility banner
+            SearchAction.OnSeeAllProperties -> {
+                state = state.copy(showingMapVisibleProperties = false)
+                observeProperties()
+            }
         }
+    }
+
+    private fun handleAIChatMessage(message: String) {
+        // Add user message
+        val userMessage = com.zanoapps.search.presentation.components.AIChatMessage(
+            id = System.currentTimeMillis().toString(),
+            content = message,
+            isFromUser = true
+        )
+        state = state.copy(
+            aiChatMessages = state.aiChatMessages + userMessage,
+            isAITyping = true
+        )
+
+        // Simulate AI response (in production, this would call an AI service)
+        viewModelScope.launch {
+            kotlinx.coroutines.delay(1500) // Simulate typing delay
+
+            val aiResponse = generateAIResponse(message)
+            val aiMessage = com.zanoapps.search.presentation.components.AIChatMessage(
+                id = (System.currentTimeMillis() + 1).toString(),
+                content = aiResponse,
+                isFromUser = false
+            )
+            state = state.copy(
+                aiChatMessages = state.aiChatMessages + aiMessage,
+                isAITyping = false
+            )
+        }
+    }
+
+    private fun generateAIResponse(userMessage: String): String {
+        val lowerMessage = userMessage.lowercase()
+        return when {
+            lowerMessage.contains("house") || lowerMessage.contains("home") -> {
+                "I found several houses that might interest you. Would you like me to filter by a specific city or price range?"
+            }
+            lowerMessage.contains("apartment") || lowerMessage.contains("flat") -> {
+                "I can help you find apartments. What area are you looking in, and what's your budget?"
+            }
+            lowerMessage.contains("tirana") -> {
+                "Tirana has great options! I see properties ranging from €25,000 to €4,500,000. Would you like to see villas, apartments, or all types?"
+            }
+            lowerMessage.contains("price") || lowerMessage.contains("budget") || lowerMessage.contains("cheap") -> {
+                "What's your price range? I can filter properties to match your budget."
+            }
+            lowerMessage.contains("bedroom") || lowerMessage.contains("room") -> {
+                "How many bedrooms do you need? I can filter properties based on that."
+            }
+            else -> {
+                "I understand you're looking for a property. Could you tell me more about what you're looking for? For example, the type of property, location, or budget."
+            }
+        }
+    }
+
+    private fun applyFiltersDataToRepository() {
+        val filtersData = state.filtersData
+
+        // Convert SearchFiltersData to repository query parameters
+        val minPrice = filtersData.minPrice.toDoubleOrNull()
+        val maxPrice = filtersData.maxPrice.toDoubleOrNull()
+        val listingType = filtersData.listingType
+        val propertyType = filtersData.propertyTypes.firstOrNull()
+        val city = filtersData.searchLocation.takeIf { it.isNotEmpty() }
+
+        state = state.copy(hasActiveFilter = true)
+
+        searchRepository.searchProperties(
+            listingType = listingType,
+            propertyType = propertyType,
+            minPrice = minPrice,
+            maxPrice = maxPrice,
+            minBedrooms = filtersData.bedrooms,
+            city = city
+        )
+            .onEach { properties ->
+                state = state.copy(
+                    properties = properties,
+                    filteredProperties = applyLocalFilters(properties)
+                )
+            }
+            .launchIn(viewModelScope)
     }
 
     /**

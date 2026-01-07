@@ -5,6 +5,8 @@ import com.zanoapps.core.domain.enums.SortOption
 import com.zanoapps.search.domain.model.MapLocation
 import com.zanoapps.core.domain.model.BalkanEstateProperty
 import com.zanoapps.search.domain.model.SearchFilters
+import com.zanoapps.search.presentation.components.AIChatMessage
+import com.zanoapps.search.presentation.components.SearchFiltersData
 
 data class SearchState(
     val mapLocation: MapLocation = MapLocation(
@@ -40,5 +42,22 @@ data class SearchState(
     val isListView: Boolean = true,
 
     // Subscription
-    val subscriptionEmail: String = ""
+    val subscriptionEmail: String = "",
+
+    // Filters screen state
+    val isFiltersScreenVisible: Boolean = false,
+    val filtersData: SearchFiltersData = SearchFiltersData(),
+
+    // AI Chat state
+    val aiChatMessages: List<AIChatMessage> = listOf(
+        AIChatMessage(
+            id = "welcome",
+            content = "Hello! Welcome to Balkan Estate. How can I help you find a property today?",
+            isFromUser = false
+        )
+    ),
+    val isAITyping: Boolean = false,
+
+    // Map visibility banner
+    val showingMapVisibleProperties: Boolean = false
 )
