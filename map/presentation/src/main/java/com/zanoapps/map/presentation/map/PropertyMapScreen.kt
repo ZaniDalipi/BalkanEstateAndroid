@@ -1,6 +1,5 @@
 package com.zanoapps.map.presentation.map
 
-import android.graphics.drawable.Icon
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +23,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
-
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Apartment
+import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Landscape
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -58,18 +63,13 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.zanoapps.core.domain.model.BalkanEstateProperty
-import com.zanoapps.core.presentation.designsystem.BackIcon
-import com.zanoapps.core.presentation.designsystem.BalkanEstateLogo
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
-import com.zanoapps.core.presentation.designsystem.BedroomsIcon
 import com.zanoapps.core.presentation.designsystem.BathroomsIcon
+import com.zanoapps.core.presentation.designsystem.BedroomsIcon
 import com.zanoapps.core.presentation.designsystem.FiltersIcon
-import com.zanoapps.core.presentation.designsystem.HomeIcon
 import com.zanoapps.core.presentation.designsystem.LocationIcon
-import com.zanoapps.core.presentation.designsystem.LogoutIcon
 import com.zanoapps.core.presentation.designsystem.MenuHamburgerIcon
-import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
 import com.zanoapps.core.presentation.designsystem.SquareMetersIcon
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateNavigationDrawer
@@ -77,8 +77,6 @@ import com.zanoapps.core.presentation.designsystem.components.DrawerMenuItem
 import com.zanoapps.core.presentation.designsystem.components.EmailSubscriptionBar
 import com.zanoapps.core.presentation.designsystem.components.ListMapToggle
 import com.zanoapps.core.presentation.designsystem.components.PropertyCard
-import com.zanoapps.core.presentation.designsystem.ZoomIn
-import com.zanoapps.core.presentation.designsystem.ZoomOut
 import com.zanoapps.map.domain.model.PropertyMarker
 import com.zanoapps.map.presentation.R
 import org.koin.androidx.compose.koinViewModel
@@ -130,9 +128,7 @@ fun PropertyMapScreenRoot(
         onAction = { action ->
             when (action) {
                 MapAction.OnBackClick -> onBackClick()
-                is MapAction.OnPropertySelected -> {
-                    viewModel.onAction(action)
-                }
+                is MapAction.OnPropertySelected -> viewModel.onAction(action)
                 else -> viewModel.onAction(action)
             }
         },
@@ -187,66 +183,20 @@ private fun PropertyMapScreen(
                             onAction(MapAction.OnAreaDrawn(south, west, north, east))
                         }
                     )
-                        true
-                    }
-                )
-            }
-        }
-
-        // Back Button
-        IconButton(
-            onClick = { onAction(MapAction.OnBackClick) },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(16.dp)
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(Color.White)
-        ) {
-            Icon(
-                imageVector = BackIcon,
-                contentDescription = "Back"
-            )
-        }
-
-        // Map Controls
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // Map Type Toggle
-            FloatingActionButton(
-                onClick = { onAction(MapAction.OnMapTypeToggle) },
-                containerColor = Color.White,
-                modifier = Modifier.size(48.dp)
-            ) {
-                Icon(
-                    imageVector = MapViewIcon,
-                    contentDescription = stringResource(R.string.map_type),
-                    tint = BalkanEstatePrimaryBlue
-                )
-            }
-
-            // My Location
-            FloatingActionButton(
-                onClick = { onAction(MapAction.OnMyLocationClick) },
-                containerColor = Color.White,
-                modifier = Modifier.size(48.dp)
-            ) {
-                Icon(
-                    imageVector = LocationIcon,
-                    contentDescription = stringResource(R.string.my_location),
-                    tint = BalkanEstatePrimaryBlue
-                )
-            }
-        }
 
                     // Map Controls Overlay
                     MapControlsOverlay(
                         state = state,
                         onAction = onAction
+                    )
+
+                    // Bottom Map Controls (3D buildings, filters)
+                    BottomMapControls(
+                        show3DBuildings = state.show3DBuildings,
+                        onToggle3D = { onAction(MapAction.OnToggle3DBuildings) },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 80.dp)
                     )
 
                     // Property Card (when selected)
@@ -255,7 +205,7 @@ private fun PropertyMapScreen(
                             property = state.selectedProperty,
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
-                                .padding(horizontal = 16.dp, vertical = 140.dp),
+                                .padding(horizontal = 16.dp, vertical = 160.dp),
                             onViewDetails = {
                                 onPropertyClick(state.selectedProperty)
                             },
@@ -264,17 +214,6 @@ private fun PropertyMapScreen(
                             }
                         )
                     }
-                }
-
-                // Category Filters - only show in map view
-                if (!state.isListView) {
-                    CategoryFilters(
-                        selectedCategory = state.selectedCategory,
-                        onCategorySelected = { onAction(MapAction.OnCategorySelected(it)) },
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 16.dp)
-                    )
                 }
             }
 
@@ -299,15 +238,17 @@ private fun PropertyMapScreen(
                     )
                 }
 
-                // Leaflet Attribution
-                Text(
-                    text = "Leaflet | © OpenStreetMap contributors",
-                    fontSize = 10.sp,
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
-                )
+                // Leaflet Attribution (only in map view)
+                if (!state.isListView) {
+                    Text(
+                        text = "Leaflet | © OpenStreetMap contributors",
+                        fontSize = 10.sp,
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                    )
+                }
 
                 // Email Subscription Bar
                 EmailSubscriptionBar(
@@ -413,20 +354,22 @@ private fun MapTopBar(
             )
         }
 
-        // Profile button
+        // Profile/Logo
         Box(
             modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(BalkanEstatePrimaryBlue)
-                .clickable { onProfileClick() },
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { onProfileClick() }
+                .padding(4.dp),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = PersonIcon,
-                contentDescription = "Profile",
-                tint = Color.White,
-                modifier = Modifier.size(20.dp)
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("https://balkanestateai.com/logo.png")
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Balkan Estate",
+                modifier = Modifier.size(32.dp),
+                contentScale = ContentScale.Fit
             )
         }
     }
@@ -449,14 +392,14 @@ private fun MapControlsOverlay(
             horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Street View - "Pamje Rruge"
+            // Street View
             Surface(
                 onClick = { if (state.mapLayerType != MapLayerType.STREET) onAction(MapAction.OnToggleMapLayer) },
                 color = if (state.mapLayerType == MapLayerType.STREET) BalkanEstatePrimaryBlue.copy(alpha = 0.1f) else Color.Transparent,
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Text(
-                    text = "Pamje Rruge",
+                    text = "Street",
                     color = if (state.mapLayerType == MapLayerType.STREET) BalkanEstatePrimaryBlue else Color.Gray,
                     fontSize = 13.sp,
                     fontWeight = if (state.mapLayerType == MapLayerType.STREET) FontWeight.Medium else FontWeight.Normal,
@@ -464,14 +407,14 @@ private fun MapControlsOverlay(
                 )
             }
 
-            // Satellite View - "Satelitor"
+            // Satellite View
             Surface(
                 onClick = { if (state.mapLayerType != MapLayerType.SATELLITE) onAction(MapAction.OnToggleMapLayer) },
                 color = if (state.mapLayerType == MapLayerType.SATELLITE) BalkanEstatePrimaryBlue.copy(alpha = 0.1f) else Color.Transparent,
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Text(
-                    text = "Satelitor",
+                    text = "Satellite",
                     color = if (state.mapLayerType == MapLayerType.SATELLITE) BalkanEstatePrimaryBlue else Color.Gray,
                     fontSize = 13.sp,
                     fontWeight = if (state.mapLayerType == MapLayerType.SATELLITE) FontWeight.Medium else FontWeight.Normal,
@@ -494,7 +437,7 @@ private fun MapControlsOverlay(
                 )
             }
 
-            // Draw/Vizato button
+            // Draw button
             Surface(
                 onClick = { onAction(MapAction.OnToggleDrawingMode) },
                 color = if (state.isDrawingMode) BalkanEstatePrimaryBlue else Color(0xFF3D4852),
@@ -513,7 +456,7 @@ private fun MapControlsOverlay(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Vizato",
+                        text = "Draw",
                         color = Color.White,
                         fontSize = 13.sp
                     )
@@ -555,9 +498,9 @@ private fun MapControlsOverlay(
 }
 
 @Composable
-private fun CategoryFilters(
-    selectedCategory: PropertyCategory,
-    onCategorySelected: (PropertyCategory) -> Unit,
+private fun BottomMapControls(
+    show3DBuildings: Boolean,
+    onToggle3D: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -567,26 +510,49 @@ private fun CategoryFilters(
             .padding(8.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        CategoryFilterButton(
-            icon = Icons.Default.Apartment,
-            isSelected = selectedCategory == PropertyCategory.ALL,
-            onClick = { onCategorySelected(PropertyCategory.ALL) }
+        // Keyboard icon (for search)
+        BottomControlButton(
+            emoji = "\u2328\uFE0F",
+            isSelected = false,
+            onClick = { }
         )
-        CategoryFilterButton(
-            icon = Icons.Default.Home,
-            isSelected = selectedCategory == PropertyCategory.RESIDENTIAL,
-            onClick = { onCategorySelected(PropertyCategory.RESIDENTIAL) }
+
+        // 3D Buildings toggle (museum icon as placeholder)
+        BottomControlButton(
+            emoji = "\uD83C\uDFDB\uFE0F",
+            isSelected = show3DBuildings,
+            onClick = onToggle3D
         )
-        CategoryFilterButton(
-            icon = Icons.Default.Business,
-            isSelected = selectedCategory == PropertyCategory.COMMERCIAL,
-            onClick = { onCategorySelected(PropertyCategory.COMMERCIAL) }
+
+        // Filter icon
+        BottomControlButton(
+            emoji = "\uD83C\uDFA8",
+            isSelected = false,
+            onClick = { }
         )
-        CategoryFilterButton(
-            icon = Icons.Default.Landscape,
-            isSelected = selectedCategory == PropertyCategory.LAND,
-            onClick = { onCategorySelected(PropertyCategory.LAND) }
-        )
+    }
+}
+
+@Composable
+private fun BottomControlButton(
+    emoji: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        color = if (isSelected) BalkanEstatePrimaryBlue else Color.White,
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier.size(48.dp)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = emoji,
+                fontSize = 20.sp
+            )
+        }
     }
 }
 
@@ -758,8 +724,8 @@ private fun PropertyFeatureSmall(
 }
 
 private fun formatPrice(price: Double, currency: String): String {
-    val formatter = NumberFormat.getNumberInstance(Locale.US)
-    return "$currency${formatter.format(price.toLong())}"
+    val formatter = NumberFormat.getNumberInstance(Locale.GERMANY)
+    return "${formatter.format(price.toLong())} €"
 }
 
 @Preview(showBackground = true)
