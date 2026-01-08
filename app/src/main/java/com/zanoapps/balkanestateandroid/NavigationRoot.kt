@@ -62,6 +62,7 @@ import com.zanoapps.onboarding.presentation.buyer.thankyoubuyer.ThankYouRoot
 import com.zanoapps.onboarding.presentation.clientintent.ClientIntentScreenRoot
 import com.zanoapps.onboarding.presentation.seller.maingoal.SellerMainGoalRoot
 import com.zanoapps.onboarding.presentation.seller.propertytype.SellerPropertyTypeRoot
+import com.zanoapps.notification.presentation.NotificationScreenRoot
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerCompletionAction
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerOnboardingCompletionRoot
 import com.zanoapps.onboarding.presentation.seller.sellingtime.SellingTimeRoot
@@ -128,6 +129,22 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
             ) { _ ->
                 InboxScreenContent()
             }
+        }
+
+        // Notifications Screen
+        composable(route = MainDestinations.NOTIFICATIONS) {
+            NotificationScreenRoot(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToProperty = { propertyId ->
+                    navController.navigate(MainDestinations.propertyDetails(propertyId))
+                },
+                onNavigateToSavedSearch = { savedSearchId ->
+                    navController.navigate(MainDestinations.SAVED_SEARCHES)
+                },
+                onNavigateToMessage = { conversationId ->
+                    navController.navigate(MainDestinations.INBOX)
+                }
+            )
         }
 
         // Profile Screen
@@ -241,8 +258,7 @@ private fun createSearchNavigationCallback(navController: NavHostController): Se
         }
 
         override fun onNavigateToNotifications() {
-            // Navigate to notifications - for now go to inbox
-            navController.navigate(MainDestinations.INBOX)
+            navController.navigate(MainDestinations.NOTIFICATIONS)
         }
 
         override fun onLogout() {
