@@ -84,6 +84,7 @@ interface SearchNavigationCallback {
     fun onNavigateToProfile()
     fun onNavigateToFavorites()
     fun onNavigateToNotifications()
+    fun onNavigateToFilters()
     fun onLogout()
 }
 
@@ -138,7 +139,10 @@ private fun SearchPropertyScreen(
                 state = state,
                 showMenuButton = showDrawer, // Only show menu button when drawer is available
                 onMenuClick = { onAction(SearchAction.OnOpenDrawer) },
-                onFilterClick = { onAction(SearchAction.OnFilterClick) },
+                onFilterClick = {
+                    onAction(SearchAction.OnFilterClick)
+                    navigationCallback?.onNavigateToFilters()
+                },
                 onQueryChange = { query -> onAction(SearchAction.OnSearchQueryChanged(query)) },
                 onProfileClick = { navigationCallback?.onNavigateToProfile() }
             )

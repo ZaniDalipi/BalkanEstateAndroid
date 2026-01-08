@@ -65,8 +65,15 @@ import com.zanoapps.onboarding.presentation.seller.propertytype.SellerPropertyTy
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerCompletionAction
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerOnboardingCompletionRoot
 import com.zanoapps.onboarding.presentation.seller.sellingtime.SellingTimeRoot
+import com.zanoapps.core.domain.enums.SortOption
+import com.zanoapps.search.domain.model.SearchFilters
+import com.zanoapps.search.presentation.filter.FilterEvent
+import com.zanoapps.search.presentation.filter.FilterScreen
+import com.zanoapps.search.presentation.filter.FilterSortViewModel
+import com.zanoapps.search.presentation.filter.FilterState
 import com.zanoapps.search.presentation.search.SearchNavigationCallback
 import com.zanoapps.search.presentation.search.SearchPropertyScreenRoot
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun NavigationRoot(
@@ -185,6 +192,27 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 SubscriptionScreenContent()
             }
         }
+
+        // Filter Screen
+        composable(route = MainDestinations.FILTERS) {
+            val viewModel: FilterSortViewModel = koinViewModel()
+            FilterScreen(
+                state = viewModel.state,
+                onAction = { action ->
+                    viewModel.onAction(action)
+                    // Handle navigation after apply/back
+                    when (action) {
+                        is com.zanoapps.search.presentation.filter.FilterAction.OnBackClick -> {
+                            navController.popBackStack()
+                        }
+                        is com.zanoapps.search.presentation.filter.FilterAction.OnShowResults -> {
+                            navController.popBackStack()
+                        }
+                        else -> {}
+                    }
+                }
+            )
+        }
     }
 
     // Also keep SearchDestinations.ROOT for backward compatibility
@@ -243,6 +271,10 @@ private fun createSearchNavigationCallback(navController: NavHostController): Se
         override fun onNavigateToNotifications() {
             // Navigate to notifications - for now go to inbox
             navController.navigate(MainDestinations.INBOX)
+        }
+
+        override fun onNavigateToFilters() {
+            navController.navigate(MainDestinations.FILTERS)
         }
 
         override fun onLogout() {

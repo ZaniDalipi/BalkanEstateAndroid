@@ -5,7 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zanoapps.core.domain.enums.SortOption
+import com.zanoapps.core.domain.model.BalkanEstateProperty
 import com.zanoapps.search.domain.model.MockData
+import com.zanoapps.search.domain.model.SearchFilters
+import com.zanoapps.search.presentation.filter.FilterChipData
+import com.zanoapps.search.presentation.filter.FilterSortViewModel
+import com.zanoapps.search.presentation.filter.FilterState
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -28,8 +34,9 @@ class SearchPropertyViewModel(
         when (action) {
             SearchAction.OnClearFilters -> {
                 state = state.copy(
+                    filters = SearchFilters(),
                     hasActiveFilter = false,
-                    filteredProperties = state.properties
+                    filteredProperties = applySorting(state.properties, state.sortOption)
                 )
             }
             SearchAction.OnCollapseBottomSheet -> {
@@ -54,14 +61,14 @@ class SearchPropertyViewModel(
                 state = state.copy(favoritePropertyIds = currentFavorites)
             }
             SearchAction.OnFilterClick -> {
-                // Open filter dialog
+                // Open filter screen - handled by navigation callback
             }
             is SearchAction.OnFiltersApplied -> {
                 state = state.copy(
                     filters = action.filters,
-                    hasActiveFilter = true
+                    hasActiveFilter = hasActiveFilters(action.filters)
                 )
-                applyFilters()
+                applyFiltersAndSort()
             }
             is SearchAction.OnLoadSavedSearch -> {
                 // Load saved search
@@ -95,11 +102,11 @@ class SearchPropertyViewModel(
                 // Query change is handled by TextFieldState
             }
             SearchAction.OnSearchSubmit -> {
-                applyFilters()
+                applyFiltersAndSort()
             }
             is SearchAction.OnSortChanged -> {
                 state = state.copy(sortOption = action.sortOption)
-                applySorting()
+                applyFiltersAndSort()
             }
             SearchAction.OnViewSavedSearches -> {
                 // Navigate to saved searches
@@ -132,6 +139,74 @@ class SearchPropertyViewModel(
         }
     }
 
+    /**
+     * Gets the current filters and sort option for passing to the filter screen
+     */
+    fun getCurrentFilters(): SearchFilters = state.filters
+
+    /**
+     * Gets the current sort option
+     */
+    fun getCurrentSortOption(): SortOption = state.sortOption
+
+    /**
+     * Gets the active filter chips for display in the active filters bar
+     */
+    fun getActiveFilterChips(): List<FilterChipData> {
+        return FilterState.fromSearchFilters(state.filters, state.sortOption).activeFilterChips
+    }
+
+    /**
+     * Gets the count of active filters
+     */
+    fun getActiveFilterCount(): Int {
+        return FilterState.fromSearchFilters(state.filters, state.sortOption).activeFilterCount
+    }
+
+    /**
+     * Removes a specific filter chip
+     */
+    fun removeFilterChip(chipData: FilterChipData) {
+        val currentFilters = state.filters
+        val updatedFilters = when (chipData) {
+            is FilterChipData.ListingTypeChip -> currentFilters.copy(
+                listingTypes = currentFilters.listingTypes - chipData.listingType
+            )
+            is FilterChipData.PropertyTypeChip -> currentFilters.copy(
+                propertyTypes = currentFilters.propertyTypes - chipData.propertyType
+            )
+            is FilterChipData.PriceRangeChip -> currentFilters.copy(
+                minPrice = null,
+                maxPrice = null
+            )
+            is FilterChipData.BedroomsChip -> currentFilters.copy(bedrooms = null)
+            is FilterChipData.BathroomsChip -> currentFilters.copy(bathrooms = null)
+            is FilterChipData.SquareFootageChip -> currentFilters.copy(
+                minSquareFootage = null,
+                maxSquareFootage = null
+            )
+            is FilterChipData.AmenityChip -> currentFilters.copy(
+                amenities = currentFilters.amenities - chipData.amenity
+            )
+            is FilterChipData.MoreAmenitiesChip -> currentFilters // Don't remove, just show filter screen
+            is FilterChipData.FurnishedTypeChip -> currentFilters.copy(
+                furnishedType = currentFilters.furnishedType - chipData.furnishedType
+            )
+            is FilterChipData.PetPolicyChip -> currentFilters.copy(
+                petPolicy = currentFilters.petPolicy - chipData.petPolicy
+            )
+            is FilterChipData.ParkingTypeChip -> currentFilters.copy(
+                parkingType = currentFilters.parkingType - chipData.parkingType
+            )
+        }
+
+        state = state.copy(
+            filters = updatedFilters,
+            hasActiveFilter = hasActiveFilters(updatedFilters)
+        )
+        applyFiltersAndSort()
+    }
+
     private fun loadProperties(isRefresh: Boolean = false) {
         viewModelScope.launch {
             state = state.copy(
@@ -143,43 +218,47 @@ class SearchPropertyViewModel(
             val properties = MockData.getMockProperties()
             state = state.copy(
                 properties = properties,
-                filteredProperties = properties,
+                filteredProperties = applySorting(properties, state.sortOption),
                 isLoadingProperties = false,
                 isRefreshing = false
             )
         }
     }
 
-    private fun applyFilters() {
-        val query = state.searchQuery.text.toString().lowercase()
-        val filtered = state.properties.filter { property ->
-            if (query.isEmpty()) true
-            else {
-                property.title.lowercase().contains(query) ||
-                        property.address.lowercase().contains(query) ||
-                        property.city.lowercase().contains(query)
-            }
-        }
-        state = state.copy(filteredProperties = filtered)
+    private fun applyFiltersAndSort() {
+        // First apply text search from the search bar
+        val query = state.searchQuery.text.toString()
+        val filtersWithQuery = state.filters.copy(query = query)
+
+        // Apply filters
+        val filtered = FilterSortViewModel.applyFiltersToProperties(
+            properties = state.properties,
+            filters = filtersWithQuery
+        )
+
+        // Then apply sorting
+        val sorted = applySorting(filtered, state.sortOption)
+
+        state = state.copy(filteredProperties = sorted)
     }
 
-    private fun applySorting() {
-        val sorted = when (state.sortOption) {
-            com.zanoapps.core.domain.enums.SortOption.PRICE_LOW_TO_HIGH ->
-                state.filteredProperties.sortedBy { it.price }
-            com.zanoapps.core.domain.enums.SortOption.PRICE_HIGH_TO_LOW ->
-                state.filteredProperties.sortedByDescending { it.price }
-            com.zanoapps.core.domain.enums.SortOption.NEWEST ->
-                state.filteredProperties // Would sort by date if available
-            com.zanoapps.core.domain.enums.SortOption.OLDEST ->
-                state.filteredProperties.reversed()
-            com.zanoapps.core.domain.enums.SortOption.BEDROOMS ->
-                state.filteredProperties.sortedByDescending { it.bedrooms }
-            com.zanoapps.core.domain.enums.SortOption.SQUARE_FOOTAGE ->
-                state.filteredProperties.sortedByDescending { it.squareFootage }
-            com.zanoapps.core.domain.enums.SortOption.FEATURED ->
-                state.filteredProperties.sortedByDescending { it.isFeatured }
-        }
-        state = state.copy(filteredProperties = sorted)
+    private fun applySorting(properties: List<BalkanEstateProperty>, sortOption: SortOption): List<BalkanEstateProperty> {
+        return FilterSortViewModel.applySortToProperties(properties, sortOption)
+    }
+
+    private fun hasActiveFilters(filters: SearchFilters): Boolean {
+        return filters.query.isNotBlank() ||
+                filters.minPrice != null ||
+                filters.maxPrice != null ||
+                filters.propertyTypes.isNotEmpty() ||
+                filters.listingTypes.isNotEmpty() ||
+                filters.bedrooms != null ||
+                filters.bathrooms != null ||
+                filters.minSquareFootage != null ||
+                filters.maxSquareFootage != null ||
+                filters.amenities.isNotEmpty() ||
+                filters.furnishedType.isNotEmpty() ||
+                filters.petPolicy.isNotEmpty() ||
+                filters.parkingType.isNotEmpty()
     }
 }
