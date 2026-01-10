@@ -155,3 +155,36 @@ val DrawPolygonIcon: ImageVector
 
 val SparkleIcon: ImageVector
     @Composable get() = ImageVector.vectorResource(id = R.drawable.sparkle)
+
+val GridViewIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.grid_view)
+
+val SettingsIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.settings)
+
+val NotificationIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.notification)
+
+val HelpIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.help)
+
+val PrivacyIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.privacy)
+
+val TermsIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.terms)
+
+val DeleteIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.delete_icon)
+
+val SendIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.send)
+
+val AttachIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.attach)
+
+val PhoneIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.phone)
+
+val CloseIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.close)
