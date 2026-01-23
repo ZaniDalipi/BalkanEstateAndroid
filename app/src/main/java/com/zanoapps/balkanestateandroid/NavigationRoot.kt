@@ -62,6 +62,7 @@ import com.zanoapps.onboarding.presentation.buyer.thankyoubuyer.ThankYouRoot
 import com.zanoapps.onboarding.presentation.clientintent.ClientIntentScreenRoot
 import com.zanoapps.onboarding.presentation.seller.maingoal.SellerMainGoalRoot
 import com.zanoapps.onboarding.presentation.seller.propertytype.SellerPropertyTypeRoot
+import com.zanoapps.onboarding.presentation.seller.pricing.PricingScreenRoot
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerCompletionAction
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerOnboardingCompletionRoot
 import com.zanoapps.onboarding.presentation.seller.sellingtime.SellingTimeRoot
@@ -176,14 +177,19 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
             }
         }
 
-        // Subscription Screen
+        // Subscription Screen - Full screen pricing for better mobile scrolling
         composable(route = MainDestinations.SUBSCRIPTION) {
-            MainAppScaffold(
-                navController = navController,
-                currentRoute = MainDestinations.PROFILE
-            ) { _ ->
-                SubscriptionScreenContent()
-            }
+            PricingScreenRoot(
+                onSelectPlanClick = { plan ->
+                    // Handle plan selection - for now navigate back to profile
+                    navController.navigate(MainDestinations.PROFILE) {
+                        popUpTo(MainDestinations.SUBSCRIPTION) { inclusive = true }
+                    }
+                },
+                onSkipClicked = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 
@@ -791,34 +797,3 @@ private fun NewListingScreenContent() {
     }
 }
 
-@Composable
-private fun SubscriptionScreenContent() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = StarIcon,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = BalkanEstateOrange
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Subscription Plans",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = BalkanEstatePrimaryBlue
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Upgrade your account for premium features",
-            fontSize = 16.sp,
-            color = Color.Gray,
-            textAlign = TextAlign.Center
-        )
-    }
-}

@@ -60,6 +60,7 @@ import com.zanoapps.core.presentation.designsystem.MenuHamburgerIcon
 import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.R
 import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
+import com.zanoapps.core.presentation.designsystem.components.AgentPromoSection
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateNavigationDrawer
 import com.zanoapps.core.presentation.designsystem.components.DrawerMenuItem
 import com.zanoapps.core.presentation.designsystem.components.ListMapToggle
@@ -181,6 +182,13 @@ private fun SearchPropertyScreen(
                     },
                     onViewDetailsClick = { property ->
                         onAction(SearchAction.OnViewDetailsClick(property))
+                    },
+                    onGetStartedClick = {
+                        // Navigate to subscription for logged-in users (proper routing)
+                        navigationCallback?.onNavigateToSubscription()
+                    },
+                    onBrowseAgenciesClick = {
+                        navigationCallback?.onNavigateToAgencies()
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -406,6 +414,8 @@ private fun PropertyList(
     onPropertyClick: (BalkanEstateProperty) -> Unit,
     onFavoriteClick: (String) -> Unit,
     onViewDetailsClick: (BalkanEstateProperty) -> Unit,
+    onGetStartedClick: () -> Unit,
+    onBrowseAgenciesClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (isLoading) {
@@ -434,6 +444,16 @@ private fun PropertyList(
                     onPropertyClick = { onPropertyClick(property) },
                     onFavoriteClick = { onFavoriteClick(property.id) },
                     onViewDetailsClick = { onViewDetailsClick(property) }
+                )
+            }
+
+            // Agent Promo Section at the end of the list
+            item(key = "agent_promo_section") {
+                AgentPromoSection(
+                    isLoggedIn = true, // TODO: Get actual auth state from ViewModel
+                    onGetStartedClick = onGetStartedClick,
+                    onBrowseAgenciesClick = onBrowseAgenciesClick,
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
         }
