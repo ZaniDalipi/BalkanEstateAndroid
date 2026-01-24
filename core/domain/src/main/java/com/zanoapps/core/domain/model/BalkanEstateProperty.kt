@@ -18,5 +18,8 @@ data class BalkanEstateProperty(
     val listingType: String,
     val agentName: String,
     val isFeatured: Boolean = false,
-    val isUrgent: Boolean = false
+    val isUrgent: Boolean = false,
+    val videoUrl: String? = null,
+    val videoThumbnailUrl: String? = null,
+    val additionalImages: List<String> = emptyList()
 )

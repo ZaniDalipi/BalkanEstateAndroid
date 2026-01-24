@@ -24,7 +24,14 @@ object MockData {
                 listingType = "Sale",
                 agentName = "Besmir Kola",
                 isFeatured = true,
-                isUrgent = false
+                isUrgent = false,
+                videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                videoThumbnailUrl = "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+                additionalImages = listOf(
+                    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9",
+                    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c",
+                    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3"
+                )
             ),
             BalkanEstateProperty(
                 id = "2",
@@ -64,7 +71,13 @@ object MockData {
                 listingType = "Sale",
                 agentName = "Arben Dedja",
                 isFeatured = true,
-                isUrgent = false
+                isUrgent = false,
+                videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                videoThumbnailUrl = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
+                additionalImages = listOf(
+                    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+                    "https://images.unsplash.com/photo-1600573472592-401b489a3cdc"
+                )
             ),
             BalkanEstateProperty(
                 id = "4",

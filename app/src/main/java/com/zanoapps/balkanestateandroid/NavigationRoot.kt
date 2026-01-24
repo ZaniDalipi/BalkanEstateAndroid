@@ -65,6 +65,7 @@ import com.zanoapps.onboarding.presentation.seller.propertytype.SellerPropertyTy
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerCompletionAction
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerOnboardingCompletionRoot
 import com.zanoapps.onboarding.presentation.seller.sellingtime.SellingTimeRoot
+import com.zanoapps.property_details.presentation.PropertyDetailsScreenRoot
 import com.zanoapps.search.presentation.search.SearchNavigationCallback
 import com.zanoapps.search.presentation.search.SearchPropertyScreenRoot
 
@@ -185,6 +186,17 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 SubscriptionScreenContent()
             }
         }
+
+        // Property Details Screen
+        composable(
+            route = MainDestinations.PROPERTY_DETAILS
+        ) { backStackEntry ->
+            val propertyId = backStackEntry.arguments?.getString("propertyId") ?: ""
+            PropertyDetailsScreenRoot(
+                propertyId = propertyId,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
     }
 
     // Also keep SearchDestinations.ROOT for backward compatibility
@@ -243,6 +255,10 @@ private fun createSearchNavigationCallback(navController: NavHostController): Se
         override fun onNavigateToNotifications() {
             // Navigate to notifications - for now go to inbox
             navController.navigate(MainDestinations.INBOX)
+        }
+
+        override fun onNavigateToPropertyDetails(propertyId: String) {
+            navController.navigate(MainDestinations.propertyDetails(propertyId))
         }
 
         override fun onLogout() {

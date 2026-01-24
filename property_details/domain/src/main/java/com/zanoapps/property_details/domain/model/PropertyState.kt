@@ -56,6 +56,7 @@ data class PropertyState(
 
     // Media
     val images: List<PropertyImageState> = emptyList(),
+    val videos: List<PropertyVideoState> = emptyList(),
     val virtualTour: String?,
     val floorPlan: String?,
 

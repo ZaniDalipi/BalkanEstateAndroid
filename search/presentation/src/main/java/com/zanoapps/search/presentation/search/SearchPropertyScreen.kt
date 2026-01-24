@@ -84,6 +84,7 @@ interface SearchNavigationCallback {
     fun onNavigateToProfile()
     fun onNavigateToFavorites()
     fun onNavigateToNotifications()
+    fun onNavigateToPropertyDetails(propertyId: String)
     fun onLogout()
 }
 
@@ -101,7 +102,17 @@ fun SearchPropertyScreenRoot(
 ) {
     SearchPropertyScreen(
         state = viewModel.state,
-        onAction = viewModel::onAction,
+        onAction = { action ->
+            when (action) {
+                is SearchAction.OnViewDetailsClick -> {
+                    navigationCallback?.onNavigateToPropertyDetails(action.property.id)
+                }
+                is SearchAction.OnPropertyClicked -> {
+                    navigationCallback?.onNavigateToPropertyDetails(action.balkanEstateProperty.id)
+                }
+                else -> viewModel.onAction(action)
+            }
+        },
         navigationCallback = navigationCallback,
         showDrawer = showDrawer
     )
