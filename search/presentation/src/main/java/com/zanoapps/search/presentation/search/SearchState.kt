@@ -40,5 +40,9 @@ data class SearchState(
     val isListView: Boolean = true,
 
     // Subscription
-    val subscriptionEmail: String = ""
+    val subscriptionEmail: String = "",
+
+    // Auth state - determines routing for agent actions
+    val isLoggedIn: Boolean = false,
+    val userName: String? = null
 )

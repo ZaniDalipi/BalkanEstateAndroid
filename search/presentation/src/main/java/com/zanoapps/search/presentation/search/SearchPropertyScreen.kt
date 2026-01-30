@@ -183,9 +183,14 @@ private fun SearchPropertyScreen(
                     onViewDetailsClick = { property ->
                         onAction(SearchAction.OnViewDetailsClick(property))
                     },
+                    isLoggedIn = state.isLoggedIn,
                     onGetStartedClick = {
-                        // Navigate to subscription for logged-in users (proper routing)
-                        navigationCallback?.onNavigateToSubscription()
+                        // Navigate based on auth state - subscription for logged-in, profile for not
+                        if (state.isLoggedIn) {
+                            navigationCallback?.onNavigateToSubscription()
+                        } else {
+                            navigationCallback?.onNavigateToProfile()
+                        }
                     },
                     onBrowseAgenciesClick = {
                         navigationCallback?.onNavigateToAgencies()
@@ -211,8 +216,8 @@ private fun SearchPropertyScreen(
             BalkanEstateNavigationDrawer(
                 isOpen = state.isDrawerOpen,
                 selectedItem = DrawerMenuItem.Search,
-                isLoggedIn = true,
-                userName = "User",
+                isLoggedIn = state.isLoggedIn,
+                userName = state.userName,
                 onItemClick = { item ->
                     onAction(SearchAction.OnDrawerItemClick(item.title))
                     onAction(SearchAction.OnCloseDrawer)
@@ -411,6 +416,7 @@ private fun PropertyList(
     properties: List<BalkanEstateProperty>,
     favorites: Set<String>,
     isLoading: Boolean,
+    isLoggedIn: Boolean,
     onPropertyClick: (BalkanEstateProperty) -> Unit,
     onFavoriteClick: (String) -> Unit,
     onViewDetailsClick: (BalkanEstateProperty) -> Unit,
@@ -450,7 +456,7 @@ private fun PropertyList(
             // Agent Promo Section at the end of the list
             item(key = "agent_promo_section") {
                 AgentPromoSection(
-                    isLoggedIn = true, // TODO: Get actual auth state from ViewModel
+                    isLoggedIn = isLoggedIn,
                     onGetStartedClick = onGetStartedClick,
                     onBrowseAgenciesClick = onBrowseAgenciesClick,
                     modifier = Modifier.padding(vertical = 8.dp)
@@ -488,7 +494,9 @@ private fun SearchPropertyScreenPreview() {
                 errorMessage = null,
                 isDrawerOpen = false,
                 isListView = true,
-                subscriptionEmail = ""
+                subscriptionEmail = "",
+                isLoggedIn = true,
+                userName = "John Doe"
             ),
             onAction = {},
             showDrawer = false
@@ -524,7 +532,9 @@ private fun SearchPropertyScreenWithDrawerPreview() {
                 errorMessage = null,
                 isDrawerOpen = true,
                 isListView = true,
-                subscriptionEmail = ""
+                subscriptionEmail = "",
+                isLoggedIn = true,
+                userName = "John Doe"
             ),
             onAction = {},
             showDrawer = true

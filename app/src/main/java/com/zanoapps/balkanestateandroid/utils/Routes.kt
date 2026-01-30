@@ -30,6 +30,7 @@ object MainDestinations {
     const val SAVED = "saved"
     const val INBOX = "inbox"
     const val PROFILE = "profile"
+    const val LOGIN = "login"
     const val PROPERTY_DETAILS = "property_details/{propertyId}"
     const val FILTERS = "filters"
     const val NEW_LISTING = "new_listing"
