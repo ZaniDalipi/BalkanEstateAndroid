@@ -155,3 +155,27 @@ val DrawPolygonIcon: ImageVector
 
 val SparkleIcon: ImageVector
     @Composable get() = ImageVector.vectorResource(id = R.drawable.sparkle)
+
+val GoogleIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.google)
+
+val PhoneIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.phone)
+
+val VerifiedIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.verified)
+
+val RatingStarIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.rating_star)
+
+val BuildingIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.building)
+
+val CalendarIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.calendar)
+
+val HeartFilledIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.heart_filled)
+
+val HeartOutlineIcon: ImageVector
+    @Composable get() = ImageVector.vectorResource(id = R.drawable.heart_outline)

@@ -68,6 +68,15 @@ import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerOnboar
 import com.zanoapps.onboarding.presentation.seller.sellingtime.SellingTimeRoot
 import com.zanoapps.search.presentation.search.SearchNavigationCallback
 import com.zanoapps.search.presentation.search.SearchPropertyScreenRoot
+import com.zanoapps.agent.presentation.AgenciesScreenRoot
+import com.zanoapps.agent.presentation.AgencyMockData
+import com.zanoapps.agent.presentation.AgentMockData
+import com.zanoapps.agent.presentation.TopAgentsScreenRoot
+import com.zanoapps.auth.presentation.login.LoginScreenRoot
+import com.zanoapps.core.presentation.designsystem.components.MockData
+import com.zanoapps.favourites.presentation.SavedPropertiesScreenRoot
+import com.zanoapps.profile.presentation.ProfileScreenRoot
+import com.zanoapps.profile.presentation.ProfileState
 
 @Composable
 fun NavigationRoot(
@@ -117,7 +126,14 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 navController = navController,
                 currentRoute = MainDestinations.SAVED
             ) { _ ->
-                SavedPropertiesScreenContent()
+                SavedPropertiesScreenRoot(
+                    savedProperties = MockData.getMockProperties().take(3),
+                    onPropertyClick = { /* Navigate to property details */ },
+                    onRemoveFromFavorites = { /* Remove from favorites */ },
+                    onBrowsePropertiesClick = {
+                        navController.navigate(MainDestinations.SEARCH)
+                    }
+                )
             }
         }
 
@@ -137,14 +153,59 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 navController = navController,
                 currentRoute = MainDestinations.PROFILE
             ) { _ ->
-                ProfileScreenContent(
-                    onLogout = {
+                ProfileScreenRoot(
+                    state = ProfileState(
+                        userName = "John Doe",
+                        email = "john.doe@example.com",
+                        phone = "+355 69 123 4567",
+                        location = "Tirana, Albania",
+                        isVerified = true,
+                        savedPropertiesCount = 12,
+                        savedSearchesCount = 5,
+                        messagesCount = 3,
+                        notificationsEnabled = true,
+                        emailNotificationsEnabled = true,
+                        isLoggedIn = true
+                    ),
+                    onEditProfileClick = { /* Navigate to edit profile */ },
+                    onSavedPropertiesClick = {
+                        navController.navigate(MainDestinations.SAVED)
+                    },
+                    onSavedSearchesClick = {
+                        navController.navigate(MainDestinations.SAVED_SEARCHES)
+                    },
+                    onMessagesClick = {
+                        navController.navigate(MainDestinations.INBOX)
+                    },
+                    onSubscriptionClick = {
+                        navController.navigate(MainDestinations.SUBSCRIPTION)
+                    },
+                    onNotificationsToggle = { /* Toggle notifications */ },
+                    onEmailNotificationsToggle = { /* Toggle email notifications */ },
+                    onLogoutClick = {
                         navController.navigate(OnboardingDestinations.ROOT) {
                             popUpTo(MainDestinations.ROOT) { inclusive = true }
                         }
+                    },
+                    onLoginClick = {
+                        navController.navigate(MainDestinations.LOGIN)
                     }
                 )
             }
+        }
+
+        // Login Screen
+        composable(route = MainDestinations.LOGIN) {
+            LoginScreenRoot(
+                onLoginSuccess = {
+                    navController.navigate(MainDestinations.PROFILE) {
+                        popUpTo(MainDestinations.LOGIN) { inclusive = true }
+                    }
+                },
+                onClose = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         // Top Agents Screen
@@ -153,7 +214,11 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 navController = navController,
                 currentRoute = MainDestinations.SEARCH
             ) { _ ->
-                TopAgentsScreenContent()
+                TopAgentsScreenRoot(
+                    agents = AgentMockData.mockAgents,
+                    onAgentClick = { /* Navigate to agent details */ },
+                    onContactClick = { /* Open contact dialog */ }
+                )
             }
         }
 
@@ -163,7 +228,11 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 navController = navController,
                 currentRoute = MainDestinations.SEARCH
             ) { _ ->
-                AgenciesScreenContent()
+                AgenciesScreenRoot(
+                    agencies = AgencyMockData.mockAgencies,
+                    onAgencyClick = { /* Navigate to agency details */ },
+                    onViewListingsClick = { /* Navigate to agency listings */ }
+                )
             }
         }
 
