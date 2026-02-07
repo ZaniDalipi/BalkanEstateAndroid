@@ -106,6 +106,14 @@ dependencies {
         // On Boarding modules
         implementation(projects.onboarding.domain)
         implementation(projects.onboarding.presentation)
+
+        // Auth modules
+        implementation(projects.auth.data)
+        implementation(projects.auth.domain)
+        implementation(projects.auth.presentation)
+
+        // Shared KMP module
+        implementation(projects.shared)
     }
 
 }

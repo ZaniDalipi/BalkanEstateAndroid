@@ -77,6 +77,14 @@ import com.zanoapps.core.presentation.designsystem.components.MockData
 import com.zanoapps.favourites.presentation.SavedPropertiesScreenRoot
 import com.zanoapps.profile.presentation.ProfileScreenRoot
 import com.zanoapps.profile.presentation.ProfileState
+import com.zanoapps.messaging.presentation.InboxScreenRoot
+import com.zanoapps.messaging.presentation.InboxMockData
+import com.zanoapps.messaging.presentation.ChatScreenRoot
+import com.zanoapps.messaging.presentation.ChatMockData
+import com.zanoapps.search.presentation.search.SavedSearchesScreenRoot
+import com.zanoapps.search.presentation.search.SavedSearchesMockData
+import com.zanoapps.agent.presentation.NewListingScreenRoot
+import com.zanoapps.property_details.presentation.PropertyDetailsScreenRoot
 
 @Composable
 fun NavigationRoot(
@@ -116,7 +124,15 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 navController = navController,
                 currentRoute = MainDestinations.SAVED_SEARCHES
             ) { _ ->
-                SavedSearchesScreenContent()
+                SavedSearchesScreenRoot(
+                    savedSearches = SavedSearchesMockData.mockSavedSearches,
+                    onSearchClick = { /* Navigate to search results */ },
+                    onDeleteClick = { /* Delete search */ },
+                    onToggleAlerts = { _, _ -> /* Toggle alerts */ },
+                    onCreateSearchClick = {
+                        navController.navigate(MainDestinations.SEARCH)
+                    }
+                )
             }
         }
 
@@ -143,8 +159,27 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 navController = navController,
                 currentRoute = MainDestinations.INBOX
             ) { _ ->
-                InboxScreenContent()
+                InboxScreenRoot(
+                    conversations = InboxMockData.mockConversations,
+                    onConversationClick = { conversation ->
+                        navController.navigate("${MainDestinations.CHAT}/${conversation.id}")
+                    }
+                )
             }
+        }
+
+        // Chat Screen
+        composable(route = "${MainDestinations.CHAT}/{conversationId}") { backStackEntry ->
+            val conversationId = backStackEntry.arguments?.getString("conversationId") ?: ""
+            val conversation = InboxMockData.mockConversations.find { it.id == conversationId }
+            ChatScreenRoot(
+                participantName = conversation?.participantName ?: "Agent",
+                isAgent = conversation?.isAgent ?: true,
+                propertyTitle = conversation?.propertyTitle,
+                messages = ChatMockData.mockMessages,
+                onBackClick = { navController.popBackStack() },
+                onSendMessage = { /* Send message */ }
+            )
         }
 
         // Profile Screen
@@ -238,12 +273,27 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
 
         // New Listing Screen
         composable(route = MainDestinations.NEW_LISTING) {
-            MainAppScaffold(
-                navController = navController,
-                currentRoute = MainDestinations.PROFILE
-            ) { _ ->
-                NewListingScreenContent()
-            }
+            NewListingScreenRoot(
+                onBackClick = { navController.popBackStack() },
+                onSubmit = { /* Handle listing submission */ }
+            )
+        }
+
+        // Property Details Screen
+        composable(route = "${MainDestinations.PROPERTY_DETAILS}/{propertyId}") { backStackEntry ->
+            val propertyId = backStackEntry.arguments?.getString("propertyId") ?: ""
+            val property = MockData.getMockProperties().find { it.id == propertyId }
+                ?: MockData.getMockProperties().first()
+            PropertyDetailsScreenRoot(
+                property = property,
+                isFavorite = false,
+                onBackClick = { navController.popBackStack() },
+                onFavoriteClick = { /* Toggle favorite */ },
+                onShareClick = { /* Share property */ },
+                onContactAgentClick = { /* Contact agent */ },
+                onCallAgentClick = { /* Call agent */ },
+                onScheduleViewingClick = { /* Schedule viewing */ }
+            )
         }
 
         // Subscription Screen - Full screen pricing for better mobile scrolling
