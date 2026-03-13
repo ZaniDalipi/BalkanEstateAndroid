@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.balkanEstateAndroid.jvm.ktor)
 }
 android {
-    namespace = "com.zanoapps.propertyDetails.data"
+    namespace = "com.zanoapps.property_details.data"
 }
 dependencies {
     implementation(projects.core.domain)
