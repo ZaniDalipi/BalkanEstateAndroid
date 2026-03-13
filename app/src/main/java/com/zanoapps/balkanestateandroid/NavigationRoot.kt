@@ -35,6 +35,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.zanoapps.core.presentation.designsystem.components.animations.DefaultTransitions
+import com.zanoapps.core.presentation.designsystem.components.animations.DetailTransitions
+import com.zanoapps.core.presentation.designsystem.components.animations.OnboardingTransitions
+import com.zanoapps.core.presentation.designsystem.components.animations.TabTransitions
 import com.zanoapps.balkanestateandroid.utils.MainDestinations
 import com.zanoapps.balkanestateandroid.utils.OnboardingDestinations
 import com.zanoapps.balkanestateandroid.utils.SearchDestinations
@@ -74,7 +78,11 @@ fun NavigationRoot(
 ) {
     NavHost(
         navController = navController,
-        startDestination = OnboardingDestinations.ROOT
+        startDestination = OnboardingDestinations.ROOT,
+        enterTransition = DefaultTransitions.enterTransition,
+        exitTransition = DefaultTransitions.exitTransition,
+        popEnterTransition = DefaultTransitions.popEnterTransition,
+        popExitTransition = DefaultTransitions.popExitTransition,
     ) {
         onBoardingGraph(navController)
         mainAppGraph(navController)
@@ -88,7 +96,13 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
         route = MainDestinations.ROOT
     ) {
         // Search Screen (Main landing screen)
-        composable(route = MainDestinations.SEARCH) {
+        composable(
+            route = MainDestinations.SEARCH,
+            enterTransition = TabTransitions.enterTransition,
+            exitTransition = TabTransitions.exitTransition,
+            popEnterTransition = TabTransitions.popEnterTransition,
+            popExitTransition = TabTransitions.popExitTransition,
+        ) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.SEARCH
@@ -101,7 +115,13 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
         }
 
         // Saved Searches Screen
-        composable(route = MainDestinations.SAVED_SEARCHES) {
+        composable(
+            route = MainDestinations.SAVED_SEARCHES,
+            enterTransition = TabTransitions.enterTransition,
+            exitTransition = TabTransitions.exitTransition,
+            popEnterTransition = TabTransitions.popEnterTransition,
+            popExitTransition = TabTransitions.popExitTransition,
+        ) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.SAVED_SEARCHES
@@ -111,7 +131,13 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
         }
 
         // Saved Properties Screen
-        composable(route = MainDestinations.SAVED) {
+        composable(
+            route = MainDestinations.SAVED,
+            enterTransition = TabTransitions.enterTransition,
+            exitTransition = TabTransitions.exitTransition,
+            popEnterTransition = TabTransitions.popEnterTransition,
+            popExitTransition = TabTransitions.popExitTransition,
+        ) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.SAVED
@@ -121,7 +147,13 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
         }
 
         // Inbox Screen
-        composable(route = MainDestinations.INBOX) {
+        composable(
+            route = MainDestinations.INBOX,
+            enterTransition = TabTransitions.enterTransition,
+            exitTransition = TabTransitions.exitTransition,
+            popEnterTransition = TabTransitions.popEnterTransition,
+            popExitTransition = TabTransitions.popExitTransition,
+        ) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.INBOX
@@ -131,7 +163,13 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
         }
 
         // Profile Screen
-        composable(route = MainDestinations.PROFILE) {
+        composable(
+            route = MainDestinations.PROFILE,
+            enterTransition = TabTransitions.enterTransition,
+            exitTransition = TabTransitions.exitTransition,
+            popEnterTransition = TabTransitions.popEnterTransition,
+            popExitTransition = TabTransitions.popExitTransition,
+        ) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.PROFILE
@@ -147,7 +185,13 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
         }
 
         // Top Agents Screen
-        composable(route = MainDestinations.TOP_AGENTS) {
+        composable(
+            route = MainDestinations.TOP_AGENTS,
+            enterTransition = DetailTransitions.enterTransition,
+            exitTransition = DetailTransitions.exitTransition,
+            popEnterTransition = DetailTransitions.popEnterTransition,
+            popExitTransition = DetailTransitions.popExitTransition,
+        ) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.SEARCH
@@ -157,7 +201,13 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
         }
 
         // Agencies Screen
-        composable(route = MainDestinations.AGENCIES) {
+        composable(
+            route = MainDestinations.AGENCIES,
+            enterTransition = DetailTransitions.enterTransition,
+            exitTransition = DetailTransitions.exitTransition,
+            popEnterTransition = DetailTransitions.popEnterTransition,
+            popExitTransition = DetailTransitions.popExitTransition,
+        ) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.SEARCH
@@ -167,7 +217,13 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
         }
 
         // New Listing Screen
-        composable(route = MainDestinations.NEW_LISTING) {
+        composable(
+            route = MainDestinations.NEW_LISTING,
+            enterTransition = DetailTransitions.enterTransition,
+            exitTransition = DetailTransitions.exitTransition,
+            popEnterTransition = DetailTransitions.popEnterTransition,
+            popExitTransition = DetailTransitions.popExitTransition,
+        ) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.PROFILE
@@ -177,7 +233,13 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
         }
 
         // Subscription Screen
-        composable(route = MainDestinations.SUBSCRIPTION) {
+        composable(
+            route = MainDestinations.SUBSCRIPTION,
+            enterTransition = DetailTransitions.enterTransition,
+            exitTransition = DetailTransitions.exitTransition,
+            popEnterTransition = DetailTransitions.popEnterTransition,
+            popExitTransition = DetailTransitions.popExitTransition,
+        ) {
             MainAppScaffold(
                 navController = navController,
                 currentRoute = MainDestinations.PROFILE
@@ -188,7 +250,13 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
     }
 
     // Also keep SearchDestinations.ROOT for backward compatibility
-    composable(route = SearchDestinations.ROOT) {
+    composable(
+        route = SearchDestinations.ROOT,
+        enterTransition = TabTransitions.enterTransition,
+        exitTransition = TabTransitions.exitTransition,
+        popEnterTransition = TabTransitions.popEnterTransition,
+        popExitTransition = TabTransitions.popExitTransition,
+    ) {
         MainAppScaffold(
             navController = navController,
             currentRoute = MainDestinations.SEARCH
@@ -261,7 +329,13 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
         route = OnboardingDestinations.ROOT,
     ) {
         // Screen 1: Client Intent
-        composable(route = OnboardingDestinations.CLIENT_INTENT) {
+        composable(
+            route = OnboardingDestinations.CLIENT_INTENT,
+            enterTransition = OnboardingTransitions.enterTransition,
+            exitTransition = OnboardingTransitions.exitTransition,
+            popEnterTransition = OnboardingTransitions.popEnterTransition,
+            popExitTransition = OnboardingTransitions.popExitTransition,
+        ) {
             ClientIntentScreenRoot(
                 onNavigateToBuyRentPath = {
                     navController.navigate(OnboardingDestinations.ON_BOARDING_BUYER_LIFE_SITUATION) {
@@ -284,7 +358,13 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
 
         //Buyer
         // Screen 2: Life Situation
-        composable(route = OnboardingDestinations.ON_BOARDING_BUYER_LIFE_SITUATION) {
+        composable(
+            route = OnboardingDestinations.ON_BOARDING_BUYER_LIFE_SITUATION,
+            enterTransition = OnboardingTransitions.enterTransition,
+            exitTransition = OnboardingTransitions.exitTransition,
+            popEnterTransition = OnboardingTransitions.popEnterTransition,
+            popExitTransition = OnboardingTransitions.popExitTransition,
+        ) {
             CurrentLifeSituationRoot(
                 onBackClicked = {
                     navController.navigate(OnboardingDestinations.CLIENT_INTENT)
@@ -304,7 +384,13 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
         }
 
         // Screen 3: Property Intent
-        composable(route = OnboardingDestinations.ON_BOARDING_BUYER_PROPERTY_INTENT) {
+        composable(
+            route = OnboardingDestinations.ON_BOARDING_BUYER_PROPERTY_INTENT,
+            enterTransition = OnboardingTransitions.enterTransition,
+            exitTransition = OnboardingTransitions.exitTransition,
+            popEnterTransition = OnboardingTransitions.popEnterTransition,
+            popExitTransition = OnboardingTransitions.popExitTransition,
+        ) {
             PropertyIntentScreenRoot(
                 onBackClicked = {
                     navController.popBackStack()
@@ -324,7 +410,13 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
         }
 
         // Screen 4: Amenities
-        composable(route = OnboardingDestinations.ON_BOARDING_BUYER_AMENITIES) {
+        composable(
+            route = OnboardingDestinations.ON_BOARDING_BUYER_AMENITIES,
+            enterTransition = OnboardingTransitions.enterTransition,
+            exitTransition = OnboardingTransitions.exitTransition,
+            popEnterTransition = OnboardingTransitions.popEnterTransition,
+            popExitTransition = OnboardingTransitions.popExitTransition,
+        ) {
             AmenitiesScreenRoot(
                 onNextClicked = {
                     navController.navigate(OnboardingDestinations.ON_BOARDING_BUYER_FINAL_MESSAGE) {
@@ -345,7 +437,13 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
             )
         }
 
-        composable(route = OnboardingDestinations.ON_BOARDING_BUYER_FINAL_MESSAGE) {
+        composable(
+            route = OnboardingDestinations.ON_BOARDING_BUYER_FINAL_MESSAGE,
+            enterTransition = OnboardingTransitions.enterTransition,
+            exitTransition = OnboardingTransitions.exitTransition,
+            popEnterTransition = OnboardingTransitions.popEnterTransition,
+            popExitTransition = OnboardingTransitions.popExitTransition,
+        ) {
             ThankYouRoot(
                 onAction = { action ->
                     when (action) {
@@ -369,7 +467,13 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
 
 
         // Screen 1: Property Type
-        composable(route = OnboardingDestinations.ON_BOARDING_SELLER_PROPERTY_TYPE) {
+        composable(
+            route = OnboardingDestinations.ON_BOARDING_SELLER_PROPERTY_TYPE,
+            enterTransition = OnboardingTransitions.enterTransition,
+            exitTransition = OnboardingTransitions.exitTransition,
+            popEnterTransition = OnboardingTransitions.popEnterTransition,
+            popExitTransition = OnboardingTransitions.popExitTransition,
+        ) {
             SellerPropertyTypeRoot(
                 onActionSellerPropertyType = {},
                 onNextClicked = {
@@ -389,7 +493,13 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
         }
 
         // Screen 2: SellingTime
-        composable(route = OnboardingDestinations.ON_BOARDING_SELLER_SELLING_TIME) {
+        composable(
+            route = OnboardingDestinations.ON_BOARDING_SELLER_SELLING_TIME,
+            enterTransition = OnboardingTransitions.enterTransition,
+            exitTransition = OnboardingTransitions.exitTransition,
+            popEnterTransition = OnboardingTransitions.popEnterTransition,
+            popExitTransition = OnboardingTransitions.popExitTransition,
+        ) {
             SellingTimeRoot(
                 onActionSellingTime = {},
                 onNextClicked = {
@@ -409,7 +519,13 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
         }
 
         // Screen 3: Main Goal
-        composable(route = OnboardingDestinations.ON_BOARDING_SELLER_MAIN_GOAL) {
+        composable(
+            route = OnboardingDestinations.ON_BOARDING_SELLER_MAIN_GOAL,
+            enterTransition = OnboardingTransitions.enterTransition,
+            exitTransition = OnboardingTransitions.exitTransition,
+            popEnterTransition = OnboardingTransitions.popEnterTransition,
+            popExitTransition = OnboardingTransitions.popExitTransition,
+        ) {
             SellerMainGoalRoot(
                 onActionMainGoal = {},
                 onNextClicked = {
@@ -431,7 +547,13 @@ private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {
         }
 
         // Screen 4: Final Message
-        composable(route = OnboardingDestinations.ON_BOARDING_SELLER_FINAL_MESSAGE) {
+        composable(
+            route = OnboardingDestinations.ON_BOARDING_SELLER_FINAL_MESSAGE,
+            enterTransition = OnboardingTransitions.enterTransition,
+            exitTransition = OnboardingTransitions.exitTransition,
+            popEnterTransition = OnboardingTransitions.popEnterTransition,
+            popExitTransition = OnboardingTransitions.popExitTransition,
+        ) {
             SellerOnboardingCompletionRoot(
                 onAction = { action ->
                     when (action) {
