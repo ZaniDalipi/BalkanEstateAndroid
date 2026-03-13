@@ -5,12 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zanoapps.search.domain.model.MockData
+import com.zanoapps.favourites.domain.repository.FavouritesRepository
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class FavouritesViewModel : ViewModel() {
+class FavouritesViewModel(
+    private val favouritesRepository: FavouritesRepository
+) : ViewModel() {
 
     var state by mutableStateOf(FavouritesState())
         private set
@@ -70,25 +74,21 @@ class FavouritesViewModel : ViewModel() {
     }
 
     private fun loadFavourites() {
-        viewModelScope.launch {
-            state = state.copy(isLoading = true)
-            // Load mock data - in production, this would load from local DB
-            val properties = MockData.getMockProperties().take(4)
-            state = state.copy(
-                savedProperties = properties,
-                filteredProperties = properties,
-                isLoading = false
-            )
-        }
+        state = state.copy(isLoading = true)
+        favouritesRepository.getFavouriteProperties()
+            .onEach { properties ->
+                state = state.copy(
+                    savedProperties = properties,
+                    filteredProperties = properties,
+                    isLoading = false
+                )
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun removeFavourite(propertyId: String) {
-        val updated = state.savedProperties.filter { it.id != propertyId }
-        state = state.copy(
-            savedProperties = updated,
-            filteredProperties = updated
-        )
         viewModelScope.launch {
+            favouritesRepository.removeFavourite(propertyId)
             eventChannel.send(FavouritesEvent.PropertyRemoved(propertyId))
         }
     }

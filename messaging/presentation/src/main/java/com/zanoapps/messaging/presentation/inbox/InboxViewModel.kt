@@ -5,14 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zanoapps.messaging.domain.model.Conversation
-import com.zanoapps.messaging.domain.model.Message
+import com.zanoapps.messaging.domain.repository.MessagingRepository
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class InboxViewModel : ViewModel() {
+class InboxViewModel(
+    private val messagingRepository: MessagingRepository
+) : ViewModel() {
 
     var state by mutableStateOf(InboxState())
         private set
@@ -50,57 +52,50 @@ class InboxViewModel : ViewModel() {
             }
             InboxAction.OnSendMessage -> sendMessage()
             is InboxAction.OnDeleteConversation -> {
-                val updated = state.conversations.filter { it.id != action.conversationId }
-                state = state.copy(conversations = updated, filteredConversations = updated)
+                viewModelScope.launch {
+                    messagingRepository.deleteConversation(action.conversationId)
+                }
             }
             is InboxAction.OnArchiveConversation -> { /* Archive logic */ }
             is InboxAction.OnMarkAsRead -> {
-                val updated = state.conversations.map {
-                    if (it.id == action.conversationId) it.copy(unreadCount = 0) else it
+                viewModelScope.launch {
+                    messagingRepository.markAsRead(action.conversationId)
                 }
-                state = state.copy(conversations = updated, filteredConversations = updated)
             }
         }
     }
 
     private fun loadConversations() {
-        viewModelScope.launch {
-            state = state.copy(isLoading = true)
-            val conversations = getMockConversations()
-            state = state.copy(
-                conversations = conversations,
-                filteredConversations = conversations,
-                isLoading = false
-            )
-        }
+        state = state.copy(isLoading = true)
+        messagingRepository.getConversations()
+            .onEach { conversations ->
+                state = state.copy(
+                    conversations = conversations,
+                    filteredConversations = conversations,
+                    isLoading = false
+                )
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun loadMessages(conversationId: String) {
+        messagingRepository.getMessages(conversationId)
+            .onEach { messages ->
+                state = state.copy(messages = messages, isLoadingMessages = false)
+            }
+            .launchIn(viewModelScope)
         viewModelScope.launch {
-            delay(300)
-            val messages = getMockMessages(conversationId)
-            state = state.copy(messages = messages, isLoadingMessages = false)
+            messagingRepository.markAsRead(conversationId)
         }
     }
 
     private fun sendMessage() {
         if (state.newMessage.isBlank()) return
+        val conversationId = state.selectedConversation?.id ?: return
         viewModelScope.launch {
             state = state.copy(isSendingMessage = true)
-            delay(500)
-            val newMsg = Message(
-                id = "msg_${System.currentTimeMillis()}",
-                conversationId = state.selectedConversation?.id ?: "",
-                content = state.newMessage,
-                timestamp = "Just now",
-                isFromUser = true,
-                isRead = true
-            )
-            state = state.copy(
-                messages = state.messages + newMsg,
-                newMessage = "",
-                isSendingMessage = false
-            )
+            messagingRepository.sendMessage(conversationId, state.newMessage)
+            state = state.copy(newMessage = "", isSendingMessage = false)
             eventChannel.send(InboxEvent.MessageSent)
         }
     }
@@ -121,55 +116,4 @@ class InboxViewModel : ViewModel() {
         }
         state = state.copy(filteredConversations = filtered)
     }
-
-    private fun getMockConversations(): List<Conversation> = listOf(
-        Conversation(
-            id = "conv1",
-            agentName = "Besmir Kola",
-            lastMessage = "The property is still available. Would you like to schedule a viewing?",
-            lastMessageTime = "2 min ago",
-            unreadCount = 2,
-            propertyTitle = "Beautiful 3BR Villa in Tirana",
-            propertyImageUrl = "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
-            isOnline = true
-        ),
-        Conversation(
-            id = "conv2",
-            agentName = "Eglantina Dervishi",
-            lastMessage = "I've sent you the documents for review.",
-            lastMessageTime = "1 hour ago",
-            unreadCount = 0,
-            propertyTitle = "Modern 2BR Apartment in Blloku",
-            propertyImageUrl = "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
-            isOnline = false
-        ),
-        Conversation(
-            id = "conv3",
-            agentName = "Arben Dedja",
-            lastMessage = "The price is negotiable. Let me know your offer.",
-            lastMessageTime = "Yesterday",
-            unreadCount = 1,
-            propertyTitle = "Luxury Penthouse with City Views",
-            propertyImageUrl = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
-            isOnline = true
-        ),
-        Conversation(
-            id = "conv4",
-            agentName = "Mirela Hoxha",
-            lastMessage = "Thank you for your interest! I'll get back to you shortly.",
-            lastMessageTime = "3 days ago",
-            unreadCount = 0,
-            propertyTitle = "Cozy Studio near University",
-            isOnline = false
-        )
-    )
-
-    private fun getMockMessages(conversationId: String): List<Message> = listOf(
-        Message("m1", conversationId, "Hi, I'm interested in this property.", "10:00 AM", true),
-        Message("m2", conversationId, "Hello! Thank you for your interest. The property is currently available for viewing.", "10:05 AM", false),
-        Message("m3", conversationId, "Great! What's the earliest available time?", "10:10 AM", true),
-        Message("m4", conversationId, "We can arrange a viewing this Saturday at 2 PM. Does that work for you?", "10:15 AM", false),
-        Message("m5", conversationId, "That works perfectly. I'll be there.", "10:20 AM", true),
-        Message("m6", conversationId, "Excellent! I'll send you the exact address and directions. See you Saturday!", "10:25 AM", false)
-    )
 }

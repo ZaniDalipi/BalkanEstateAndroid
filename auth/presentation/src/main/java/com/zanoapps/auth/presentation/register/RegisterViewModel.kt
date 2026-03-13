@@ -5,12 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zanoapps.auth.domain.repository.AuthRepository
+import com.zanoapps.core.domain.util.Result
+import com.zanoapps.auth.domain.model.AccountType as DomainAccountType
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class RegisterViewModel : ViewModel() {
+class RegisterViewModel(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     var state by mutableStateOf(RegisterState())
         private set
@@ -52,9 +56,30 @@ class RegisterViewModel : ViewModel() {
         }
         viewModelScope.launch {
             state = state.copy(isLoading = true, errorMessage = null)
-            delay(2000)
-            state = state.copy(isLoading = false)
-            eventChannel.send(RegisterEvent.RegisterSuccess)
+            val accountType = when (state.accountType) {
+                AccountType.BUYER -> DomainAccountType.BUYER
+                AccountType.SELLER -> DomainAccountType.SELLER
+                AccountType.AGENT -> DomainAccountType.AGENT
+            }
+            when (val result = authRepository.register(
+                firstName = state.firstName,
+                lastName = state.lastName,
+                email = state.email,
+                phone = state.phone,
+                password = state.password,
+                accountType = accountType
+            )) {
+                is Result.Success -> {
+                    state = state.copy(isLoading = false)
+                    eventChannel.send(RegisterEvent.RegisterSuccess)
+                }
+                is Result.Error -> {
+                    state = state.copy(
+                        isLoading = false,
+                        errorMessage = "Registration failed. Please try again."
+                    )
+                }
+            }
         }
     }
 }

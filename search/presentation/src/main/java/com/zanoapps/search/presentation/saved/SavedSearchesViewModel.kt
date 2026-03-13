@@ -5,11 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zanoapps.search.domain.repository.SavedSearchRepository
+import com.zanoapps.search.domain.repository.SavedSearchItem as DomainSavedSearchItem
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class SavedSearchesViewModel : ViewModel() {
+class SavedSearchesViewModel(
+    private val savedSearchRepository: SavedSearchRepository
+) : ViewModel() {
 
     var state by mutableStateOf(SavedSearchesState())
         private set
@@ -36,34 +42,51 @@ class SavedSearchesViewModel : ViewModel() {
     }
 
     private fun loadSavedSearches() {
-        viewModelScope.launch {
-            state = state.copy(isLoading = true)
-            state = state.copy(
-                savedSearches = getMockSavedSearches(),
-                isLoading = false
-            )
+        savedSearchRepository.getSavedSearches()
+            .onEach { domainItems ->
+                val items = domainItems.map { item ->
+                    SavedSearchItem(
+                        id = item.id,
+                        name = item.name,
+                        query = item.query,
+                        location = item.location,
+                        propertyType = item.propertyType,
+                        priceRange = item.priceRange,
+                        bedrooms = item.bedrooms,
+                        notificationsEnabled = item.notificationsEnabled,
+                        matchCount = item.matchCount,
+                        newCount = item.newCount,
+                        createdAt = formatCreatedAt(item.createdAt)
+                    )
+                }
+                state = state.copy(savedSearches = items, isLoading = false)
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun formatCreatedAt(timestamp: Long): String {
+        val diff = System.currentTimeMillis() - timestamp
+        val days = diff / (1000 * 60 * 60 * 24)
+        return when {
+            days < 1 -> "Today"
+            days < 2 -> "Yesterday"
+            days < 7 -> "$days days ago"
+            days < 30 -> "${days / 7} week${if (days / 7 > 1) "s" else ""} ago"
+            else -> "${days / 30} month${if (days / 30 > 1) "s" else ""} ago"
         }
     }
 
     private fun deleteSearch(searchId: String) {
-        val updated = state.savedSearches.filter { it.id != searchId }
-        state = state.copy(savedSearches = updated)
         viewModelScope.launch {
+            savedSearchRepository.deleteSearch(searchId)
             eventChannel.send(SavedSearchesEvent.SearchDeleted(searchId))
         }
     }
 
     private fun toggleNotifications(searchId: String) {
-        val updated = state.savedSearches.map {
-            if (it.id == searchId) it.copy(notificationsEnabled = !it.notificationsEnabled) else it
+        val item = state.savedSearches.find { it.id == searchId } ?: return
+        viewModelScope.launch {
+            savedSearchRepository.toggleNotifications(searchId, !item.notificationsEnabled)
         }
-        state = state.copy(savedSearches = updated)
     }
-
-    private fun getMockSavedSearches(): List<SavedSearchItem> = listOf(
-        SavedSearchItem("s1", "Tirana Apartments", query = "apartment", location = "Tirana", propertyType = "Apartment", priceRange = "€50,000 - €200,000", bedrooms = "2+", notificationsEnabled = true, matchCount = 24, newCount = 3, createdAt = "2 days ago"),
-        SavedSearchItem("s2", "Coastal Villas", query = "villa", location = "Durrës, Vlorë", propertyType = "Villa", priceRange = "€200,000 - €500,000", bedrooms = "3+", notificationsEnabled = true, matchCount = 12, newCount = 1, createdAt = "1 week ago"),
-        SavedSearchItem("s3", "Commercial Tirana", query = "office", location = "Tirana", propertyType = "Commercial", priceRange = "€1,000 - €5,000/mo", bedrooms = "N/A", notificationsEnabled = false, matchCount = 8, newCount = 0, createdAt = "2 weeks ago"),
-        SavedSearchItem("s4", "Student Rentals", query = "studio", location = "Tirana", propertyType = "Studio", priceRange = "€200 - €500/mo", bedrooms = "1", notificationsEnabled = true, matchCount = 15, newCount = 5, createdAt = "3 weeks ago")
-    )
 }

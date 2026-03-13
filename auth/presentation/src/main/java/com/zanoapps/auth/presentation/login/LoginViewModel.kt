@@ -5,12 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zanoapps.auth.domain.repository.AuthRepository
+import com.zanoapps.core.domain.util.Result
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     var state by mutableStateOf(LoginState())
         private set
@@ -43,9 +46,18 @@ class LoginViewModel : ViewModel() {
         }
         viewModelScope.launch {
             state = state.copy(isLoading = true, errorMessage = null)
-            delay(1500)
-            state = state.copy(isLoading = false)
-            eventChannel.send(LoginEvent.LoginSuccess)
+            when (val result = authRepository.login(state.email, state.password)) {
+                is Result.Success -> {
+                    state = state.copy(isLoading = false)
+                    eventChannel.send(LoginEvent.LoginSuccess)
+                }
+                is Result.Error -> {
+                    state = state.copy(
+                        isLoading = false,
+                        errorMessage = "Login failed. Please check your credentials."
+                    )
+                }
+            }
         }
     }
 }

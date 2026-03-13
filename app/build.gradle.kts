@@ -48,6 +48,7 @@ dependencies {
     dependencies {
         // Core modules
         implementation(projects.core.data)
+        implementation(projects.core.database)
         implementation(projects.core.domain)
         implementation(projects.core.presentation)
         implementation(projects.core.presentation.designSystem)
@@ -102,6 +103,11 @@ dependencies {
         implementation(projects.media.data)
         implementation(projects.media.domain)
         implementation(projects.media.presentation)
+
+        // Auth modules
+        implementation(projects.auth.data)
+        implementation(projects.auth.domain)
+        implementation(projects.auth.presentation)
 
         // On Boarding modules
         implementation(projects.onboarding.domain)

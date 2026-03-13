@@ -5,13 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zanoapps.search.domain.model.MockData
+import com.zanoapps.search.domain.repository.PropertyRepository
+import com.zanoapps.favourites.domain.repository.FavouritesRepository
+import com.zanoapps.core.domain.util.Result
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class PropertyDetailViewModel : ViewModel() {
+class PropertyDetailViewModel(
+    private val propertyRepository: PropertyRepository,
+    private val favouritesRepository: FavouritesRepository
+) : ViewModel() {
 
     var state by mutableStateOf(PropertyDetailState())
         private set
@@ -23,7 +27,15 @@ class PropertyDetailViewModel : ViewModel() {
         when (action) {
             is PropertyDetailAction.OnLoadProperty -> loadProperty(action.propertyId)
             PropertyDetailAction.OnToggleFavorite -> {
-                state = state.copy(isFavorite = !state.isFavorite)
+                val propertyId = state.property?.id ?: return
+                viewModelScope.launch {
+                    if (state.isFavorite) {
+                        favouritesRepository.removeFavourite(propertyId)
+                    } else {
+                        favouritesRepository.addFavourite(propertyId)
+                    }
+                    state = state.copy(isFavorite = !state.isFavorite)
+                }
             }
             PropertyDetailAction.OnShareProperty -> {
                 state.property?.let { property ->
@@ -104,24 +116,39 @@ class PropertyDetailViewModel : ViewModel() {
     private fun loadProperty(propertyId: String) {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
-            // Load from mock data for now
-            val property = MockData.getMockProperties().find { it.id == propertyId }
-            val similarProperties = MockData.getMockProperties()
-                .filter { it.id != propertyId }
-                .take(3)
-
-            state = state.copy(
-                property = property,
-                similarProperties = similarProperties,
-                isLoading = false
-            )
+            val result = propertyRepository.getPropertyById(propertyId)
+            val isFav = favouritesRepository.isFavourite(propertyId)
+            when (result) {
+                is Result.Success -> {
+                    val property = result.data
+                    val similarResult = propertyRepository.searchProperties(
+                        property.city,
+                        com.zanoapps.search.domain.model.SearchFilters()
+                    )
+                    val similar = when (similarResult) {
+                        is Result.Success -> similarResult.data.filter { it.id != propertyId }.take(3)
+                        is Result.Error -> emptyList()
+                    }
+                    state = state.copy(
+                        property = property,
+                        similarProperties = similar,
+                        isFavorite = isFav,
+                        isLoading = false
+                    )
+                }
+                is Result.Error -> {
+                    state = state.copy(
+                        isLoading = false,
+                        errorMessage = "Failed to load property"
+                    )
+                }
+            }
         }
     }
 
     private fun sendMessage() {
         viewModelScope.launch {
             state = state.copy(isSendingMessage = true)
-            delay(1500) // Simulate network call
             state = state.copy(
                 isSendingMessage = false,
                 messageSent = true,

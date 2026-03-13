@@ -5,18 +5,34 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zanoapps.profile.domain.repository.ProfileRepository
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class ProfileViewModel : ViewModel() {
+class ProfileViewModel(
+    private val profileRepository: ProfileRepository
+) : ViewModel() {
 
     var state by mutableStateOf(ProfileState())
         private set
 
     private val eventChannel = Channel<ProfileEvent>()
     val events = eventChannel.receiveAsFlow()
+
+    init {
+        loadProfile()
+    }
+
+    private fun loadProfile() {
+        profileRepository.getProfile()
+            .onEach { profile ->
+                state = state.copy(userProfile = profile)
+            }
+            .launchIn(viewModelScope)
+    }
 
     fun onAction(action: ProfileAction) {
         when (action) {
@@ -69,7 +85,10 @@ class ProfileViewModel : ViewModel() {
             ProfileAction.OnDeleteAccountClick -> state = state.copy(showDeleteAccountDialog = true)
             ProfileAction.OnConfirmDeleteAccount -> {
                 state = state.copy(showDeleteAccountDialog = false)
-                viewModelScope.launch { eventChannel.send(ProfileEvent.NavigateToLogin) }
+                viewModelScope.launch {
+                    profileRepository.deleteAccount()
+                    eventChannel.send(ProfileEvent.NavigateToLogin)
+                }
             }
             ProfileAction.OnDismissDeleteAccount -> state = state.copy(showDeleteAccountDialog = false)
             ProfileAction.OnChangePasswordClick -> {}
@@ -79,7 +98,6 @@ class ProfileViewModel : ViewModel() {
     private fun saveProfile() {
         viewModelScope.launch {
             state = state.copy(isSaving = true)
-            delay(1000)
             val updatedProfile = state.userProfile.copy(
                 firstName = state.editFirstName,
                 lastName = state.editLastName,
@@ -88,6 +106,7 @@ class ProfileViewModel : ViewModel() {
                 bio = state.editBio,
                 location = state.editLocation
             )
+            profileRepository.updateProfile(updatedProfile)
             state = state.copy(
                 userProfile = updatedProfile,
                 isEditing = false,

@@ -5,13 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zanoapps.search.domain.model.MockData
+import com.zanoapps.favourites.domain.repository.FavouritesRepository
+import com.zanoapps.search.domain.repository.PropertyRepository
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class SearchPropertyViewModel(
-    private val userId: String? = null
+    private val propertyRepository: PropertyRepository,
+    private val favouritesRepository: FavouritesRepository
 ) : ViewModel() {
 
     var state by mutableStateOf(SearchState())
@@ -45,13 +49,17 @@ class SearchPropertyViewModel(
                 state = state.copy(isBottomSheetExpanded = true)
             }
             is SearchAction.OnFavoriteToggle -> {
-                val currentFavorites = state.favoritePropertyIds.toMutableSet()
-                if (currentFavorites.contains(action.propertyId)) {
-                    currentFavorites.remove(action.propertyId)
-                } else {
-                    currentFavorites.add(action.propertyId)
+                viewModelScope.launch {
+                    val currentFavorites = state.favoritePropertyIds.toMutableSet()
+                    if (currentFavorites.contains(action.propertyId)) {
+                        currentFavorites.remove(action.propertyId)
+                        favouritesRepository.removeFavourite(action.propertyId)
+                    } else {
+                        currentFavorites.add(action.propertyId)
+                        favouritesRepository.addFavourite(action.propertyId)
+                    }
+                    state = state.copy(favoritePropertyIds = currentFavorites)
                 }
-                state = state.copy(favoritePropertyIds = currentFavorites)
             }
             SearchAction.OnFilterClick -> {
                 // Open filter dialog
@@ -138,16 +146,17 @@ class SearchPropertyViewModel(
                 isLoadingProperties = !isRefresh,
                 isRefreshing = isRefresh
             )
-
-            // Load mock data for now
-            val properties = MockData.getMockProperties()
-            state = state.copy(
-                properties = properties,
-                filteredProperties = properties,
-                isLoadingProperties = false,
-                isRefreshing = false
-            )
         }
+        propertyRepository.getProperties()
+            .onEach { properties ->
+                state = state.copy(
+                    properties = properties,
+                    filteredProperties = properties,
+                    isLoadingProperties = false,
+                    isRefreshing = false
+                )
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun applyFilters() {

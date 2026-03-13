@@ -13,4 +13,5 @@ dependencies {
     implementation(projects.core.presentation)
     implementation(projects.propertyDetails.domain)
     implementation(projects.search.domain)
+    implementation(projects.favourites.domain)
 }
