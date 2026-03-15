@@ -3,6 +3,8 @@ package com.zanoapps.balkanestateandroid
 import android.app.Application
 import com.zanoapps.agent.data.di.agentDataModule
 import com.zanoapps.agent.presentation.di.agentViewModelModule
+import com.zanoapps.ads.data.di.adDataModule
+import com.zanoapps.ads.presentation.di.adViewModelModule
 import com.zanoapps.auth.data.di.authDataModule
 import com.zanoapps.auth.presentation.di.authViewModelModule
 import com.zanoapps.balkanestateandroid.data.DataSeeder
@@ -10,8 +12,14 @@ import com.zanoapps.balkanestateandroid.di.appModule
 import com.zanoapps.core.database.di.databaseModule
 import com.zanoapps.favourites.data.di.favouritesDataModule
 import com.zanoapps.favourites.presentation.di.favouritesViewModelModule
+import com.zanoapps.map.data.di.mapDataModule
+import com.zanoapps.map.presentation.di.mapViewModelModule
+import com.zanoapps.media.data.di.mediaDataModule
+import com.zanoapps.media.presentation.di.mediaViewModelModule
 import com.zanoapps.messaging.data.di.messagingDataModule
 import com.zanoapps.messaging.presentation.di.messagingViewModelModule
+import com.zanoapps.notification.data.di.notificationDataModule
+import com.zanoapps.notification.presentation.di.notificationViewModelModule
 import com.zanoapps.onboarding.presentation.di.onBoardingViewModelModule
 import com.zanoapps.profile.data.di.profileDataModule
 import com.zanoapps.profile.presentation.di.profileViewModelModule
@@ -50,6 +58,10 @@ class BalkanEstateApp: Application() {
                 favouritesDataModule,
                 propertyDetailsDataModule,
                 authDataModule,
+                notificationDataModule,
+                mapDataModule,
+                mediaDataModule,
+                adDataModule,
                 // Presentation
                 onBoardingViewModelModule,
                 searchViewModelModule,
@@ -58,7 +70,11 @@ class BalkanEstateApp: Application() {
                 messagingViewModelModule,
                 favouritesViewModelModule,
                 propertyDetailsViewModelModule,
-                authViewModelModule
+                authViewModelModule,
+                notificationViewModelModule,
+                mapViewModelModule,
+                mediaViewModelModule,
+                adViewModelModule
             )
         }
 

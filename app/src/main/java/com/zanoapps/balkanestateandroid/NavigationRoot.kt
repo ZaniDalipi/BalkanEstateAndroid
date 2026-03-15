@@ -17,6 +17,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.zanoapps.agent.presentation.agencies.AgenciesScreenRoot
 import com.zanoapps.agent.presentation.agents.AgentsScreenRoot
+import com.zanoapps.map.presentation.map.MapScreenRoot
+import com.zanoapps.media.presentation.gallery.MediaGalleryScreenRoot
+import com.zanoapps.notification.presentation.notifications.NotificationScreenRoot
 import com.zanoapps.balkanestateandroid.utils.MainDestinations
 import com.zanoapps.balkanestateandroid.utils.OnboardingDestinations
 import com.zanoapps.balkanestateandroid.utils.SearchDestinations
@@ -183,6 +186,38 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
             )
         }
 
+        // Notifications Screen
+        composable(route = MainDestinations.NOTIFICATIONS) {
+            NotificationScreenRoot(
+                onNavigateToProperty = { propertyId ->
+                    navController.navigate(MainDestinations.propertyDetails(propertyId))
+                }
+            )
+        }
+
+        // Map Screen
+        composable(route = MainDestinations.MAP) {
+            MainAppScaffold(
+                navController = navController,
+                currentRoute = MainDestinations.SEARCH
+            ) { _ ->
+                MapScreenRoot(
+                    onNavigateToPropertyDetail = { propertyId ->
+                        navController.navigate(MainDestinations.propertyDetails(propertyId))
+                    }
+                )
+            }
+        }
+
+        // Media Gallery Screen
+        composable(route = MainDestinations.MEDIA_GALLERY) { backStackEntry ->
+            val propertyId = backStackEntry.arguments?.getString("propertyId") ?: ""
+            MediaGalleryScreenRoot(
+                propertyId = propertyId,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
         // Filter Screen
         composable(route = MainDestinations.FILTERS) {
             FilterScreenRoot(
@@ -246,7 +281,7 @@ private fun createSearchNavigationCallback(navController: NavHostController): Se
         }
 
         override fun onNavigateToNotifications() {
-            navController.navigate(MainDestinations.INBOX)
+            navController.navigate(MainDestinations.NOTIFICATIONS)
         }
 
         override fun onLogout() {

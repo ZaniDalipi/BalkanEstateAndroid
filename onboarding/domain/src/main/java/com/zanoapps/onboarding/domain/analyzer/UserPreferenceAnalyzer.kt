@@ -197,7 +197,16 @@ class UserPreferenceAnalyzer {
                     )
                 }
 
-                PropertyIntent.JUST_LOOKING_AROUND -> TODO()
+                PropertyIntent.JUST_LOOKING_AROUND -> {
+                    suggestions.addAll(
+                        listOf(
+                            Amenity.SWIMMING_POOL,
+                            Amenity.GARDEN,
+                            Amenity.PARKING,
+                            Amenity.BALCONY,
+                        )
+                    )
+                }
             }
         }
 

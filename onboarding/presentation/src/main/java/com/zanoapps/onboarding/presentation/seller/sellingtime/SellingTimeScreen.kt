@@ -168,14 +168,7 @@ fun SellingTimeScreenPreview() {
 
         SellingTimeScreen (
             state = SellingTimeState(selectedOptions),
-            onAction = {sellingTime ->
-                when(sellingTime) {
-                    SellingTimeAction.OnBackClick -> TODO()
-                    SellingTimeAction.OnNextClick -> TODO()
-                    SellingTimeAction.OnSkipClick -> TODO()
-                    else -> Unit
-                }
-            }
+            onAction = {}
         )
 
     }

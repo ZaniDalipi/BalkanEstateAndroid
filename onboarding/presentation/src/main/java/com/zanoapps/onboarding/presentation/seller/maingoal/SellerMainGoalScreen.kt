@@ -165,14 +165,7 @@ fun MainGoalScreenPreview() {
 
         SellerMainGoalScreen(
             state = SellerMainGoalState(selectedOptions),
-            onAction = { mainGoal ->
-                when (mainGoal) {
-                    CurrentLifeSituationAction.OnBackClick -> TODO()
-                    CurrentLifeSituationAction.OnNextClick -> TODO()
-                    CurrentLifeSituationAction.OnSkipClick -> TODO()
-                    else -> Unit
-                }
-            }
+            onAction = {}
         )
 
     }

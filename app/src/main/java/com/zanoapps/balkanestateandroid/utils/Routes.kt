@@ -37,6 +37,10 @@ object MainDestinations {
     const val SAVED_SEARCHES = "saved_searches"
     const val TOP_AGENTS = "top_agents"
     const val AGENCIES = "agencies"
+    const val NOTIFICATIONS = "notifications"
+    const val MAP = "map"
+    const val MEDIA_GALLERY = "media_gallery/{propertyId}"
 
     fun propertyDetails(propertyId: String) = "property_details/$propertyId"
+    fun mediaGallery(propertyId: String) = "media_gallery/$propertyId"
 }

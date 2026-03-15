@@ -163,14 +163,7 @@ fun PropertyTypeScreenPreview() {
 
         SellerPropertyTypeScreen (
             state = PropertyTypeState(selectedOptions),
-            onAction = {currentLifeSituationAction ->
-                when(currentLifeSituationAction) {
-                    CurrentLifeSituationAction.OnBackClick -> TODO()
-                    CurrentLifeSituationAction.OnNextClick -> TODO()
-                    CurrentLifeSituationAction.OnSkipClick -> TODO()
-                    is CurrentLifeSituationAction.OnPreferenceSelected -> TODO()
-                }
-            }
+            onAction = {}
         )
 
     }

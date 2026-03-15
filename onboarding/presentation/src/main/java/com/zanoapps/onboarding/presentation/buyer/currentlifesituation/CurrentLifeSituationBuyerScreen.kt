@@ -179,14 +179,7 @@ private fun CurrentLifeSituationScreenPreview() {
 
         CurrentLifeSituationBuyerScreen(
             state = CurrentLifeSituationBuyerState(selectedOptions),
-            onAction = {currentLifeSituationAction ->
-                when(currentLifeSituationAction) {
-                    CurrentLifeSituationAction.OnBackClick -> TODO()
-                    CurrentLifeSituationAction.OnNextClick -> TODO()
-                    CurrentLifeSituationAction.OnSkipClick -> TODO()
-                    is CurrentLifeSituationAction.OnPreferenceSelected -> TODO()
-                }
-            }
+            onAction = {}
         )
     }
 }
