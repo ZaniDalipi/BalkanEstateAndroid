@@ -52,6 +52,8 @@ import com.zanoapps.core.presentation.designsystem.KeyboardArrowDownIcon
 import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
 import com.zanoapps.core.presentation.designsystem.SavedHomesIcon
 import com.zanoapps.core.presentation.designsystem.components.PropertyCard
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -304,5 +306,16 @@ private fun FavouritesScreen(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun FavouritesScreenPreview() {
+    BalkanEstateTheme {
+        FavouritesScreen(
+            state = FavouritesState(),
+            onAction = {}
+        )
     }
 }

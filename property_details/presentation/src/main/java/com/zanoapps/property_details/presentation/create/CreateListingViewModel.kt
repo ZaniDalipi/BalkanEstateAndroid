@@ -65,9 +65,27 @@ class CreateListingViewModel : ViewModel() {
                 viewModelScope.launch { eventChannel.send(CreateListingEvent.NavigateBack) }
             }
         }
+        validateForm()
+    }
+
+    private fun validateForm() {
+        val isValid = state.title.isNotBlank() &&
+                state.propertyType.isNotBlank() &&
+                state.address.isNotBlank() &&
+                state.city.isNotBlank() &&
+                state.price.isNotBlank() &&
+                state.price.toDoubleOrNull() != null &&
+                state.price.toDoubleOrNull()?.let { it > 0 } == true
+        state = state.copy(isFormValid = isValid)
     }
 
     private fun submitListing() {
+        if (!state.isFormValid) {
+            viewModelScope.launch {
+                eventChannel.send(CreateListingEvent.ValidationError("Please fill in all required fields"))
+            }
+            return
+        }
         viewModelScope.launch {
             state = state.copy(isSubmitting = true)
             delay(2000) // Simulate API call

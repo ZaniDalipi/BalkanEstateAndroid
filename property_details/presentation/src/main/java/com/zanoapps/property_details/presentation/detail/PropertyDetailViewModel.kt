@@ -86,10 +86,20 @@ class PropertyDetailViewModel(
                 }
             }
             PropertyDetailAction.OnScheduleTourClick -> {
-                // Schedule tour logic
+                state.property?.let { property ->
+                    viewModelScope.launch {
+                        eventChannel.send(
+                            PropertyDetailEvent.OpenScheduleTour(property.id, property.agentName)
+                        )
+                    }
+                }
             }
             PropertyDetailAction.OnVirtualTourClick -> {
-                // Virtual tour logic
+                state.property?.let { property ->
+                    viewModelScope.launch {
+                        eventChannel.send(PropertyDetailEvent.OpenVirtualTour(property.id))
+                    }
+                }
             }
             PropertyDetailAction.OnGetDirectionsClick -> {
                 state.property?.let { property ->

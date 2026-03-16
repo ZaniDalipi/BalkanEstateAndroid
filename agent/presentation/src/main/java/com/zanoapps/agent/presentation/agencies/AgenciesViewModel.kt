@@ -38,7 +38,16 @@ class AgenciesViewModel(
                     eventChannel.send(AgenciesEvent.NavigateToAgencyDetail(action.agency.id))
                 }
             }
-            is AgenciesAction.OnContactAgency -> {}
+            is AgenciesAction.OnContactAgency -> {
+                viewModelScope.launch {
+                    eventChannel.send(
+                        AgenciesEvent.ContactAgency(
+                            phone = action.agency.phone,
+                            email = action.agency.email
+                        )
+                    )
+                }
+            }
         }
     }
 

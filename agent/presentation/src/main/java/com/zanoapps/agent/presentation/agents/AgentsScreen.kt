@@ -55,6 +55,8 @@ import com.zanoapps.core.presentation.designsystem.KeyboardArrowDownIcon
 import com.zanoapps.core.presentation.designsystem.LocationIcon
 import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
 import com.zanoapps.core.presentation.designsystem.StarIcon
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -297,5 +299,16 @@ private fun AgentStat(value: String, label: String, color: Color = BalkanEstateP
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = value, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = color)
         Text(text = label, fontSize = 11.sp, color = BalkanEstateGray)
+    }
+}
+
+@Preview
+@Composable
+private fun AgentsScreenPreview() {
+    BalkanEstateTheme {
+        AgentsScreen(
+            state = AgentsState(),
+            onAction = {}
+        )
     }
 }

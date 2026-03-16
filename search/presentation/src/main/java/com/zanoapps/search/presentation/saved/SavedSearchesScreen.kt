@@ -43,6 +43,8 @@ import com.zanoapps.core.presentation.designsystem.BalkanEstateRed
 import com.zanoapps.core.presentation.designsystem.CrossIcon
 import com.zanoapps.core.presentation.designsystem.LocationIcon
 import com.zanoapps.core.presentation.designsystem.NotificationBellIcon
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -184,5 +186,16 @@ private fun SearchDetail(label: String, value: String) {
     Column {
         Text(label, fontSize = 11.sp, color = BalkanEstateGray)
         Text(value, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Color.DarkGray)
+    }
+}
+
+@Preview
+@Composable
+private fun SavedSearchesScreenPreview() {
+    BalkanEstateTheme {
+        SavedSearchesScreen(
+            state = SavedSearchesState(),
+            onAction = {}
+        )
     }
 }

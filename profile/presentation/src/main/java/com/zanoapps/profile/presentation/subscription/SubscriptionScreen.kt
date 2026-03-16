@@ -45,6 +45,8 @@ import com.zanoapps.core.presentation.designsystem.BalkanEstateOrange
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.CheckIcon
 import com.zanoapps.core.presentation.designsystem.StarIcon
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -213,5 +215,16 @@ private fun PlanCard(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun SubscriptionScreenPreview() {
+    BalkanEstateTheme {
+        SubscriptionScreen(
+            state = SubscriptionState(),
+            onAction = {}
+        )
     }
 }

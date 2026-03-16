@@ -66,6 +66,8 @@ import com.zanoapps.core.presentation.designsystem.BalkanEstateTextSecondary
 import com.zanoapps.notification.domain.model.Notification
 import com.zanoapps.notification.domain.model.NotificationType
 import com.zanoapps.presentation.ui.ObserveAsEvents
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -384,5 +386,16 @@ private fun formatTimestamp(timestamp: Long): String {
             val sdf = SimpleDateFormat("MMM dd", Locale.getDefault())
             sdf.format(Date(timestamp))
         }
+    }
+}
+
+@Preview
+@Composable
+private fun NotificationScreenPreview() {
+    BalkanEstateTheme {
+        NotificationScreen(
+            state = NotificationState(),
+            onAction = {}
+        )
     }
 }

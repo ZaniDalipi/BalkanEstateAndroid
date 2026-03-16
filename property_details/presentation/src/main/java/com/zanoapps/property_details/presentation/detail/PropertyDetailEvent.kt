@@ -11,4 +11,6 @@ sealed interface PropertyDetailEvent {
     data class OpenDialer(val phoneNumber: String) : PropertyDetailEvent
     data class OpenEmail(val email: String) : PropertyDetailEvent
     data class OpenDirections(val latitude: Double, val longitude: Double) : PropertyDetailEvent
+    data class OpenVirtualTour(val propertyId: String) : PropertyDetailEvent
+    data class OpenScheduleTour(val propertyId: String, val agentName: String) : PropertyDetailEvent
 }

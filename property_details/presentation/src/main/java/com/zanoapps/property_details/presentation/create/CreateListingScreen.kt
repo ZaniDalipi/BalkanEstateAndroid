@@ -55,6 +55,8 @@ import com.zanoapps.core.presentation.designsystem.BalkanEstateGray
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.CameraIcon
 import com.zanoapps.core.presentation.designsystem.KeyboardArrowDownIcon
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -351,5 +353,16 @@ private fun DropdownSelector(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun CreateListingScreenPreview() {
+    BalkanEstateTheme {
+        CreateListingScreen(
+            state = CreateListingState(),
+            onAction = {}
+        )
     }
 }

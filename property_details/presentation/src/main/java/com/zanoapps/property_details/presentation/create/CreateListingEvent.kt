@@ -4,6 +4,7 @@ import com.zanoapps.presentation.ui.UiText
 
 sealed interface CreateListingEvent {
     data class Error(val error: UiText) : CreateListingEvent
+    data class ValidationError(val message: String) : CreateListingEvent
     data object ListingCreated : CreateListingEvent
     data object NavigateBack : CreateListingEvent
 }

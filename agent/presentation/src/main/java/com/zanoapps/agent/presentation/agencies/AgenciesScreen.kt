@@ -50,6 +50,8 @@ import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
 import com.zanoapps.core.presentation.designsystem.StarIcon
 import org.koin.androidx.compose.koinViewModel
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 
 @Composable
 fun AgenciesScreenRoot(
@@ -203,5 +205,16 @@ private fun AgencyCard(agency: Agency, onAction: (AgenciesAction) -> Unit) {
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AgenciesScreenPreview() {
+    BalkanEstateTheme {
+        AgenciesScreen(
+            state = AgenciesState(),
+            onAction = {}
+        )
     }
 }

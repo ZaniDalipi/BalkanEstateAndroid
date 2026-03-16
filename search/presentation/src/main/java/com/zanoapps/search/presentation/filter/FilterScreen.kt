@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import com.zanoapps.core.presentation.designsystem.BackIcon
 import com.zanoapps.core.presentation.designsystem.BalkanEstateGray
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -225,5 +227,16 @@ private fun FilterSection(title: String, content: @Composable () -> Unit) {
             Spacer(Modifier.height(8.dp))
             content()
         }
+    }
+}
+
+@Preview
+@Composable
+private fun FilterScreenPreview() {
+    BalkanEstateTheme {
+        FilterScreen(
+            state = FilterState(),
+            onAction = {}
+        )
     }
 }

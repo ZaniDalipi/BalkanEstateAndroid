@@ -284,6 +284,14 @@ private fun createSearchNavigationCallback(navController: NavHostController): Se
             navController.navigate(MainDestinations.NOTIFICATIONS)
         }
 
+        override fun onNavigateToPropertyDetail(propertyId: String) {
+            navController.navigate(MainDestinations.propertyDetails(propertyId))
+        }
+
+        override fun onNavigateToFilters() {
+            navController.navigate(MainDestinations.FILTERS)
+        }
+
         override fun onLogout() {
             navController.navigate(OnboardingDestinations.ROOT) {
                 popUpTo(MainDestinations.ROOT) { inclusive = true }

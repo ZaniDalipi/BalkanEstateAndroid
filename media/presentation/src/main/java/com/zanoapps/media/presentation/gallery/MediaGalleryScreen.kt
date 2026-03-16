@@ -58,6 +58,8 @@ import com.zanoapps.core.presentation.designsystem.BalkanEstateCardBackground
 import com.zanoapps.media.domain.model.MediaItem
 import com.zanoapps.media.domain.model.MediaType
 import com.zanoapps.presentation.ui.ObserveAsEvents
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -409,5 +411,16 @@ private fun getMediaTypeLabel(type: MediaType): String {
         MediaType.VIDEO -> "Video"
         MediaType.FLOOR_PLAN -> "Floor Plan"
         MediaType.VIRTUAL_TOUR -> "Virtual Tour"
+    }
+}
+
+@Preview
+@Composable
+private fun MediaGalleryScreenPreview() {
+    BalkanEstateTheme {
+        MediaGalleryScreen(
+            state = MediaGalleryState(),
+            onAction = {}
+        )
     }
 }

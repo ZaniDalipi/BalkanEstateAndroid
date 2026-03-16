@@ -67,6 +67,7 @@ import com.zanoapps.core.presentation.designsystem.components.PropertyCard
 import com.zanoapps.search.domain.model.MapLocation
 import com.zanoapps.search.domain.model.MockData
 import com.zanoapps.search.domain.model.SearchFilters
+import com.zanoapps.presentation.ui.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -81,6 +82,8 @@ interface SearchNavigationCallback {
     fun onNavigateToNewListing()
     fun onNavigateToSubscription()
     fun onNavigateToInbox()
+    fun onNavigateToPropertyDetail(propertyId: String)
+    fun onNavigateToFilters()
     fun onNavigateToProfile()
     fun onNavigateToFavorites()
     fun onNavigateToNotifications()
@@ -99,6 +102,26 @@ fun SearchPropertyScreenRoot(
     navigationCallback: SearchNavigationCallback? = null,
     showDrawer: Boolean = false
 ) {
+    ObserveAsEvents(events = viewModel.events) { event ->
+        when (event) {
+            SearchEvent.NavigateToPropertyDetails -> {
+                viewModel.state.selectedBalkanEstateProperty?.let { property ->
+                    navigationCallback?.onNavigateToPropertyDetail(property.id)
+                }
+            }
+            SearchEvent.NavigateToFilters -> {
+                navigationCallback?.onNavigateToFilters()
+            }
+            SearchEvent.NavigateToCreateListing -> {
+                navigationCallback?.onNavigateToNewListing()
+            }
+            SearchEvent.NavigateToSavedSearches -> {
+                navigationCallback?.onNavigateToSavedSearches()
+            }
+            else -> {}
+        }
+    }
+
     SearchPropertyScreen(
         state = viewModel.state,
         onAction = viewModel::onAction,

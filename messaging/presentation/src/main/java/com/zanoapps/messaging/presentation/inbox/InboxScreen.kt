@@ -49,6 +49,8 @@ import com.zanoapps.core.presentation.designsystem.InboxIcon
 import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
 import com.zanoapps.messaging.domain.model.Conversation
 import com.zanoapps.messaging.domain.model.Message
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -486,5 +488,16 @@ private fun MessageBubble(message: Message) {
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun InboxScreenPreview() {
+    BalkanEstateTheme {
+        InboxScreen(
+            state = InboxState(),
+            onAction = {}
+        )
     }
 }

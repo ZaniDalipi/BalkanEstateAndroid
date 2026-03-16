@@ -53,6 +53,8 @@ import com.zanoapps.core.presentation.designsystem.PersonIcon
 import com.zanoapps.core.presentation.designsystem.SavedHomesIcon
 import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
 import com.zanoapps.core.presentation.designsystem.StarIcon
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -500,5 +502,16 @@ private fun ProfileMenuItem(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun ProfileScreenPreview() {
+    BalkanEstateTheme {
+        ProfileScreen(
+            state = ProfileState(),
+            onAction = {}
+        )
     }
 }

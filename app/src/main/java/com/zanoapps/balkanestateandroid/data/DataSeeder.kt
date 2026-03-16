@@ -46,7 +46,8 @@ class DataSeeder(
                 propertyType = "Apartment", listingType = "For Sale",
                 agentName = "Besmir Kola", isFeatured = true,
                 description = "Beautiful modern apartment in the heart of Blloku district. Features high ceilings, hardwood floors, and a spacious balcony overlooking the city.",
-                agentPhone = "+355 69 123 4567", agentEmail = "besmir@balkanproperty.al"
+                agentPhone = "+355 69 123 4567", agentEmail = "besmir@balkanproperty.al",
+                yearBuilt = 2019, floorNumber = 4, totalFloors = 8, furnished = "Fully Furnished", parking = "1 Underground"
             ),
             PropertyEntity(
                 id = "p2", title = "Luxury Villa with Pool in Durr\u00ebs",
@@ -58,7 +59,8 @@ class DataSeeder(
                 propertyType = "Villa", listingType = "For Sale",
                 agentName = "Arben Dedja", isFeatured = true, isUrgent = true,
                 description = "Stunning seaside villa with private pool, garden, and panoramic views of the Adriatic Sea.",
-                agentPhone = "+355 69 234 5678", agentEmail = "arben@balkanproperty.al"
+                agentPhone = "+355 69 234 5678", agentEmail = "arben@balkanproperty.al",
+                yearBuilt = 2021, totalFloors = 2, furnished = "Fully Furnished", parking = "2 Garage"
             ),
             PropertyEntity(
                 id = "p3", title = "Cozy Studio near University of Tirana",
@@ -70,7 +72,8 @@ class DataSeeder(
                 propertyType = "Studio", listingType = "For Rent",
                 agentName = "Mirela Hoxha",
                 description = "Perfect student accommodation near the university campus. Fully furnished with modern amenities.",
-                agentPhone = "+355 69 345 6789", agentEmail = "mirela@sunshineprops.al"
+                agentPhone = "+355 69 345 6789", agentEmail = "mirela@sunshineprops.al",
+                yearBuilt = 2018, floorNumber = 2, totalFloors = 5, furnished = "Fully Furnished", parking = "None"
             ),
             PropertyEntity(
                 id = "p4", title = "Penthouse with Panoramic City Views",
@@ -82,7 +85,8 @@ class DataSeeder(
                 propertyType = "Penthouse", listingType = "For Sale",
                 agentName = "Eglantina Dervishi", isFeatured = true,
                 description = "Spectacular penthouse apartment with 360-degree views of Tirana. Features a rooftop terrace and premium finishes.",
-                agentPhone = "+355 69 456 7890", agentEmail = "eglantina@eliterealty.al"
+                agentPhone = "+355 69 456 7890", agentEmail = "eglantina@eliterealty.al",
+                yearBuilt = 2022, floorNumber = 12, totalFloors = 12, furnished = "Semi-Furnished", parking = "2 Underground"
             ),
             PropertyEntity(
                 id = "p5", title = "Commercial Space in City Center",
@@ -94,7 +98,8 @@ class DataSeeder(
                 propertyType = "Commercial", listingType = "For Rent",
                 agentName = "Klodian M\u00ebhilli",
                 description = "Prime commercial space perfect for retail or office use. High foot traffic location in Myslym Shyri.",
-                agentPhone = "+355 69 567 8901", agentEmail = "klodian@eliterealty.al"
+                agentPhone = "+355 69 567 8901", agentEmail = "klodian@eliterealty.al",
+                yearBuilt = 2015, floorNumber = 1, totalFloors = 6, furnished = "Unfurnished", parking = "Street"
             ),
             PropertyEntity(
                 id = "p6", title = "Beachfront Apartment in Sarand\u00eb",
@@ -106,7 +111,8 @@ class DataSeeder(
                 propertyType = "Apartment", listingType = "For Sale",
                 agentName = "Gentian Leka", isUrgent = true,
                 description = "Charming beachfront apartment with stunning sea views. Walking distance to restaurants and nightlife.",
-                agentPhone = "+355 69 678 9012", agentEmail = "gentian@adriaticre.al"
+                agentPhone = "+355 69 678 9012", agentEmail = "gentian@adriaticre.al",
+                yearBuilt = 2020, floorNumber = 3, totalFloors = 5, furnished = "Semi-Furnished", parking = "1 Space"
             ),
             PropertyEntity(
                 id = "p7", title = "New Development 2BR in Vlor\u00eb",
@@ -118,7 +124,8 @@ class DataSeeder(
                 propertyType = "Apartment", listingType = "For Sale",
                 agentName = "Mirela Hoxha",
                 description = "Brand new apartment in an exciting coastal development. Modern design with energy-efficient features.",
-                agentPhone = "+355 69 345 6789", agentEmail = "mirela@sunshineprops.al"
+                agentPhone = "+355 69 345 6789", agentEmail = "mirela@sunshineprops.al",
+                yearBuilt = 2024, floorNumber = 5, totalFloors = 10, furnished = "Unfurnished", parking = "1 Underground"
             ),
             PropertyEntity(
                 id = "p8", title = "Traditional Stone House in Gjirokast\u00ebr",
@@ -130,7 +137,8 @@ class DataSeeder(
                 propertyType = "House", listingType = "For Sale",
                 agentName = "Besmir Kola",
                 description = "Beautifully restored traditional stone house in UNESCO World Heritage city. Original features with modern comforts.",
-                agentPhone = "+355 69 123 4567", agentEmail = "besmir@balkanproperty.al"
+                agentPhone = "+355 69 123 4567", agentEmail = "besmir@balkanproperty.al",
+                yearBuilt = 1850, totalFloors = 2, furnished = "Semi-Furnished", parking = "Garden"
             ),
             PropertyEntity(
                 id = "p9", title = "Modern Office Space in Pristina",
@@ -142,7 +150,8 @@ class DataSeeder(
                 propertyType = "Office", listingType = "For Rent",
                 agentName = "Eglantina Dervishi",
                 description = "Modern open-plan office in the business district of Pristina. Ready for immediate occupancy.",
-                agentPhone = "+355 69 456 7890", agentEmail = "eglantina@eliterealty.al"
+                agentPhone = "+355 69 456 7890", agentEmail = "eglantina@eliterealty.al",
+                yearBuilt = 2017, floorNumber = 3, totalFloors = 8, furnished = "Unfurnished", parking = "2 Spaces"
             ),
             PropertyEntity(
                 id = "p10", title = "Land Plot with Sea View in Himara",
@@ -154,7 +163,8 @@ class DataSeeder(
                 propertyType = "Land", listingType = "For Sale",
                 agentName = "Gentian Leka", isFeatured = true,
                 description = "Prime land plot with breathtaking sea views. Perfect for building your dream villa on the Albanian Riviera.",
-                agentPhone = "+355 69 678 9012", agentEmail = "gentian@adriaticre.al"
+                agentPhone = "+355 69 678 9012", agentEmail = "gentian@adriaticre.al",
+                parking = "Open"
             )
         )
         propertyDao.insertAll(properties)

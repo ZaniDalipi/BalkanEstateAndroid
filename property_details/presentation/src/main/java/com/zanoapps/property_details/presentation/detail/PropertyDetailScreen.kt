@@ -74,6 +74,8 @@ import com.zanoapps.core.presentation.designsystem.SquareMetersIcon
 import com.zanoapps.core.presentation.designsystem.VirtualTourIcon
 import com.zanoapps.core.presentation.designsystem.YearBuildIcon
 import com.zanoapps.core.presentation.designsystem.components.PropertyCard
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import org.koin.androidx.compose.koinViewModel
 import java.text.NumberFormat
 
@@ -296,16 +298,20 @@ private fun PropertyDetailScreen(
                         value = "${NumberFormat.getInstance().format(property.squareFootage)}",
                         label = "m\u00B2"
                     )
-                    FeatureItem(
-                        icon = ParkingSpotIcon,
-                        value = "1",
-                        label = "Parking"
-                    )
-                    FeatureItem(
-                        icon = YearBuildIcon,
-                        value = "2020",
-                        label = "Year"
-                    )
+                    if (property.parking.isNotBlank()) {
+                        FeatureItem(
+                            icon = ParkingSpotIcon,
+                            value = property.parking.split(" ").firstOrNull()?.takeIf { it.all { c -> c.isDigit() } } ?: "Yes",
+                            label = "Parking"
+                        )
+                    }
+                    if (property.yearBuilt > 0) {
+                        FeatureItem(
+                            icon = YearBuildIcon,
+                            value = property.yearBuilt.toString(),
+                            label = "Year"
+                        )
+                    }
                 }
             }
 
@@ -328,7 +334,9 @@ private fun PropertyDetailScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "This beautiful ${property.propertyType.lowercase()} features ${property.bedrooms} bedrooms and ${property.bathrooms} bathrooms spread across ${NumberFormat.getInstance().format(property.squareFootage)} m\u00B2 of living space. Located in the heart of ${property.city}, this property offers modern amenities, stunning views, and easy access to local attractions, restaurants, and public transportation. The property has been recently renovated with high-quality finishes throughout.",
+                        text = property.description.ifBlank {
+                            "This beautiful ${property.propertyType.lowercase()} features ${property.bedrooms} bedrooms and ${property.bathrooms} bathrooms spread across ${NumberFormat.getInstance().format(property.squareFootage)} m\u00B2 of living space. Located in the heart of ${property.city}, this property offers modern amenities and easy access to local attractions."
+                        },
                         style = MaterialTheme.typography.bodyMedium,
                         color = BalkanEstateGray,
                         lineHeight = 22.sp
@@ -411,14 +419,14 @@ private fun PropertyDetailScreen(
                     DetailRow("Listing Type", property.listingType)
                     DetailRow("City", property.city)
                     DetailRow("Country", property.country)
-                    DetailRow("Bedrooms", property.bedrooms.toString())
-                    DetailRow("Bathrooms", property.bathrooms.toString())
+                    if (property.bedrooms > 0) DetailRow("Bedrooms", property.bedrooms.toString())
+                    if (property.bathrooms > 0) DetailRow("Bathrooms", property.bathrooms.toString())
                     DetailRow("Area", "${NumberFormat.getInstance().format(property.squareFootage)} m\u00B2")
-                    DetailRow("Furnished", "Fully Furnished")
-                    DetailRow("Heating", "Central Heating")
-                    DetailRow("Parking", "1 Space")
-                    DetailRow("Year Built", "2020")
-                    DetailRow("Energy Certificate", "A+")
+                    if (property.furnished.isNotBlank()) DetailRow("Furnished", property.furnished)
+                    if (property.parking.isNotBlank()) DetailRow("Parking", property.parking)
+                    if (property.yearBuilt > 0) DetailRow("Year Built", property.yearBuilt.toString())
+                    if (property.floorNumber > 0) DetailRow("Floor", "${property.floorNumber} / ${property.totalFloors}")
+                    DetailRow("Currency", property.currency)
                 }
             }
 
@@ -470,19 +478,6 @@ private fun PropertyDetailScreen(
                                 style = MaterialTheme.typography.bodySmall,
                                 color = BalkanEstateGray
                             )
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = "4.8",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Medium,
-                                    color = BalkanEstateOrange
-                                )
-                                Text(
-                                    text = " (124 reviews)",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = BalkanEstateGray
-                                )
-                            }
                         }
                     }
                     Spacer(modifier = Modifier.height(12.dp))
@@ -491,14 +486,14 @@ private fun PropertyDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         OutlinedButton(
-                            onClick = { onAction(PropertyDetailAction.OnCallAgent("+355 69 123 4567")) },
+                            onClick = { onAction(PropertyDetailAction.OnCallAgent(property.agentPhone)) },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(8.dp)
                         ) {
                             Text("Call", fontSize = 13.sp)
                         }
                         OutlinedButton(
-                            onClick = { onAction(PropertyDetailAction.OnEmailAgent("agent@balkanestateai.com")) },
+                            onClick = { onAction(PropertyDetailAction.OnEmailAgent(property.agentEmail)) },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(8.dp)
                         ) {
@@ -850,4 +845,36 @@ private fun formatPrice(price: Double): String {
     val formatter = NumberFormat.getNumberInstance()
     formatter.maximumFractionDigits = 0
     return "${formatter.format(price).replace(",", ".")} \u20AC"
+}
+
+@Preview
+@Composable
+private fun PropertyDetailScreenPreview() {
+    BalkanEstateTheme {
+        PropertyDetailScreen(
+            state = PropertyDetailState(
+                property = BalkanEstateProperty(
+                    id = "1",
+                    title = "Modern Apartment in Skopje",
+                    price = 120000.0,
+                    currency = "EUR",
+                    imageUrl = "",
+                    bedrooms = 3,
+                    bathrooms = 2,
+                    squareFootage = 95,
+                    address = "ul. Makedonija 10",
+                    city = "Skopje",
+                    country = "North Macedonia",
+                    latitude = 41.9973,
+                    longitude = 21.4280,
+                    propertyType = "Apartment",
+                    listingType = "Sale",
+                    agentName = "Marko Petrovic",
+                    agentPhone = "+389 70 123 456",
+                    agentEmail = "marko@example.com"
+                )
+            ),
+            onAction = {}
+        )
+    }
 }

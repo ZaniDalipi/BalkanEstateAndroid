@@ -40,7 +40,9 @@ class SearchPropertyViewModel(
                 state = state.copy(isBottomSheetExpanded = false)
             }
             SearchAction.OnCreateListingClick -> {
-                // Navigate to create listing screen
+                viewModelScope.launch {
+                    eventChannel.send(SearchEvent.NavigateToCreateListing)
+                }
             }
             is SearchAction.OnDeleteSavedSearch -> {
                 // Delete saved search
@@ -62,7 +64,9 @@ class SearchPropertyViewModel(
                 }
             }
             SearchAction.OnFilterClick -> {
-                // Open filter dialog
+                viewModelScope.launch {
+                    eventChannel.send(SearchEvent.NavigateToFilters)
+                }
             }
             is SearchAction.OnFiltersApplied -> {
                 state = state.copy(
@@ -88,6 +92,9 @@ class SearchPropertyViewModel(
             }
             is SearchAction.OnPropertyClicked -> {
                 state = state.copy(selectedBalkanEstateProperty = action.balkanEstateProperty)
+                viewModelScope.launch {
+                    eventChannel.send(SearchEvent.NavigateToPropertyDetails)
+                }
             }
             SearchAction.OnRefreshProperties -> {
                 loadProperties(isRefresh = true)
@@ -110,7 +117,9 @@ class SearchPropertyViewModel(
                 applySorting()
             }
             SearchAction.OnViewSavedSearches -> {
-                // Navigate to saved searches
+                viewModelScope.launch {
+                    eventChannel.send(SearchEvent.NavigateToSavedSearches)
+                }
             }
             // New drawer actions
             SearchAction.OnOpenDrawer -> {
@@ -135,7 +144,9 @@ class SearchPropertyViewModel(
             // View details
             is SearchAction.OnViewDetailsClick -> {
                 state = state.copy(selectedBalkanEstateProperty = action.property)
-                // Navigate to property details
+                viewModelScope.launch {
+                    eventChannel.send(SearchEvent.NavigateToPropertyDetails)
+                }
             }
         }
     }

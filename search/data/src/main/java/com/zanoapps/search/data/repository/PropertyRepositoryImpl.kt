@@ -99,7 +99,16 @@ fun PropertyEntity.toDomain(): BalkanEstateProperty {
         listingType = listingType,
         agentName = agentName,
         isFeatured = isFeatured,
-        isUrgent = isUrgent
+        isUrgent = isUrgent,
+        description = description,
+        yearBuilt = yearBuilt,
+        floorNumber = floorNumber,
+        totalFloors = totalFloors,
+        furnished = furnished,
+        parking = parking,
+        agentPhone = agentPhone,
+        agentEmail = agentEmail,
+        agentAvatarUrl = agentAvatarUrl
     )
 }
 
@@ -122,6 +131,15 @@ fun BalkanEstateProperty.toEntity(): PropertyEntity {
         listingType = listingType,
         agentName = agentName,
         isFeatured = isFeatured,
-        isUrgent = isUrgent
+        isUrgent = isUrgent,
+        description = description,
+        yearBuilt = yearBuilt,
+        floorNumber = floorNumber,
+        totalFloors = totalFloors,
+        furnished = furnished,
+        parking = parking,
+        agentPhone = agentPhone,
+        agentEmail = agentEmail,
+        agentAvatarUrl = agentAvatarUrl
     )
 }
