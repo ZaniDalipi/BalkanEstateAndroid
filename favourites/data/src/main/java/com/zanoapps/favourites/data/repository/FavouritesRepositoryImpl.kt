@@ -1,5 +1,6 @@
 package com.zanoapps.favourites.data.repository
 
+import com.zanoapps.auth.domain.repository.SessionStorage
 import com.zanoapps.core.database.dao.FavoriteDao
 import com.zanoapps.core.database.entity.FavoritePropertyEntity
 import com.zanoapps.core.domain.model.BalkanEstateProperty
@@ -12,7 +13,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class FavouritesRepositoryImpl(
-    private val favoriteDao: FavoriteDao
+    private val favoriteDao: FavoriteDao,
+    private val sessionStorage: SessionStorage
 ) : FavouritesRepository {
 
     override fun getFavouriteProperties(): Flow<List<BalkanEstateProperty>> {
@@ -24,7 +26,7 @@ class FavouritesRepositoryImpl(
     override suspend fun addFavourite(propertyId: String): EmptyResult<DataError.Local> {
         return try {
             favoriteDao.addFavourite(
-                FavoritePropertyEntity(propertyId = propertyId, userId = "current_user")
+                FavoritePropertyEntity(propertyId = propertyId, userId = sessionStorage.getUser()?.id ?: "default_user")
             )
             Result.Success(Unit)
         } catch (e: Exception) {

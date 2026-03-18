@@ -5,5 +5,5 @@ import com.zanoapps.map.domain.repository.MapRepository
 import org.koin.dsl.module
 
 val mapDataModule = module {
-    single<MapRepository> { MapRepositoryImpl() }
+    single<MapRepository> { MapRepositoryImpl(get()) }
 }

@@ -70,8 +70,39 @@ class PropertyDetailRepositoryImpl(
     }
 
     override suspend fun createListing(form: CreatePropertyForm): Result<String, DataError.Network> {
-        // In a real app, this would POST to an API
-        return Result.Success(UUID.randomUUID().toString())
+        return try {
+            val id = UUID.randomUUID().toString()
+            val entity = com.zanoapps.core.database.entity.PropertyEntity(
+                id = id,
+                title = form.title,
+                description = form.description,
+                price = form.price.toDoubleOrNull() ?: 0.0,
+                currency = form.currency,
+                imageUrl = "",
+                bedrooms = form.bedrooms,
+                bathrooms = form.bathrooms,
+                squareFootage = form.squareFootage.toIntOrNull() ?: 0,
+                address = form.address,
+                city = form.city,
+                country = form.country,
+                latitude = 0.0,
+                longitude = 0.0,
+                propertyType = form.propertyType?.name ?: "",
+                listingType = form.listingType?.name ?: "",
+                agentName = form.agentName,
+                agentPhone = form.agentPhone,
+                agentEmail = form.agentEmail,
+                yearBuilt = form.yearBuilt.toIntOrNull() ?: 0,
+                furnished = form.furnished.name,
+                parking = form.parkingType?.name ?: "",
+                isFeatured = form.featured,
+                isUrgent = form.urgent
+            )
+            propertyDao.insert(entity)
+            Result.Success(id)
+        } catch (e: Exception) {
+            Result.Error(DataError.Network.UNKNOWN)
+        }
     }
 
     override suspend fun contactAgent(

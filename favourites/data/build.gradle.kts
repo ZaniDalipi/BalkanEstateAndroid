@@ -13,4 +13,5 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.search.data)
     implementation(projects.favourites.domain)
+    implementation(projects.auth.domain)
 }
