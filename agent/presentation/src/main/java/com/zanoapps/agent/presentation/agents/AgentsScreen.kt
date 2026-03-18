@@ -57,12 +57,22 @@ import com.zanoapps.core.presentation.designsystem.SaveSearchIcon
 import com.zanoapps.core.presentation.designsystem.StarIcon
 import androidx.compose.ui.tooling.preview.Preview
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
+import com.zanoapps.presentation.ui.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AgentsScreenRoot(
-    viewModel: AgentsViewModel = koinViewModel()
+    viewModel: AgentsViewModel = koinViewModel(),
+    onNavigateToAgentDetail: (String) -> Unit = {}
 ) {
+    ObserveAsEvents(flow = viewModel.events) { event ->
+        when (event) {
+            is AgentsEvent.NavigateToAgentDetail -> onNavigateToAgentDetail(event.agentId)
+            is AgentsEvent.NavigateToContactAgent -> { /* TODO: open dialer/email */ }
+            is AgentsEvent.Error -> { /* TODO: show error */ }
+        }
+    }
+
     AgentsScreen(
         state = viewModel.state,
         onAction = viewModel::onAction

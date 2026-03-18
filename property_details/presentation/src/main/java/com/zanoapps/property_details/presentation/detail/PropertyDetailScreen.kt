@@ -64,6 +64,7 @@ import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BathroomsIcon
 import com.zanoapps.core.presentation.designsystem.BedroomsIcon
 import com.zanoapps.core.presentation.designsystem.EmailIcon
+import com.zanoapps.core.presentation.designsystem.LoanHomeBottomBarIcon
 import com.zanoapps.core.presentation.designsystem.LocationIcon
 import com.zanoapps.core.presentation.designsystem.NotAddedToFavIcon
 import com.zanoapps.core.presentation.designsystem.AddedToFavIcon
@@ -84,7 +85,8 @@ fun PropertyDetailScreenRoot(
     propertyId: String,
     viewModel: PropertyDetailViewModel = koinViewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToProperty: (String) -> Unit
+    onNavigateToProperty: (String) -> Unit,
+    onNavigateToMortgageCalculator: () -> Unit = {}
 ) {
     LaunchedEffect(propertyId) {
         viewModel.onAction(PropertyDetailAction.OnLoadProperty(propertyId))
@@ -96,6 +98,7 @@ fun PropertyDetailScreenRoot(
             when (action) {
                 PropertyDetailAction.OnBackClick -> onNavigateBack()
                 is PropertyDetailAction.OnSimilarPropertyClick -> onNavigateToProperty(action.property.id)
+                PropertyDetailAction.OnMortgageCalculatorClick -> onNavigateToMortgageCalculator()
                 else -> viewModel.onAction(action)
             }
         }
@@ -550,6 +553,13 @@ private fun PropertyDetailScreen(
                             modifier = Modifier.weight(1f)
                         )
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    ActionCard(
+                        icon = LoanHomeBottomBarIcon,
+                        label = "Mortgage Calculator",
+                        onClick = { onAction(PropertyDetailAction.OnMortgageCalculatorClick) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
 

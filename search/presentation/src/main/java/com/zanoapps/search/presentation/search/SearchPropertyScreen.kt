@@ -171,7 +171,7 @@ private fun SearchPropertyScreen(
 
             // Results count and sort
             ResultsHeader(
-                resultsCount = state.filteredProperties.size.takeIf { it > 0 } ?: MockData.getMockProperties().size,
+                resultsCount = state.filteredProperties.size,
                 sortOption = state.sortOption,
                 onSortChange = { sortOption ->
                     onAction(SearchAction.OnSortChanged(sortOption))
@@ -481,7 +481,7 @@ private fun PropertyList(
             modifier = modifier.fillMaxWidth()
         ) {
             items(
-                items = if (properties.isEmpty()) MockData.getMockProperties() else properties,
+                items = properties,
                 key = { it.id }
             ) { property ->
                 PropertyCard(

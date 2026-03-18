@@ -217,7 +217,11 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 navController = navController,
                 currentRoute = MainDestinations.SEARCH
             ) { _ ->
-                AgentsScreenRoot()
+                AgentsScreenRoot(
+                    onNavigateToAgentDetail = { agentId ->
+                        navController.navigate(MainDestinations.agentDetail(agentId))
+                    }
+                )
             }
         }
 
@@ -227,7 +231,11 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 navController = navController,
                 currentRoute = MainDestinations.SEARCH
             ) { _ ->
-                AgenciesScreenRoot()
+                AgenciesScreenRoot(
+                    onNavigateToAgencyDetail = { agencyId ->
+                        navController.navigate(MainDestinations.agencyDetail(agencyId))
+                    }
+                )
             }
         }
 
@@ -253,6 +261,9 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToProperty = { id ->
                     navController.navigate(MainDestinations.propertyDetails(id))
+                },
+                onNavigateToMortgageCalculator = {
+                    navController.navigate(MainDestinations.MORTGAGE_CALCULATOR)
                 }
             )
         }

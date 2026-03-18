@@ -20,4 +20,5 @@ sealed interface PropertyDetailAction {
     data object OnGetDirectionsClick : PropertyDetailAction
     data class OnCallAgent(val phoneNumber: String) : PropertyDetailAction
     data class OnEmailAgent(val email: String) : PropertyDetailAction
+    data object OnMortgageCalculatorClick : PropertyDetailAction
 }

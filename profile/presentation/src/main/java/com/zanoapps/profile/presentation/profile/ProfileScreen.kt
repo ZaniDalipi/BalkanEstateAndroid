@@ -432,6 +432,71 @@ private fun ProfileScreen(
         )
     }
 
+    // Change Password Dialog
+    if (state.showChangePasswordDialog) {
+        AlertDialog(
+            onDismissRequest = { onAction(ProfileAction.OnDismissChangePassword) },
+            title = { Text("Change Password") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = state.oldPassword,
+                        onValueChange = { onAction(ProfileAction.OnOldPasswordChanged(it)) },
+                        label = { Text("Current Password") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = BalkanEstatePrimaryBlue
+                        ),
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = state.newPassword,
+                        onValueChange = { onAction(ProfileAction.OnNewPasswordChanged(it)) },
+                        label = { Text("New Password") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = BalkanEstatePrimaryBlue
+                        ),
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = state.confirmNewPassword,
+                        onValueChange = { onAction(ProfileAction.OnConfirmNewPasswordChanged(it)) },
+                        label = { Text("Confirm New Password") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = BalkanEstatePrimaryBlue
+                        ),
+                        singleLine = true
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { onAction(ProfileAction.OnConfirmChangePassword) },
+                    enabled = !state.isChangingPassword
+                ) {
+                    if (state.isChangingPassword) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Change", color = BalkanEstatePrimaryBlue)
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onAction(ProfileAction.OnDismissChangePassword) }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
     // Delete Account Dialog
     if (state.showDeleteAccountDialog) {
         AlertDialog(
