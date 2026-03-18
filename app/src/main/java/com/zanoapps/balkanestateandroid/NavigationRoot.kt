@@ -17,11 +17,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.zanoapps.agent.presentation.agencies.AgenciesScreenRoot
 import com.zanoapps.agent.presentation.agents.AgentsScreenRoot
-import com.zanoapps.map.presentation.map.MapScreenRoot
-import com.zanoapps.media.presentation.gallery.MediaGalleryScreenRoot
-import com.zanoapps.notification.presentation.notifications.NotificationScreenRoot
+import com.zanoapps.agent.presentation.detail.AgentDetailScreenRoot
+import com.zanoapps.agent.presentation.detail.AgencyDetailScreenRoot
+import com.zanoapps.auth.presentation.forgot.ForgotPasswordScreenRoot
 import com.zanoapps.auth.presentation.login.LoginScreenRoot
 import com.zanoapps.auth.presentation.register.RegisterScreenRoot
+import com.zanoapps.balkanestateandroid.home.HomeNavigationCallback
+import com.zanoapps.balkanestateandroid.home.HomeScreenRoot
 import com.zanoapps.balkanestateandroid.utils.AuthDestinations
 import com.zanoapps.balkanestateandroid.utils.MainDestinations
 import com.zanoapps.balkanestateandroid.utils.OnboardingDestinations
@@ -30,8 +32,13 @@ import com.zanoapps.core.presentation.designsystem.components.BalkanEstateBottom
 import com.zanoapps.core.presentation.designsystem.components.BalkanEstateNavigationRail
 import com.zanoapps.core.presentation.designsystem.components.BottomNavItem
 import com.zanoapps.core.presentation.designsystem.util.rememberWindowSizeClass
+import com.zanoapps.favourites.presentation.compare.PropertyComparisonScreenRoot
 import com.zanoapps.favourites.presentation.favourites.FavouritesScreenRoot
+import com.zanoapps.map.presentation.map.MapScreenRoot
+import com.zanoapps.media.presentation.gallery.MediaGalleryScreenRoot
 import com.zanoapps.messaging.presentation.inbox.InboxScreenRoot
+import com.zanoapps.notification.presentation.notifications.NotificationScreenRoot
+import com.zanoapps.notification.presentation.settings.NotificationSettingsScreenRoot
 import com.zanoapps.onboarding.presentation.buyer.amenities.AmenitiesScreenRoot
 import com.zanoapps.onboarding.presentation.buyer.currentlifesituation.CurrentLifeSituationRoot
 import com.zanoapps.onboarding.presentation.buyer.propertyintent.PropertyIntentScreenRoot
@@ -43,10 +50,15 @@ import com.zanoapps.onboarding.presentation.seller.propertytype.SellerPropertyTy
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerCompletionAction
 import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerOnboardingCompletionRoot
 import com.zanoapps.onboarding.presentation.seller.sellingtime.SellingTimeRoot
+import com.zanoapps.profile.presentation.help.HelpSupportScreenRoot
+import com.zanoapps.profile.presentation.legal.PrivacyPolicyScreenRoot
+import com.zanoapps.profile.presentation.legal.TermsOfServiceScreenRoot
 import com.zanoapps.profile.presentation.profile.ProfileScreenRoot
 import com.zanoapps.profile.presentation.subscription.SubscriptionScreenRoot
+import com.zanoapps.property_details.presentation.calculator.MortgageCalculatorScreenRoot
 import com.zanoapps.property_details.presentation.create.CreateListingScreenRoot
 import com.zanoapps.property_details.presentation.detail.PropertyDetailScreenRoot
+import com.zanoapps.property_details.presentation.listings.MyListingsScreenRoot
 import com.zanoapps.search.presentation.filter.FilterScreenRoot
 import com.zanoapps.search.presentation.saved.SavedSearchesScreenRoot
 import com.zanoapps.search.presentation.search.SearchNavigationCallback
@@ -69,10 +81,47 @@ fun NavigationRoot(
 // Main App Navigation Graph with bottom navigation screens
 private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
     navigation(
-        startDestination = MainDestinations.SEARCH,
+        startDestination = MainDestinations.HOME,
         route = MainDestinations.ROOT
     ) {
-        // Search Screen (Main landing screen)
+        // Home Screen (Landing page)
+        composable(route = MainDestinations.HOME) {
+            MainAppScaffold(
+                navController = navController,
+                currentRoute = MainDestinations.SEARCH
+            ) { _ ->
+                HomeScreenRoot(
+                    navigationCallback = object : HomeNavigationCallback {
+                        override fun onNavigateToSearch(query: String) {
+                            navController.navigate(MainDestinations.SEARCH)
+                        }
+                        override fun onNavigateToPropertyDetail(propertyId: String) {
+                            navController.navigate(MainDestinations.propertyDetails(propertyId))
+                        }
+                        override fun onNavigateToCountry(country: String) {
+                            navController.navigate(MainDestinations.SEARCH)
+                        }
+                        override fun onNavigateToCity(city: String) {
+                            navController.navigate(MainDestinations.SEARCH)
+                        }
+                        override fun onNavigateToAgentDetail(agentId: String) {
+                            navController.navigate(MainDestinations.agentDetail(agentId))
+                        }
+                        override fun onNavigateToAllProperties() {
+                            navController.navigate(MainDestinations.SEARCH)
+                        }
+                        override fun onNavigateToAllAgents() {
+                            navController.navigate(MainDestinations.TOP_AGENTS)
+                        }
+                        override fun onNavigateToPropertyType(type: String) {
+                            navController.navigate(MainDestinations.SEARCH)
+                        }
+                    }
+                )
+            }
+        }
+
+        // Search Screen
         composable(route = MainDestinations.SEARCH) {
             MainAppScaffold(
                 navController = navController,
@@ -104,6 +153,9 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 FavouritesScreenRoot(
                     onNavigateToPropertyDetail = { propertyId ->
                         navController.navigate(MainDestinations.propertyDetails(propertyId))
+                    },
+                    onNavigateToCompare = { propertyIds ->
+                        navController.navigate(MainDestinations.compareProperties(propertyIds))
                     }
                 )
             }
@@ -139,6 +191,21 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                     },
                     onNavigateToSubscription = {
                         navController.navigate(MainDestinations.SUBSCRIPTION)
+                    },
+                    onNavigateToMyListings = {
+                        navController.navigate(MainDestinations.MY_LISTINGS)
+                    },
+                    onNavigateToNotificationSettings = {
+                        navController.navigate(MainDestinations.NOTIFICATION_SETTINGS)
+                    },
+                    onNavigateToHelp = {
+                        navController.navigate(MainDestinations.HELP_SUPPORT)
+                    },
+                    onNavigateToPrivacyPolicy = {
+                        navController.navigate(MainDestinations.PRIVACY_POLICY)
+                    },
+                    onNavigateToTerms = {
+                        navController.navigate(MainDestinations.TERMS_OF_SERVICE)
                     }
                 )
             }
@@ -229,6 +296,79 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 onFiltersApplied = { navController.popBackStack() }
             )
         }
+
+        // Agent Detail Screen
+        composable(route = MainDestinations.AGENT_DETAIL) { backStackEntry ->
+            AgentDetailScreenRoot(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToListings = { navController.navigate(MainDestinations.SEARCH) }
+            )
+        }
+
+        // Agency Detail Screen
+        composable(route = MainDestinations.AGENCY_DETAIL) { backStackEntry ->
+            AgencyDetailScreenRoot(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Property Comparison Screen
+        composable(route = MainDestinations.COMPARE_PROPERTIES) { backStackEntry ->
+            PropertyComparisonScreenRoot(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToPropertyDetail = { propertyId ->
+                    navController.navigate(MainDestinations.propertyDetails(propertyId))
+                }
+            )
+        }
+
+        // Notification Settings Screen
+        composable(route = MainDestinations.NOTIFICATION_SETTINGS) {
+            NotificationSettingsScreenRoot(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Help & Support Screen
+        composable(route = MainDestinations.HELP_SUPPORT) {
+            HelpSupportScreenRoot(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Privacy Policy Screen
+        composable(route = MainDestinations.PRIVACY_POLICY) {
+            PrivacyPolicyScreenRoot(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Terms of Service Screen
+        composable(route = MainDestinations.TERMS_OF_SERVICE) {
+            TermsOfServiceScreenRoot(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // My Listings Screen
+        composable(route = MainDestinations.MY_LISTINGS) {
+            MyListingsScreenRoot(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToCreateListing = {
+                    navController.navigate(MainDestinations.NEW_LISTING)
+                },
+                onNavigateToEditListing = { propertyId ->
+                    navController.navigate(MainDestinations.propertyDetails(propertyId))
+                }
+            )
+        }
+
+        // Mortgage Calculator Screen
+        composable(route = MainDestinations.MORTGAGE_CALCULATOR) {
+            MortgageCalculatorScreenRoot(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
     }
 
     // Also keep SearchDestinations.ROOT for backward compatibility
@@ -288,6 +428,10 @@ private fun createSearchNavigationCallback(navController: NavHostController): Se
             navController.navigate(MainDestinations.NOTIFICATIONS)
         }
 
+        override fun onNavigateToMap() {
+            navController.navigate(MainDestinations.MAP)
+        }
+
         override fun onNavigateToPropertyDetail(propertyId: String) {
             navController.navigate(MainDestinations.propertyDetails(propertyId))
         }
@@ -320,6 +464,9 @@ private fun NavGraphBuilder.authGraph(navController: NavHostController) {
                 },
                 onNavigateToRegister = {
                     navController.navigate(AuthDestinations.REGISTER)
+                },
+                onNavigateToForgotPassword = {
+                    navController.navigate(AuthDestinations.FORGOT_PASSWORD)
                 }
             )
         }
@@ -333,6 +480,17 @@ private fun NavGraphBuilder.authGraph(navController: NavHostController) {
                 },
                 onNavigateToLogin = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable(route = AuthDestinations.FORGOT_PASSWORD) {
+            ForgotPasswordScreenRoot(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToLogin = {
+                    navController.navigate(AuthDestinations.LOGIN) {
+                        popUpTo(AuthDestinations.ROOT)
+                    }
                 }
             )
         }

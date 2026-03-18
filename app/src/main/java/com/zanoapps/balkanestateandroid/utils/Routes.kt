@@ -27,6 +27,7 @@ object AuthDestinations {
     const val ROOT = "auth"
     const val LOGIN = "login"
     const val REGISTER = "register"
+    const val FORGOT_PASSWORD = "forgot_password"
 }
 
 object MainDestinations {
@@ -46,7 +47,19 @@ object MainDestinations {
     const val NOTIFICATIONS = "notifications"
     const val MAP = "map"
     const val MEDIA_GALLERY = "media_gallery/{propertyId}"
+    const val AGENT_DETAIL = "agent_detail/{agentId}"
+    const val AGENCY_DETAIL = "agency_detail/{agencyId}"
+    const val COMPARE_PROPERTIES = "compare_properties/{propertyIds}"
+    const val NOTIFICATION_SETTINGS = "notification_settings"
+    const val HELP_SUPPORT = "help_support"
+    const val PRIVACY_POLICY = "privacy_policy"
+    const val TERMS_OF_SERVICE = "terms_of_service"
+    const val MY_LISTINGS = "my_listings"
+    const val MORTGAGE_CALCULATOR = "mortgage_calculator"
 
     fun propertyDetails(propertyId: String) = "property_details/$propertyId"
     fun mediaGallery(propertyId: String) = "media_gallery/$propertyId"
+    fun agentDetail(agentId: String) = "agent_detail/$agentId"
+    fun agencyDetail(agencyId: String) = "agency_detail/$agencyId"
+    fun compareProperties(propertyIds: String) = "compare_properties/$propertyIds"
 }

@@ -54,13 +54,25 @@ import com.zanoapps.core.presentation.designsystem.SavedHomesIcon
 import com.zanoapps.core.presentation.designsystem.components.PropertyCard
 import androidx.compose.ui.tooling.preview.Preview
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
+import com.zanoapps.presentation.ui.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun FavouritesScreenRoot(
     viewModel: FavouritesViewModel = koinViewModel(),
-    onNavigateToPropertyDetail: (String) -> Unit
+    onNavigateToPropertyDetail: (String) -> Unit,
+    onNavigateToCompare: (String) -> Unit = {}
 ) {
+    ObserveAsEvents(events = viewModel.events) { event ->
+        when (event) {
+            is FavouritesEvent.NavigateToPropertyDetail -> onNavigateToPropertyDetail(event.propertyId)
+            is FavouritesEvent.NavigateToCompare -> {
+                onNavigateToCompare(event.propertyIds.joinToString(","))
+            }
+            else -> {}
+        }
+    }
+
     FavouritesScreen(
         state = viewModel.state,
         onAction = { action ->

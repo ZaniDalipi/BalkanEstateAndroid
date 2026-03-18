@@ -63,7 +63,12 @@ fun ProfileScreenRoot(
     onLogout: () -> Unit,
     onNavigateToSavedProperties: () -> Unit,
     onNavigateToSavedSearches: () -> Unit,
-    onNavigateToSubscription: () -> Unit
+    onNavigateToSubscription: () -> Unit,
+    onNavigateToMyListings: () -> Unit = {},
+    onNavigateToNotificationSettings: () -> Unit = {},
+    onNavigateToHelp: () -> Unit = {},
+    onNavigateToPrivacyPolicy: () -> Unit = {},
+    onNavigateToTerms: () -> Unit = {}
 ) {
     ProfileScreen(
         state = viewModel.state,
@@ -76,6 +81,11 @@ fun ProfileScreenRoot(
                 ProfileAction.OnSavedPropertiesClick -> onNavigateToSavedProperties()
                 ProfileAction.OnSavedSearchesClick -> onNavigateToSavedSearches()
                 ProfileAction.OnSubscriptionClick -> onNavigateToSubscription()
+                ProfileAction.OnMyListingsClick -> onNavigateToMyListings()
+                ProfileAction.OnNotificationSettingsClick -> onNavigateToNotificationSettings()
+                ProfileAction.OnHelpClick -> onNavigateToHelp()
+                ProfileAction.OnPrivacyPolicyClick -> onNavigateToPrivacyPolicy()
+                ProfileAction.OnTermsClick -> onNavigateToTerms()
                 else -> viewModel.onAction(action)
             }
         }

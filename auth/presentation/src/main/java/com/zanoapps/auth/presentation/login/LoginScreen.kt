@@ -55,13 +55,14 @@ import org.koin.androidx.compose.koinViewModel
 fun LoginScreenRoot(
     viewModel: LoginViewModel = koinViewModel(),
     onLoginSuccess: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit = {}
 ) {
     ObserveAsEvents(flow = viewModel.events) { event ->
         when (event) {
             LoginEvent.LoginSuccess -> onLoginSuccess()
             LoginEvent.NavigateToRegister -> onNavigateToRegister()
-            LoginEvent.NavigateToForgotPassword -> Unit
+            LoginEvent.NavigateToForgotPassword -> onNavigateToForgotPassword()
             is LoginEvent.Error -> Unit
         }
     }

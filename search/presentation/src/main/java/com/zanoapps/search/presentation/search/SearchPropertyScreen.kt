@@ -22,6 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -87,6 +89,7 @@ interface SearchNavigationCallback {
     fun onNavigateToProfile()
     fun onNavigateToFavorites()
     fun onNavigateToNotifications()
+    fun onNavigateToMap()
     fun onLogout()
 }
 
@@ -208,15 +211,46 @@ private fun SearchPropertyScreen(
                     modifier = Modifier.weight(1f)
                 )
             } else {
-                // Map view placeholder
+                // Navigate to Map screen when map toggle is selected
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .background(Color.LightGray),
+                        .background(Color(0xFFE8EEF4)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Map View - Coming Soon")
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = SaveSearchIcon,
+                            contentDescription = null,
+                            tint = BalkanEstatePrimaryBlue,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "View Properties on Map",
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = Color.DarkGray
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Explore ${if (state.filteredProperties.isNotEmpty()) state.filteredProperties.size else "all"} properties on an interactive map",
+                            fontSize = 13.sp,
+                            color = BalkanEstateGray
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = { navigationCallback?.onNavigateToMap() },
+                            colors = ButtonDefaults.buttonColors(containerColor = BalkanEstatePrimaryBlue),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Open Map View")
+                        }
+                    }
                 }
             }
         }
