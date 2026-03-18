@@ -16,6 +16,8 @@ interface AuthRepository {
         password: String,
         accountType: AccountType
     ): Result<AuthUser, DataError.Network>
+    suspend fun loginWithGoogle(): Result<AuthUser, DataError.Network>
+    suspend fun loginWithFacebook(): Result<AuthUser, DataError.Network>
     suspend fun logout(): EmptyResult<DataError.Network>
     suspend fun getCurrentUser(): AuthUser?
     suspend fun isLoggedIn(): Boolean

@@ -28,8 +28,40 @@ class LoginViewModel(
             LoginAction.OnTogglePasswordVisibility -> state = state.copy(isPasswordVisible = !state.isPasswordVisible)
             LoginAction.OnToggleRememberMe -> state = state.copy(rememberMe = !state.rememberMe)
             LoginAction.OnLoginClick -> login()
-            LoginAction.OnGoogleLoginClick -> { /* Google login */ }
-            LoginAction.OnFacebookLoginClick -> { /* Facebook login */ }
+            LoginAction.OnGoogleLoginClick -> {
+                viewModelScope.launch {
+                    state = state.copy(isLoading = true, errorMessage = null)
+                    when (val result = authRepository.loginWithGoogle()) {
+                        is Result.Success -> {
+                            state = state.copy(isLoading = false)
+                            eventChannel.send(LoginEvent.LoginSuccess)
+                        }
+                        is Result.Error -> {
+                            state = state.copy(
+                                isLoading = false,
+                                errorMessage = "Google sign-in failed. Please try again."
+                            )
+                        }
+                    }
+                }
+            }
+            LoginAction.OnFacebookLoginClick -> {
+                viewModelScope.launch {
+                    state = state.copy(isLoading = true, errorMessage = null)
+                    when (val result = authRepository.loginWithFacebook()) {
+                        is Result.Success -> {
+                            state = state.copy(isLoading = false)
+                            eventChannel.send(LoginEvent.LoginSuccess)
+                        }
+                        is Result.Error -> {
+                            state = state.copy(
+                                isLoading = false,
+                                errorMessage = "Facebook sign-in failed. Please try again."
+                            )
+                        }
+                    }
+                }
+            }
             LoginAction.OnForgotPasswordClick -> {
                 viewModelScope.launch { eventChannel.send(LoginEvent.NavigateToForgotPassword) }
             }

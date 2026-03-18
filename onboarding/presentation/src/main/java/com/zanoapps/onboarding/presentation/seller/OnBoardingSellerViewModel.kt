@@ -13,11 +13,10 @@ import com.zanoapps.onboarding.presentation.seller.sellercompletion.SellerComple
 import com.zanoapps.onboarding.presentation.seller.sellingtime.SellingTimeAction
 import com.zanoapps.onboarding.presentation.seller.sellingtime.SellingTimeState
 
-class OnBoardingSellerViewModel: ViewModel() {
+class OnBoardingSellerViewModel : ViewModel() {
 
-
-    private val _propertyTypeStateState = mutableStateOf(PropertyTypeState())
-    val propertyTypeState get() = _propertyTypeStateState.value
+    private val _propertyTypeState = mutableStateOf(PropertyTypeState())
+    val propertyTypeState get() = _propertyTypeState.value
 
     private val _sellingTimeState = mutableStateOf(SellingTimeState())
     val sellingTimeState get() = _sellingTimeState.value
@@ -28,100 +27,54 @@ class OnBoardingSellerViewModel: ViewModel() {
     private val _sellerCompletionState = mutableStateOf(SellerCompletionState())
     val sellerCompletionState get() = _sellerCompletionState.value
 
-
-    fun updatePropertyIntentProgress(progress: Float) {
-        _propertyTypeStateState.value = _propertyTypeStateState.value.copy(
-            progress = progress
-        )
-    }
-
-    fun updateSellingTimeProgress(progress: Float) {
-        _sellingTimeState.value = _sellingTimeState.value.copy(
-            progress = progress
-        )
-    }
-
-    fun updateMainGoalProgress(progress: Float) {
-        _mainGoalState.value = _mainGoalState.value.copy(
-            progress = progress
-        )
-    }
-
     init {
-        updatePropertyIntentProgress( propertyTypeState.progress)
-        updateSellingTimeProgress(sellingTimeState.progress)
-        updateMainGoalProgress(mainGoalState.progress)
+        _propertyTypeState.value = _propertyTypeState.value.copy(progress = propertyTypeState.progress)
+        _sellingTimeState.value = _sellingTimeState.value.copy(progress = sellingTimeState.progress)
+        _mainGoalState.value = _mainGoalState.value.copy(progress = mainGoalState.progress)
     }
 
     fun onPropertyTypeAction(action: SellerPropertyTypeAction) {
         when (action) {
             is SellerPropertyTypeAction.OnPreferenceSelected -> {
-                togglePropertyTypeSelection(action.preference)
+                _propertyTypeState.value = _propertyTypeState.value.copy(
+                    propertyTypeSeller = action.preference
+                )
             }
-
-            else -> Unit
+            is SellerPropertyTypeAction.OnProgressUpdate -> {
+                _propertyTypeState.value = _propertyTypeState.value.copy(
+                    progress = action.progress
+                )
+            }
         }
     }
-
-    private fun togglePropertyTypeSelection(sellerPropertyType: PropertyTypeSeller) {
-
-
-        _propertyTypeStateState.value = _propertyTypeStateState.value.copy(
-            propertyTypeSeller = sellerPropertyType
-        )
-    }
-
-
- /*   fun clearLifeSituationOptions() {
-        _propertyTypeStateState.value = _propertyTypeStateState.value.copy(
-            propertyTypeSeller = null
-        )
-    }
-
-
-    fun updateLifeSituationProgress(progress: Float) {
-        _propertyTypeStateState.value = _propertyTypeStateState.value.copy(
-            progress = progress
-        )
-    }*/
-
 
     fun onMainGoalAction(mainGoalAction: SellerMainGoalAction) {
-        when(mainGoalAction) {
+        when (mainGoalAction) {
             is SellerMainGoalAction.OnPreferenceSelected -> {
-                toggleMainGoalSelection(mainGoalAction.preference)
+                _mainGoalState.value = _mainGoalState.value.copy(
+                    sellerMainGoal = mainGoalAction.preference
+                )
             }
-            else -> Unit
+            is SellerMainGoalAction.OnProgressUpdate -> {
+                _mainGoalState.value = _mainGoalState.value.copy(
+                    progress = mainGoalAction.progress
+                )
+            }
         }
-
     }
-
-    private fun toggleMainGoalSelection(mainGoal: MainGoal) {
-        _mainGoalState.value = _mainGoalState.value.copy(
-            sellerMainGoal = mainGoal
-        )
-    }
-
 
     fun onSellingTimeAction(sellingTimeAction: SellingTimeAction) {
-        when(sellingTimeAction) {
+        when (sellingTimeAction) {
             is SellingTimeAction.OnPreferenceSelected -> {
-                toggleSellingTimeSelection(sellingTimeAction.preference)
+                _sellingTimeState.value = _sellingTimeState.value.copy(
+                    sellingTime = sellingTimeAction.preference
+                )
             }
-            else -> Unit
+            is SellingTimeAction.OnProgressUpdate -> {
+                _sellingTimeState.value = _sellingTimeState.value.copy(
+                    progress = sellingTimeAction.progress
+                )
+            }
         }
-
     }
-
-    private fun toggleSellingTimeSelection(sellingTime: SellingTime) {
-        _sellingTimeState.value = _sellingTimeState.value.copy(
-            sellingTime = sellingTime
-        )
-    }
-
-
-
-
-
-
 }

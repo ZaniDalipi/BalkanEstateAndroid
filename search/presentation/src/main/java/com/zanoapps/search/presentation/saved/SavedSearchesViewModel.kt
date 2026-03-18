@@ -37,7 +37,11 @@ class SavedSearchesViewModel(
                     eventChannel.send(SavedSearchesEvent.NavigateToSearch(action.search.id))
                 }
             }
-            is SavedSearchesAction.OnEditSearch -> {}
+            is SavedSearchesAction.OnEditSearch -> {
+                viewModelScope.launch {
+                    eventChannel.send(SavedSearchesEvent.NavigateToSearch(action.search.id))
+                }
+            }
         }
     }
 

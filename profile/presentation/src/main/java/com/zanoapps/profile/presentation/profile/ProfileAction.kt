@@ -26,4 +26,9 @@ sealed interface ProfileAction {
     data object OnConfirmDeleteAccount : ProfileAction
     data object OnDismissDeleteAccount : ProfileAction
     data object OnChangePasswordClick : ProfileAction
+    data class OnOldPasswordChanged(val password: String) : ProfileAction
+    data class OnNewPasswordChanged(val password: String) : ProfileAction
+    data class OnConfirmNewPasswordChanged(val password: String) : ProfileAction
+    data object OnConfirmChangePassword : ProfileAction
+    data object OnDismissChangePassword : ProfileAction
 }

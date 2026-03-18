@@ -11,4 +11,7 @@ sealed interface ProfileEvent {
     data object NavigateToSavedSearches : ProfileEvent
     data object NavigateToSubscription : ProfileEvent
     data object NavigateToNotificationSettings : ProfileEvent
+    data class OpenUrl(val url: String) : ProfileEvent
+    data object PasswordChanged : ProfileEvent
+    data class PasswordChangeError(val message: String) : ProfileEvent
 }

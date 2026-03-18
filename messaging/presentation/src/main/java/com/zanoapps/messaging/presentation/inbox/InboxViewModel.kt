@@ -56,7 +56,12 @@ class InboxViewModel(
                     messagingRepository.deleteConversation(action.conversationId)
                 }
             }
-            is InboxAction.OnArchiveConversation -> { /* Archive logic */ }
+            is InboxAction.OnArchiveConversation -> {
+                viewModelScope.launch {
+                    messagingRepository.archiveConversation(action.conversationId)
+                    loadConversations()
+                }
+            }
             is InboxAction.OnMarkAsRead -> {
                 viewModelScope.launch {
                     messagingRepository.markAsRead(action.conversationId)

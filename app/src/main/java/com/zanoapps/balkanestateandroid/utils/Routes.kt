@@ -23,6 +23,12 @@ object SearchDestinations {
     const val SELLER_DASHBOARD = "seller_dashboard"
 }
 
+object AuthDestinations {
+    const val ROOT = "auth"
+    const val LOGIN = "login"
+    const val REGISTER = "register"
+}
+
 object MainDestinations {
     const val ROOT = "main"
     const val HOME = "home"

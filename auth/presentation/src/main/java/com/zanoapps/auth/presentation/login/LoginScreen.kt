@@ -46,6 +46,9 @@ import com.zanoapps.core.presentation.designsystem.EmailIcon
 import com.zanoapps.core.presentation.designsystem.EyeClosedIcon
 import com.zanoapps.core.presentation.designsystem.EyeOpenedIcon
 import com.zanoapps.core.presentation.designsystem.BalkanEstateLogo
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
+import com.zanoapps.presentation.ui.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -54,14 +57,18 @@ fun LoginScreenRoot(
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
+    ObserveAsEvents(flow = viewModel.events) { event ->
+        when (event) {
+            LoginEvent.LoginSuccess -> onLoginSuccess()
+            LoginEvent.NavigateToRegister -> onNavigateToRegister()
+            LoginEvent.NavigateToForgotPassword -> Unit
+            is LoginEvent.Error -> Unit
+        }
+    }
+
     LoginScreen(
         state = viewModel.state,
-        onAction = { action ->
-            when (action) {
-                LoginAction.OnRegisterClick -> onNavigateToRegister()
-                else -> viewModel.onAction(action)
-            }
-        }
+        onAction = viewModel::onAction
     )
 }
 
@@ -212,5 +219,16 @@ private fun LoginScreen(
                 modifier = Modifier.clickable { onAction(LoginAction.OnRegisterClick) }
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun LoginScreenPreview() {
+    BalkanEstateTheme {
+        LoginScreen(
+            state = LoginState(),
+            onAction = {}
+        )
     }
 }

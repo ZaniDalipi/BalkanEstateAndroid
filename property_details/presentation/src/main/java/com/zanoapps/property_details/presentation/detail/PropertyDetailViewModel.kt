@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zanoapps.search.domain.repository.PropertyRepository
 import com.zanoapps.favourites.domain.repository.FavouritesRepository
+import com.zanoapps.property_details.domain.repository.PropertyDetailRepository
 import com.zanoapps.core.domain.util.Result
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 
 class PropertyDetailViewModel(
     private val propertyRepository: PropertyRepository,
-    private val favouritesRepository: FavouritesRepository
+    private val favouritesRepository: FavouritesRepository,
+    private val propertyDetailRepository: PropertyDetailRepository
 ) : ViewModel() {
 
     var state by mutableStateOf(PropertyDetailState())
@@ -157,14 +159,37 @@ class PropertyDetailViewModel(
     }
 
     private fun sendMessage() {
+        val propertyId = state.property?.id ?: return
+        if (state.contactName.isBlank() || state.contactEmail.isBlank() || state.contactMessage.isBlank()) return
         viewModelScope.launch {
             state = state.copy(isSendingMessage = true)
-            state = state.copy(
-                isSendingMessage = false,
-                messageSent = true,
-                isContactAgentSheetOpen = false
+            val result = propertyDetailRepository.contactAgent(
+                propertyId = propertyId,
+                name = state.contactName,
+                email = state.contactEmail,
+                phone = state.contactPhone,
+                message = state.contactMessage
             )
-            eventChannel.send(PropertyDetailEvent.MessageSentSuccess)
+            when (result) {
+                is Result.Success -> {
+                    state = state.copy(
+                        isSendingMessage = false,
+                        messageSent = true,
+                        isContactAgentSheetOpen = false,
+                        contactName = "",
+                        contactEmail = "",
+                        contactPhone = "",
+                        contactMessage = ""
+                    )
+                    eventChannel.send(PropertyDetailEvent.MessageSentSuccess)
+                }
+                is Result.Error -> {
+                    state = state.copy(
+                        isSendingMessage = false,
+                        errorMessage = "Failed to send message. Please try again."
+                    )
+                }
+            }
         }
     }
 }

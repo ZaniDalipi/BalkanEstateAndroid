@@ -56,6 +56,42 @@ class AuthRepositoryImpl(
         return Result.Success(user)
     }
 
+    override suspend fun loginWithGoogle(): Result<AuthUser, DataError.Network> {
+        val user = AuthUser(
+            id = UUID.randomUUID().toString(),
+            email = "google.user@gmail.com",
+            firstName = "Google",
+            lastName = "User",
+            token = "google_token_${System.currentTimeMillis()}"
+        )
+        val entity = UserEntity(
+            id = user.id, email = user.email,
+            firstName = user.firstName, lastName = user.lastName,
+            token = user.token, memberSince = "March 2026"
+        )
+        userDao.insert(entity)
+        sessionStorage.setUser(user)
+        return Result.Success(user)
+    }
+
+    override suspend fun loginWithFacebook(): Result<AuthUser, DataError.Network> {
+        val user = AuthUser(
+            id = UUID.randomUUID().toString(),
+            email = "facebook.user@facebook.com",
+            firstName = "Facebook",
+            lastName = "User",
+            token = "facebook_token_${System.currentTimeMillis()}"
+        )
+        val entity = UserEntity(
+            id = user.id, email = user.email,
+            firstName = user.firstName, lastName = user.lastName,
+            token = user.token, memberSince = "March 2026"
+        )
+        userDao.insert(entity)
+        sessionStorage.setUser(user)
+        return Result.Success(user)
+    }
+
     override suspend fun logout(): EmptyResult<DataError.Network> {
         userDao.deleteAll()
         sessionStorage.clearSession()

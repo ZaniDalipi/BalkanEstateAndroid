@@ -28,5 +28,10 @@ data class ProfileState(
     val isSaving: Boolean = false,
     val showLogoutDialog: Boolean = false,
     val showDeleteAccountDialog: Boolean = false,
+    val showChangePasswordDialog: Boolean = false,
+    val oldPassword: String = "",
+    val newPassword: String = "",
+    val confirmNewPassword: String = "",
+    val isChangingPassword: Boolean = false,
     val errorMessage: String? = null
 )

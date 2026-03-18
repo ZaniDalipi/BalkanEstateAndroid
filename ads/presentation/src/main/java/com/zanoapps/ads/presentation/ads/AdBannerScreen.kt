@@ -37,7 +37,9 @@ import com.zanoapps.core.presentation.designsystem.BalkanEstateGray
 import com.zanoapps.core.presentation.designsystem.BalkanEstateGreen
 import com.zanoapps.core.presentation.designsystem.BalkanEstateOrange
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.presentation.ui.ObserveAsEvents
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -396,5 +398,37 @@ fun SponsoredAgentCard(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AdBannerScreenPreview() {
+    BalkanEstateTheme {
+        AdBannerScreen(
+            state = AdState(
+                ads = listOf(
+                    Ad(
+                        id = "1",
+                        title = "Premium Property in Tirana",
+                        description = "Beautiful apartment with stunning views in the heart of the city",
+                        type = AdType.BANNER
+                    ),
+                    Ad(
+                        id = "2",
+                        title = "Luxury Villa in Saranda",
+                        description = "Seafront villa with private pool and garden",
+                        type = AdType.FEATURED_LISTING
+                    ),
+                    Ad(
+                        id = "3",
+                        title = "Top Agent: Maria Johnson",
+                        description = "15 years experience in Balkan real estate market",
+                        type = AdType.SPONSORED_AGENT
+                    )
+                )
+            ),
+            onAction = {}
+        )
     }
 }

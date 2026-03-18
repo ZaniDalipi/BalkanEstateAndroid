@@ -4,6 +4,7 @@ import com.zanoapps.onboarding.domain.enums.seller.MainGoal
 
 sealed interface SellerMainGoalAction {
     data class OnPreferenceSelected(val preference: MainGoal) : SellerMainGoalAction
+    data class OnProgressUpdate(val progress: Float) : SellerMainGoalAction
     data object OnBackClick : SellerMainGoalAction
     data object OnNextClick : SellerMainGoalAction
     data object OnSkipClick : SellerMainGoalAction

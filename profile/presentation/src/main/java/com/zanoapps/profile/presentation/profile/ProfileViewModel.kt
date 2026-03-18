@@ -73,9 +73,21 @@ class ProfileViewModel(
             ProfileAction.OnSubscriptionClick -> {
                 viewModelScope.launch { eventChannel.send(ProfileEvent.NavigateToSubscription) }
             }
-            ProfileAction.OnHelpClick -> {}
-            ProfileAction.OnPrivacyPolicyClick -> {}
-            ProfileAction.OnTermsClick -> {}
+            ProfileAction.OnHelpClick -> {
+                viewModelScope.launch {
+                    eventChannel.send(ProfileEvent.OpenUrl("https://balkanestateai.com/help"))
+                }
+            }
+            ProfileAction.OnPrivacyPolicyClick -> {
+                viewModelScope.launch {
+                    eventChannel.send(ProfileEvent.OpenUrl("https://balkanestateai.com/privacy"))
+                }
+            }
+            ProfileAction.OnTermsClick -> {
+                viewModelScope.launch {
+                    eventChannel.send(ProfileEvent.OpenUrl("https://balkanestateai.com/terms"))
+                }
+            }
             ProfileAction.OnLogoutClick -> state = state.copy(showLogoutDialog = true)
             ProfileAction.OnConfirmLogout -> {
                 state = state.copy(showLogoutDialog = false)
@@ -91,7 +103,43 @@ class ProfileViewModel(
                 }
             }
             ProfileAction.OnDismissDeleteAccount -> state = state.copy(showDeleteAccountDialog = false)
-            ProfileAction.OnChangePasswordClick -> {}
+            ProfileAction.OnChangePasswordClick -> {
+                state = state.copy(
+                    showChangePasswordDialog = true,
+                    oldPassword = "",
+                    newPassword = "",
+                    confirmNewPassword = ""
+                )
+            }
+            is ProfileAction.OnOldPasswordChanged -> state = state.copy(oldPassword = action.password)
+            is ProfileAction.OnNewPasswordChanged -> state = state.copy(newPassword = action.password)
+            is ProfileAction.OnConfirmNewPasswordChanged -> state = state.copy(confirmNewPassword = action.password)
+            ProfileAction.OnConfirmChangePassword -> changePassword()
+            ProfileAction.OnDismissChangePassword -> state = state.copy(showChangePasswordDialog = false)
+        }
+    }
+
+    private fun changePassword() {
+        if (state.newPassword != state.confirmNewPassword) {
+            viewModelScope.launch {
+                eventChannel.send(ProfileEvent.PasswordChangeError("Passwords do not match"))
+            }
+            return
+        }
+        if (state.newPassword.length < 6) {
+            viewModelScope.launch {
+                eventChannel.send(ProfileEvent.PasswordChangeError("Password must be at least 6 characters"))
+            }
+            return
+        }
+        viewModelScope.launch {
+            state = state.copy(isChangingPassword = true)
+            profileRepository.changePassword(state.oldPassword, state.newPassword)
+            state = state.copy(
+                isChangingPassword = false,
+                showChangePasswordDialog = false
+            )
+            eventChannel.send(ProfileEvent.PasswordChanged)
         }
     }
 

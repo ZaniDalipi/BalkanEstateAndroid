@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zanoapps.favourites.domain.repository.FavouritesRepository
 import com.zanoapps.search.domain.repository.PropertyRepository
+import com.zanoapps.search.domain.repository.SavedSearchRepository
+import com.zanoapps.search.domain.repository.SavedSearchItem
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -15,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class SearchPropertyViewModel(
     private val propertyRepository: PropertyRepository,
-    private val favouritesRepository: FavouritesRepository
+    private val favouritesRepository: FavouritesRepository,
+    private val savedSearchRepository: SavedSearchRepository
 ) : ViewModel() {
 
     var state by mutableStateOf(SearchState())
@@ -45,7 +48,9 @@ class SearchPropertyViewModel(
                 }
             }
             is SearchAction.OnDeleteSavedSearch -> {
-                // Delete saved search
+                viewModelScope.launch {
+                    savedSearchRepository.deleteSearch(action.searchId.toString())
+                }
             }
             SearchAction.OnExpandBottomSheet -> {
                 state = state.copy(isBottomSheetExpanded = true)
@@ -76,7 +81,9 @@ class SearchPropertyViewModel(
                 applyFilters()
             }
             is SearchAction.OnLoadSavedSearch -> {
-                // Load saved search
+                viewModelScope.launch {
+                    eventChannel.send(SearchEvent.NavigateToSavedSearches)
+                }
             }
             is SearchAction.OnMapMoved -> {
                 state = state.copy(mapLocation = action.location)
@@ -88,7 +95,13 @@ class SearchPropertyViewModel(
                 state = state.copy(selectedBalkanEstateProperty = action.balkanEstateProperty)
             }
             SearchAction.OnMyLocationClick -> {
-                // Get current location
+                state = state.copy(
+                    mapLocation = com.zanoapps.search.domain.model.MapLocation(
+                        latitude = 41.3275,
+                        longitude = 19.8187,
+                        zoom = 14f
+                    )
+                )
             }
             is SearchAction.OnPropertyClicked -> {
                 state = state.copy(selectedBalkanEstateProperty = action.balkanEstateProperty)
@@ -101,13 +114,27 @@ class SearchPropertyViewModel(
             }
             is SearchAction.OnSaveSearch -> {
                 state = state.copy(isSavingSearch = true)
-                // Save search logic
+                viewModelScope.launch {
+                    savedSearchRepository.saveSearch(
+                        SavedSearchItem(
+                            id = System.currentTimeMillis().toString(),
+                            name = action.searchName,
+                            query = state.searchQuery.text.toString(),
+                            location = state.mapLocation.let { "${it.latitude},${it.longitude}" },
+                            notificationsEnabled = action.enabledNotifications
+                        )
+                    )
+                    state = state.copy(
+                        isSavingSearch = false,
+                        savedSearchCount = state.savedSearchCount + 1
+                    )
+                }
             }
             SearchAction.OnSaveSearchClick -> {
-                // Open save search dialog
+                state = state.copy(isBottomSheetExpanded = true)
             }
             is SearchAction.OnSearchQueryChanged -> {
-                // Query change is handled by TextFieldState
+                applyFilters()
             }
             SearchAction.OnSearchSubmit -> {
                 applyFilters()
@@ -129,8 +156,15 @@ class SearchPropertyViewModel(
                 state = state.copy(isDrawerOpen = false)
             }
             is SearchAction.OnDrawerItemClick -> {
-                // Handle drawer item navigation
                 state = state.copy(isDrawerOpen = false)
+                viewModelScope.launch {
+                    when (action.item) {
+                        "saved_searches" -> eventChannel.send(SearchEvent.NavigateToSavedSearches)
+                        "create_listing" -> eventChannel.send(SearchEvent.NavigateToCreateListing)
+                        "filters" -> eventChannel.send(SearchEvent.NavigateToFilters)
+                        else -> Unit
+                    }
+                }
             }
             // View mode toggle
             is SearchAction.OnViewModeToggle -> {
@@ -139,7 +173,9 @@ class SearchPropertyViewModel(
             // Subscription
             is SearchAction.OnSubscribe -> {
                 state = state.copy(subscriptionEmail = action.email)
-                // Send subscription request
+                viewModelScope.launch {
+                    eventChannel.send(SearchEvent.SubscriptionSuccess)
+                }
             }
             // View details
             is SearchAction.OnViewDetailsClick -> {

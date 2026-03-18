@@ -5,12 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zanoapps.property_details.domain.model.CreatePropertyForm
+import com.zanoapps.property_details.domain.repository.PropertyDetailRepository
+import com.zanoapps.core.domain.util.Result
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class CreateListingViewModel : ViewModel() {
+class CreateListingViewModel(
+    private val propertyDetailRepository: PropertyDetailRepository
+) : ViewModel() {
 
     var state by mutableStateOf(CreateListingState())
         private set
@@ -88,9 +92,33 @@ class CreateListingViewModel : ViewModel() {
         }
         viewModelScope.launch {
             state = state.copy(isSubmitting = true)
-            delay(2000) // Simulate API call
-            state = state.copy(isSubmitting = false)
-            eventChannel.send(CreateListingEvent.ListingCreated)
+            val form = CreatePropertyForm(
+                title = state.title,
+                description = state.description,
+                price = state.price,
+                currency = state.currency,
+                address = state.address,
+                city = state.city,
+                country = state.country,
+                postalCode = state.postalCode,
+                bedrooms = state.bedrooms.toIntOrNull() ?: 1,
+                bathrooms = state.bathrooms.toIntOrNull() ?: 1,
+                squareFootage = state.squareFootage,
+                yearBuilt = state.yearBuilt
+            )
+            when (val result = propertyDetailRepository.createListing(form)) {
+                is Result.Success -> {
+                    state = state.copy(isSubmitting = false)
+                    eventChannel.send(CreateListingEvent.ListingCreated)
+                }
+                is Result.Error -> {
+                    state = state.copy(
+                        isSubmitting = false,
+                        errorMessage = "Failed to create listing. Please try again."
+                    )
+                    eventChannel.send(CreateListingEvent.ValidationError("Failed to create listing"))
+                }
+            }
         }
     }
 }

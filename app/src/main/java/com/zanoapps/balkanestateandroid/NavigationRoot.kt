@@ -20,6 +20,9 @@ import com.zanoapps.agent.presentation.agents.AgentsScreenRoot
 import com.zanoapps.map.presentation.map.MapScreenRoot
 import com.zanoapps.media.presentation.gallery.MediaGalleryScreenRoot
 import com.zanoapps.notification.presentation.notifications.NotificationScreenRoot
+import com.zanoapps.auth.presentation.login.LoginScreenRoot
+import com.zanoapps.auth.presentation.register.RegisterScreenRoot
+import com.zanoapps.balkanestateandroid.utils.AuthDestinations
 import com.zanoapps.balkanestateandroid.utils.MainDestinations
 import com.zanoapps.balkanestateandroid.utils.OnboardingDestinations
 import com.zanoapps.balkanestateandroid.utils.SearchDestinations
@@ -58,6 +61,7 @@ fun NavigationRoot(
         startDestination = OnboardingDestinations.ROOT
     ) {
         onBoardingGraph(navController)
+        authGraph(navController)
         mainAppGraph(navController)
     }
 }
@@ -123,7 +127,7 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
             ) { _ ->
                 ProfileScreenRoot(
                     onLogout = {
-                        navController.navigate(OnboardingDestinations.ROOT) {
+                        navController.navigate(AuthDestinations.ROOT) {
                             popUpTo(MainDestinations.ROOT) { inclusive = true }
                         }
                     },
@@ -293,13 +297,47 @@ private fun createSearchNavigationCallback(navController: NavHostController): Se
         }
 
         override fun onLogout() {
-            navController.navigate(OnboardingDestinations.ROOT) {
+            navController.navigate(AuthDestinations.ROOT) {
                 popUpTo(MainDestinations.ROOT) { inclusive = true }
             }
         }
     }
 }
 
+
+// Auth Navigation Graph
+private fun NavGraphBuilder.authGraph(navController: NavHostController) {
+    navigation(
+        startDestination = AuthDestinations.LOGIN,
+        route = AuthDestinations.ROOT
+    ) {
+        composable(route = AuthDestinations.LOGIN) {
+            LoginScreenRoot(
+                onLoginSuccess = {
+                    navController.navigate(MainDestinations.ROOT) {
+                        popUpTo(AuthDestinations.ROOT) { inclusive = true }
+                    }
+                },
+                onNavigateToRegister = {
+                    navController.navigate(AuthDestinations.REGISTER)
+                }
+            )
+        }
+
+        composable(route = AuthDestinations.REGISTER) {
+            RegisterScreenRoot(
+                onRegisterSuccess = {
+                    navController.navigate(MainDestinations.ROOT) {
+                        popUpTo(AuthDestinations.ROOT) { inclusive = true }
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.popBackStack()
+                }
+            )
+        }
+    }
+}
 
 // OnboardingNavigation.kt
 private fun NavGraphBuilder.onBoardingGraph(navController: NavHostController) {

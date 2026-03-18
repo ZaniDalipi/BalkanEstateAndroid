@@ -37,7 +37,23 @@ class RegisterViewModel(
             RegisterAction.OnLoginClick -> {
                 viewModelScope.launch { eventChannel.send(RegisterEvent.NavigateToLogin) }
             }
-            RegisterAction.OnGoogleRegisterClick -> {}
+            RegisterAction.OnGoogleRegisterClick -> {
+                viewModelScope.launch {
+                    state = state.copy(isLoading = true, errorMessage = null)
+                    when (val result = authRepository.loginWithGoogle()) {
+                        is Result.Success -> {
+                            state = state.copy(isLoading = false)
+                            eventChannel.send(RegisterEvent.RegisterSuccess)
+                        }
+                        is Result.Error -> {
+                            state = state.copy(
+                                isLoading = false,
+                                errorMessage = "Google sign-up failed. Please try again."
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 

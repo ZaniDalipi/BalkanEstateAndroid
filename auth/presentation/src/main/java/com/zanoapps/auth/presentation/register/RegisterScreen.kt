@@ -43,6 +43,9 @@ import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateRed
 import com.zanoapps.core.presentation.designsystem.EyeClosedIcon
 import com.zanoapps.core.presentation.designsystem.EyeOpenedIcon
+import androidx.compose.ui.tooling.preview.Preview
+import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
+import com.zanoapps.presentation.ui.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -51,14 +54,17 @@ fun RegisterScreenRoot(
     onRegisterSuccess: () -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
+    ObserveAsEvents(flow = viewModel.events) { event ->
+        when (event) {
+            RegisterEvent.RegisterSuccess -> onRegisterSuccess()
+            RegisterEvent.NavigateToLogin -> onNavigateToLogin()
+            is RegisterEvent.Error -> Unit
+        }
+    }
+
     RegisterScreen(
         state = viewModel.state,
-        onAction = { action ->
-            when (action) {
-                RegisterAction.OnLoginClick -> onNavigateToLogin()
-                else -> viewModel.onAction(action)
-            }
-        }
+        onAction = viewModel::onAction
     )
 }
 
@@ -155,5 +161,16 @@ private fun RegisterScreen(
             Text("Sign In", color = BalkanEstatePrimaryBlue, fontWeight = FontWeight.Bold, modifier = Modifier.clickable { onAction(RegisterAction.OnLoginClick) })
         }
         Spacer(Modifier.height(16.dp))
+    }
+}
+
+@Preview
+@Composable
+private fun RegisterScreenPreview() {
+    BalkanEstateTheme {
+        RegisterScreen(
+            state = RegisterState(),
+            onAction = {}
+        )
     }
 }
