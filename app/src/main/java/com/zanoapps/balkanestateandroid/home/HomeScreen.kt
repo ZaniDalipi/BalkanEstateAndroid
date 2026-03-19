@@ -69,6 +69,8 @@ import com.zanoapps.core.presentation.designsystem.StarIcon
 import com.zanoapps.core.presentation.designsystem.components.EmailSubscriptionBar
 import com.zanoapps.core.presentation.designsystem.components.PropertyCard
 import com.zanoapps.presentation.ui.ObserveAsEvents
+import com.zanoapps.ads.domain.model.AdPlacement
+import com.zanoapps.ads.presentation.ads.AdBannerRoot
 import org.koin.androidx.compose.koinViewModel
 
 // -----------------------------------------------------------------
@@ -219,6 +221,14 @@ private fun HomeScreen(
             BrowseByCitySection(
                 onCityClick = { onAction(HomeAction.OnCityClick(it)) }
             )
+        }
+
+        // Ad Banner
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                AdBannerRoot(placement = AdPlacement.HOME_FEED)
+            }
         }
 
         // 5. Property Types Section

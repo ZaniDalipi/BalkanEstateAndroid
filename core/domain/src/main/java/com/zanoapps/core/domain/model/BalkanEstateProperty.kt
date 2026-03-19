@@ -27,5 +27,6 @@ data class BalkanEstateProperty(
     val parking: String = "",
     val agentPhone: String = "",
     val agentEmail: String = "",
-    val agentAvatarUrl: String = ""
+    val agentAvatarUrl: String = "",
+    val agentId: String = ""
 )

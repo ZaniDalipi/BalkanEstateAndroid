@@ -32,6 +32,7 @@ data class PropertyEntity(
     val agentPhone: String = "",
     val agentEmail: String = "",
     val agentAvatarUrl: String = "",
+    val agentId: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )

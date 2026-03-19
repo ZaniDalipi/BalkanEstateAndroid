@@ -264,6 +264,9 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
                 },
                 onNavigateToMortgageCalculator = {
                     navController.navigate(MainDestinations.MORTGAGE_CALCULATOR)
+                },
+                onNavigateToAgentDetail = { agentId ->
+                    navController.navigate(MainDestinations.agentDetail(agentId))
                 }
             )
         }
@@ -273,6 +276,9 @@ private fun NavGraphBuilder.mainAppGraph(navController: NavHostController) {
             NotificationScreenRoot(
                 onNavigateToProperty = { propertyId ->
                     navController.navigate(MainDestinations.propertyDetails(propertyId))
+                },
+                onNavigateToSettings = {
+                    navController.navigate(MainDestinations.NOTIFICATION_SETTINGS)
                 }
             )
         }

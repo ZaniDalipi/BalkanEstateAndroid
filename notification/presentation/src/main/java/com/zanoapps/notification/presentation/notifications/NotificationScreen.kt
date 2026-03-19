@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,6 +33,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
@@ -76,7 +78,8 @@ import java.util.Locale
 @Composable
 fun NotificationScreenRoot(
     viewModel: NotificationViewModel = koinViewModel(),
-    onNavigateToProperty: (String) -> Unit = {}
+    onNavigateToProperty: (String) -> Unit = {},
+    onNavigateToSettings: () -> Unit = {}
 ) {
     ObserveAsEvents(flow = viewModel.events) { event ->
         when (event) {
@@ -87,7 +90,8 @@ fun NotificationScreenRoot(
 
     NotificationScreen(
         state = viewModel.state,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        onNavigateToSettings = onNavigateToSettings
     )
 }
 
@@ -95,7 +99,8 @@ fun NotificationScreenRoot(
 @Composable
 private fun NotificationScreen(
     state: NotificationState,
-    onAction: (NotificationAction) -> Unit
+    onAction: (NotificationAction) -> Unit,
+    onNavigateToSettings: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -127,6 +132,13 @@ private fun NotificationScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Notification Settings",
+                            tint = BalkanEstateTextPrimary
+                        )
+                    }
                     if (state.notifications.any { !it.isRead }) {
                         TextButton(onClick = { onAction(NotificationAction.OnMarkAllAsRead) }) {
                             Text(

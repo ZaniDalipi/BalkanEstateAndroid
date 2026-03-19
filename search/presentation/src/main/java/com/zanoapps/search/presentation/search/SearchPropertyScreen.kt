@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zanoapps.core.domain.enums.SortOption
 import com.zanoapps.core.domain.model.BalkanEstateProperty
+import com.zanoapps.core.presentation.designsystem.BalkanEstateGray
 import com.zanoapps.core.presentation.designsystem.BalkanEstatePrimaryBlue
 import com.zanoapps.core.presentation.designsystem.BalkanEstateTheme
 import com.zanoapps.core.presentation.designsystem.FiltersIcon
@@ -473,6 +474,38 @@ private fun PropertyList(
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(color = BalkanEstatePrimaryBlue)
+        }
+    } else if (properties.isEmpty()) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = SaveSearchIcon,
+                    contentDescription = null,
+                    tint = BalkanEstatePrimaryBlue,
+                    modifier = Modifier.size(64.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "No Properties Found",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                    color = Color.DarkGray
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Try adjusting your filters or search in a different area",
+                    fontSize = 14.sp,
+                    color = BalkanEstateGray
+                )
+            }
         }
     } else {
         LazyColumn(

@@ -86,7 +86,8 @@ fun PropertyDetailScreenRoot(
     viewModel: PropertyDetailViewModel = koinViewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToProperty: (String) -> Unit,
-    onNavigateToMortgageCalculator: () -> Unit = {}
+    onNavigateToMortgageCalculator: () -> Unit = {},
+    onNavigateToAgentDetail: (String) -> Unit = {}
 ) {
     LaunchedEffect(propertyId) {
         viewModel.onAction(PropertyDetailAction.OnLoadProperty(propertyId))
@@ -99,6 +100,12 @@ fun PropertyDetailScreenRoot(
                 PropertyDetailAction.OnBackClick -> onNavigateBack()
                 is PropertyDetailAction.OnSimilarPropertyClick -> onNavigateToProperty(action.property.id)
                 PropertyDetailAction.OnMortgageCalculatorClick -> onNavigateToMortgageCalculator()
+                PropertyDetailAction.OnAgentCardClick -> {
+                    val agentId = viewModel.state.property?.agentId
+                    if (!agentId.isNullOrBlank()) {
+                        onNavigateToAgentDetail(agentId)
+                    }
+                }
                 else -> viewModel.onAction(action)
             }
         }
@@ -443,7 +450,11 @@ private fun PropertyDetailScreen(
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .clickable { onAction(PropertyDetailAction.OnAgentCardClick) }
+                        .padding(16.dp)
+                ) {
                     Text(
                         text = "Listed by",
                         style = MaterialTheme.typography.titleMedium,

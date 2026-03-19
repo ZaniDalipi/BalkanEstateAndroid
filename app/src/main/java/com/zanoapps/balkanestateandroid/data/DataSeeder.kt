@@ -47,7 +47,8 @@ class DataSeeder(
                 agentName = "Besmir Kola", isFeatured = true,
                 description = "Beautiful modern apartment in the heart of Blloku district. Features high ceilings, hardwood floors, and a spacious balcony overlooking the city.",
                 agentPhone = "+355 69 123 4567", agentEmail = "besmir@balkanproperty.al",
-                yearBuilt = 2019, floorNumber = 4, totalFloors = 8, furnished = "Fully Furnished", parking = "1 Underground"
+                yearBuilt = 2019, floorNumber = 4, totalFloors = 8, furnished = "Fully Furnished", parking = "1 Underground",
+                agentId = "a1"
             ),
             PropertyEntity(
                 id = "p2", title = "Luxury Villa with Pool in Durr\u00ebs",
@@ -60,7 +61,8 @@ class DataSeeder(
                 agentName = "Arben Dedja", isFeatured = true, isUrgent = true,
                 description = "Stunning seaside villa with private pool, garden, and panoramic views of the Adriatic Sea.",
                 agentPhone = "+355 69 234 5678", agentEmail = "arben@balkanproperty.al",
-                yearBuilt = 2021, totalFloors = 2, furnished = "Fully Furnished", parking = "2 Garage"
+                yearBuilt = 2021, totalFloors = 2, furnished = "Fully Furnished", parking = "2 Garage",
+                agentId = "a3"
             ),
             PropertyEntity(
                 id = "p3", title = "Cozy Studio near University of Tirana",
@@ -73,7 +75,8 @@ class DataSeeder(
                 agentName = "Mirela Hoxha",
                 description = "Perfect student accommodation near the university campus. Fully furnished with modern amenities.",
                 agentPhone = "+355 69 345 6789", agentEmail = "mirela@sunshineprops.al",
-                yearBuilt = 2018, floorNumber = 2, totalFloors = 5, furnished = "Fully Furnished", parking = "None"
+                yearBuilt = 2018, floorNumber = 2, totalFloors = 5, furnished = "Fully Furnished", parking = "None",
+                agentId = "a4"
             ),
             PropertyEntity(
                 id = "p4", title = "Penthouse with Panoramic City Views",
@@ -86,7 +89,8 @@ class DataSeeder(
                 agentName = "Eglantina Dervishi", isFeatured = true,
                 description = "Spectacular penthouse apartment with 360-degree views of Tirana. Features a rooftop terrace and premium finishes.",
                 agentPhone = "+355 69 456 7890", agentEmail = "eglantina@eliterealty.al",
-                yearBuilt = 2022, floorNumber = 12, totalFloors = 12, furnished = "Semi-Furnished", parking = "2 Underground"
+                yearBuilt = 2022, floorNumber = 12, totalFloors = 12, furnished = "Semi-Furnished", parking = "2 Underground",
+                agentId = "a2"
             ),
             PropertyEntity(
                 id = "p5", title = "Commercial Space in City Center",
@@ -99,7 +103,8 @@ class DataSeeder(
                 agentName = "Klodian M\u00ebhilli",
                 description = "Prime commercial space perfect for retail or office use. High foot traffic location in Myslym Shyri.",
                 agentPhone = "+355 69 567 8901", agentEmail = "klodian@eliterealty.al",
-                yearBuilt = 2015, floorNumber = 1, totalFloors = 6, furnished = "Unfurnished", parking = "Street"
+                yearBuilt = 2015, floorNumber = 1, totalFloors = 6, furnished = "Unfurnished", parking = "Street",
+                agentId = "a6"
             ),
             PropertyEntity(
                 id = "p6", title = "Beachfront Apartment in Sarand\u00eb",
@@ -112,7 +117,8 @@ class DataSeeder(
                 agentName = "Gentian Leka", isUrgent = true,
                 description = "Charming beachfront apartment with stunning sea views. Walking distance to restaurants and nightlife.",
                 agentPhone = "+355 69 678 9012", agentEmail = "gentian@adriaticre.al",
-                yearBuilt = 2020, floorNumber = 3, totalFloors = 5, furnished = "Semi-Furnished", parking = "1 Space"
+                yearBuilt = 2020, floorNumber = 3, totalFloors = 5, furnished = "Semi-Furnished", parking = "1 Space",
+                agentId = "a5"
             ),
             PropertyEntity(
                 id = "p7", title = "New Development 2BR in Vlor\u00eb",
@@ -125,7 +131,8 @@ class DataSeeder(
                 agentName = "Mirela Hoxha",
                 description = "Brand new apartment in an exciting coastal development. Modern design with energy-efficient features.",
                 agentPhone = "+355 69 345 6789", agentEmail = "mirela@sunshineprops.al",
-                yearBuilt = 2024, floorNumber = 5, totalFloors = 10, furnished = "Unfurnished", parking = "1 Underground"
+                yearBuilt = 2024, floorNumber = 5, totalFloors = 10, furnished = "Unfurnished", parking = "1 Underground",
+                agentId = "a4"
             ),
             PropertyEntity(
                 id = "p8", title = "Traditional Stone House in Gjirokast\u00ebr",
@@ -138,7 +145,8 @@ class DataSeeder(
                 agentName = "Besmir Kola",
                 description = "Beautifully restored traditional stone house in UNESCO World Heritage city. Original features with modern comforts.",
                 agentPhone = "+355 69 123 4567", agentEmail = "besmir@balkanproperty.al",
-                yearBuilt = 1850, totalFloors = 2, furnished = "Semi-Furnished", parking = "Garden"
+                yearBuilt = 1850, totalFloors = 2, furnished = "Semi-Furnished", parking = "Garden",
+                agentId = "a1"
             ),
             PropertyEntity(
                 id = "p9", title = "Modern Office Space in Pristina",
@@ -151,7 +159,8 @@ class DataSeeder(
                 agentName = "Eglantina Dervishi",
                 description = "Modern open-plan office in the business district of Pristina. Ready for immediate occupancy.",
                 agentPhone = "+355 69 456 7890", agentEmail = "eglantina@eliterealty.al",
-                yearBuilt = 2017, floorNumber = 3, totalFloors = 8, furnished = "Unfurnished", parking = "2 Spaces"
+                yearBuilt = 2017, floorNumber = 3, totalFloors = 8, furnished = "Unfurnished", parking = "2 Spaces",
+                agentId = "a2"
             ),
             PropertyEntity(
                 id = "p10", title = "Land Plot with Sea View in Himara",
@@ -164,7 +173,148 @@ class DataSeeder(
                 agentName = "Gentian Leka", isFeatured = true,
                 description = "Prime land plot with breathtaking sea views. Perfect for building your dream villa on the Albanian Riviera.",
                 agentPhone = "+355 69 678 9012", agentEmail = "gentian@adriaticre.al",
-                parking = "Open"
+                parking = "Open",
+                agentId = "a5"
+            ),
+            PropertyEntity(
+                id = "p11", title = "Spacious 4BR Apartment in Vra\u010dar",
+                price = 230000.0, currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
+                bedrooms = 4, bathrooms = 2, squareFootage = 140,
+                address = "Bulevar Kralja Aleksandra 78", city = "Belgrade", country = "Serbia",
+                latitude = 44.7936, longitude = 20.4717,
+                propertyType = "Apartment", listingType = "For Sale",
+                agentName = "Besmir Kola", isFeatured = true,
+                description = "Elegant apartment in the sought-after Vra\u010dar neighborhood. Renovated with premium materials, close to St. Sava Temple.",
+                agentPhone = "+355 69 123 4567", agentEmail = "besmir@balkanproperty.al",
+                yearBuilt = 2020, floorNumber = 5, totalFloors = 7, furnished = "Semi-Furnished", parking = "1 Underground",
+                agentId = "a1"
+            ),
+            PropertyEntity(
+                id = "p12", title = "Modern Loft in Belgrade Waterfront",
+                price = 1200.0, currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800",
+                bedrooms = 2, bathrooms = 1, squareFootage = 90,
+                address = "Savski Trg 5", city = "Belgrade", country = "Serbia",
+                latitude = 44.8057, longitude = 20.4530,
+                propertyType = "Apartment", listingType = "For Rent",
+                agentName = "Eglantina Dervishi",
+                description = "Trendy loft-style apartment in the new Belgrade Waterfront district. Floor-to-ceiling windows with river views.",
+                agentPhone = "+355 69 456 7890", agentEmail = "eglantina@eliterealty.al",
+                yearBuilt = 2023, floorNumber = 8, totalFloors = 15, furnished = "Fully Furnished", parking = "1 Underground",
+                agentId = "a2"
+            ),
+            PropertyEntity(
+                id = "p13", title = "Charming House in Zagreb Upper Town",
+                price = 380000.0, currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800",
+                bedrooms = 3, bathrooms = 2, squareFootage = 160,
+                address = "Tkal\u010di\u0107eva ulica 22", city = "Zagreb", country = "Croatia",
+                latitude = 45.8150, longitude = 15.9785,
+                propertyType = "House", listingType = "For Sale",
+                agentName = "Arben Dedja", isFeatured = true,
+                description = "Beautifully restored townhouse in Zagreb's historic Upper Town. Combines period charm with contemporary comfort.",
+                agentPhone = "+355 69 234 5678", agentEmail = "arben@balkanproperty.al",
+                yearBuilt = 1920, totalFloors = 2, furnished = "Semi-Furnished", parking = "Street",
+                agentId = "a3"
+            ),
+            PropertyEntity(
+                id = "p14", title = "Seafront Villa in Split",
+                price = 620000.0, currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
+                bedrooms = 5, bathrooms = 4, squareFootage = 280,
+                address = "Obala Hrvatskog Narodnog Preporoda 12", city = "Split", country = "Croatia",
+                latitude = 43.5081, longitude = 16.4402,
+                propertyType = "Villa", listingType = "For Sale",
+                agentName = "Gentian Leka", isFeatured = true, isUrgent = true,
+                description = "Magnificent Mediterranean villa steps from Diocletian's Palace. Private terrace with breathtaking Adriatic views.",
+                agentPhone = "+355 69 678 9012", agentEmail = "gentian@adriaticre.al",
+                yearBuilt = 2018, totalFloors = 3, furnished = "Fully Furnished", parking = "2 Garage",
+                agentId = "a5"
+            ),
+            PropertyEntity(
+                id = "p15", title = "New 2BR Apartment in Podgorica",
+                price = 115000.0, currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=800",
+                bedrooms = 2, bathrooms = 1, squareFootage = 72,
+                address = "Bulevar Svetog Petra Cetinjskog 18", city = "Podgorica", country = "Montenegro",
+                latitude = 42.4304, longitude = 19.2594,
+                propertyType = "Apartment", listingType = "For Sale",
+                agentName = "Mirela Hoxha",
+                description = "Modern apartment in a new residential complex in Podgorica. Open floor plan with high-quality finishes and city views.",
+                agentPhone = "+355 69 345 6789", agentEmail = "mirela@sunshineprops.al",
+                yearBuilt = 2024, floorNumber = 6, totalFloors = 10, furnished = "Unfurnished", parking = "1 Underground",
+                agentId = "a4"
+            ),
+            PropertyEntity(
+                id = "p16", title = "Luxury Apartment in Budva Old Town",
+                price = 2800.0, currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800",
+                bedrooms = 3, bathrooms = 2, squareFootage = 110,
+                address = "Mediteranska 7", city = "Budva", country = "Montenegro",
+                latitude = 42.2889, longitude = 18.8403,
+                propertyType = "Apartment", listingType = "For Rent",
+                agentName = "Klodian M\u00ebhilli", isUrgent = true,
+                description = "Premium furnished apartment in the heart of Budva's Old Town. Stone walls meet modern luxury with sea views from the balcony.",
+                agentPhone = "+355 69 567 8901", agentEmail = "klodian@eliterealty.al",
+                yearBuilt = 2017, floorNumber = 2, totalFloors = 4, furnished = "Fully Furnished", parking = "None",
+                agentId = "a6"
+            ),
+            PropertyEntity(
+                id = "p17", title = "Central Apartment in Skopje",
+                price = 89000.0, currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
+                bedrooms = 2, bathrooms = 1, squareFootage = 68,
+                address = "Bulevar Makedonija 24", city = "Skopje", country = "North Macedonia",
+                latitude = 41.9981, longitude = 21.4254,
+                propertyType = "Apartment", listingType = "For Sale",
+                agentName = "Besmir Kola",
+                description = "Well-located apartment near Macedonia Square. Bright and airy with a modern kitchen and views of the Vardar River.",
+                agentPhone = "+355 69 123 4567", agentEmail = "besmir@balkanproperty.al",
+                yearBuilt = 2016, floorNumber = 3, totalFloors = 6, furnished = "Semi-Furnished", parking = "Street",
+                agentId = "a1"
+            ),
+            PropertyEntity(
+                id = "p18", title = "Commercial Space in Sarajevo",
+                price = 1500.0, currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1604328698692-f76ea9498e76?w=800",
+                bedrooms = 0, bathrooms = 1, squareFootage = 120,
+                address = "Ferhadija 15", city = "Sarajevo", country = "Bosnia and Herzegovina",
+                latitude = 43.8589, longitude = 18.4318,
+                propertyType = "Commercial", listingType = "For Rent",
+                agentName = "Eglantina Dervishi",
+                description = "Prime retail space on Sarajevo's famous Ferhadija pedestrian street. High visibility and foot traffic, ideal for boutique or caf\u00e9.",
+                agentPhone = "+355 69 456 7890", agentEmail = "eglantina@eliterealty.al",
+                yearBuilt = 2010, floorNumber = 1, totalFloors = 5, furnished = "Unfurnished", parking = "None",
+                agentId = "a2"
+            ),
+            PropertyEntity(
+                id = "p19", title = "Stylish 3BR in Athens Kolonaki",
+                price = 340000.0, currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800",
+                bedrooms = 3, bathrooms = 2, squareFootage = 105,
+                address = "Patriarchou Ioakeim 32", city = "Athens", country = "Greece",
+                latitude = 37.9755, longitude = 23.7428,
+                propertyType = "Apartment", listingType = "For Sale",
+                agentName = "Arben Dedja", isFeatured = true,
+                description = "Elegant apartment in the upscale Kolonaki district. Neoclassical building with high ceilings, marble floors, and Acropolis views.",
+                agentPhone = "+355 69 234 5678", agentEmail = "arben@balkanproperty.al",
+                yearBuilt = 2015, floorNumber = 4, totalFloors = 6, furnished = "Semi-Furnished", parking = "1 Underground",
+                agentId = "a3"
+            ),
+            PropertyEntity(
+                id = "p20", title = "Renovated House in Sofia Center",
+                price = 195000.0, currency = "EUR",
+                imageUrl = "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800",
+                bedrooms = 4, bathrooms = 2, squareFootage = 170,
+                address = "Ulitsa Vitosha 88", city = "Sofia", country = "Bulgaria",
+                latitude = 42.6886, longitude = 23.3189,
+                propertyType = "House", listingType = "For Sale",
+                agentName = "Mirela Hoxha",
+                description = "Fully renovated family house on Sofia's main boulevard. Spacious garden, modern interiors, and excellent access to parks and schools.",
+                agentPhone = "+355 69 345 6789", agentEmail = "mirela@sunshineprops.al",
+                yearBuilt = 1975, totalFloors = 2, furnished = "Unfurnished", parking = "Garden",
+                agentId = "a4"
             )
         )
         propertyDao.insertAll(properties)

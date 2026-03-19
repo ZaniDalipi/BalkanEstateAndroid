@@ -108,7 +108,8 @@ fun PropertyEntity.toDomain(): BalkanEstateProperty {
         parking = parking,
         agentPhone = agentPhone,
         agentEmail = agentEmail,
-        agentAvatarUrl = agentAvatarUrl
+        agentAvatarUrl = agentAvatarUrl,
+        agentId = agentId
     )
 }
 
@@ -140,6 +141,7 @@ fun BalkanEstateProperty.toEntity(): PropertyEntity {
         parking = parking,
         agentPhone = agentPhone,
         agentEmail = agentEmail,
-        agentAvatarUrl = agentAvatarUrl
+        agentAvatarUrl = agentAvatarUrl,
+        agentId = agentId
     )
 }
